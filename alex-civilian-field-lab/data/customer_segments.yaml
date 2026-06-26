@@ -1,0 +1,73 @@
+# Kundesegmenter referert til av customer-feltet i concepts.yaml.
+# Brukes av salgsmateriell og prototype-planlegging for å velge riktig tone,
+# kanal og beslutningstaker.
+segments:
+  - id: "kommunalt_vannverk"
+    label: "Kommunalt vannverk / VA-avdeling"
+    decision_maker: "VA-sjef / driftsleder vann og avløp"
+    typical_budget_nok: "50000-500000"
+    sales_cycle_days: 90
+    best_channel: "e-post til VA-sjef + møte etterspurt via kommunens postmottak"
+
+  - id: "oppdrettsselskap"
+    label: "Oppdrettsselskap (laks/regnbueørret)"
+    decision_maker: "Drifts- eller teknisk sjef ved anlegget"
+    typical_budget_nok: "30000-300000"
+    sales_cycle_days: 60
+    best_channel: "direkte telefon til anleggsleder + demo på kai"
+
+  - id: "havnevesen_marina"
+    label: "Havnevesen / marina"
+    decision_maker: "Havnefogd / driftsansvarlig marina"
+    typical_budget_nok: "20000-150000"
+    sales_cycle_days: 60
+    best_channel: "møte på stedet + skriftlig tilbud"
+
+  - id: "borettslag_boligselskap"
+    label: "Borettslag / boligselskap"
+    decision_maker: "Styreleder / forretningsfører (boligbyggelag)"
+    typical_budget_nok: "5000-50000"
+    sales_cycle_days: 45
+    best_channel: "e-post til styreleder + presentasjon på styremøte/generalforsamling"
+
+  - id: "hytteeier_hytteforening"
+    label: "Hytteeiere / hytteforeninger"
+    decision_maker: "Privatperson / styre i hytteforening"
+    typical_budget_nok: "1500-6000"
+    sales_cycle_days: 14
+    best_channel: "Facebook-grupper for hytteeiere + nettbutikk/landingsside"
+
+  - id: "smabedrift_byggfirma"
+    label: "Småbedrift / bygg- og anleggsfirma / rørleggerfirma"
+    decision_maker: "Eier / daglig leder"
+    typical_budget_nok: "1000-20000"
+    sales_cycle_days: 21
+    best_channel: "direkte telefon + kort demo via skjermdeling"
+
+  - id: "kommune_vei_drift"
+    label: "Kommune (vei og drift) / vegentreprenører"
+    decision_maker: "Driftsingeniør / enhetsleder vei"
+    typical_budget_nok: "20000-200000"
+    sales_cycle_days: 90
+    best_channel: "e-post + deltakelse på kommunalteknisk fagdag"
+
+  - id: "byggherre_arkitekt"
+    label: "Byggherrer / arkitektkontor / eiendomsutviklere"
+    decision_maker: "Prosjektleder / ansvarlig søker"
+    typical_budget_nok: "2000-15000"
+    sales_cycle_days: 21
+    best_channel: "e-post til ansvarlig søker + integrasjon i byggesaksverktøy"
+
+  - id: "bilverksted_helseinstitusjon"
+    label: "Bilverksted / marina / helseinstitusjoner med kamera-/speilutstyr"
+    decision_maker: "Verkstedleder / teknisk drift"
+    typical_budget_nok: "1000-10000"
+    sales_cycle_days: 14
+    best_channel: "direkte salg via bransjemesse eller telefon"
+
+  - id: "oppfinnere_smabedrifter_ip"
+    label: "Oppfinnere / småbedrifter som søker IP-rådgivning"
+    decision_maker: "Privatperson / gründer"
+    typical_budget_nok: "500-5000"
+    sales_cycle_days: 7
+    best_channel: "landingsside med selvbetjent søk + e-post oppfølging"

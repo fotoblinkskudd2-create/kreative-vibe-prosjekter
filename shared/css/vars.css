@@ -1,0 +1,58 @@
+/**
+ * Shared CSS custom properties (design tokens).
+ * Import this in any project, then override :root vars for theming.
+ *
+ * Projects using this:
+ * - art-generator (dark theme override)
+ * - vibe-cards-prototype (light theme override)
+ * - problemknuser (neutral theme)
+ */
+
+:root {
+  /* Color palette - light theme defaults */
+  --color-bg: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6c757d;
+  --color-primary: #7c5cbf;
+  --color-primary-hover: #6a4aa8;
+  --color-secondary: #4ecdc4;
+  --color-accent: #ff6b6b;
+  --color-border: #dee2e6;
+  --color-error: #dc3545;
+  --color-success: #28a745;
+  --color-warning: #ffc107;
+
+  /* Typography */
+  --font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Fira Code", "Consolas", monospace;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}

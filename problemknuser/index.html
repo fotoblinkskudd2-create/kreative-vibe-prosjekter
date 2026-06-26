@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProblemKnuser — løs problemer, ha det gøy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-emoji">💥</span>
+      <div>
+        <h1>ProblemKnuser</h1>
+        <p class="tagline">Løs ekte problemer. Få ekte XP.</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat streak" title="Antall dager i streak">
+        <span class="stat-emoji">🔥</span>
+        <span id="streak-value">0</span>
+      </div>
+      <div class="stat level" title="Level">
+        <span id="level-title">Problem-nybegynner 🐣</span>
+      </div>
+      <div class="xp-bar-wrap" title="Erfaring (XP)">
+        <div class="xp-bar"><div id="xp-fill" class="xp-fill"></div></div>
+        <span id="xp-label">0 XP</span>
+      </div>
+    </div>
+  </header>
+
+  <div id="daily-vibe" class="daily-vibe"></div>
+
+  <main class="board">
+
+    <section class="panel" id="panel-input">
+      <h2>1. Hva er problemet?</h2>
+      <p class="hint">Skriv det rett ut. Ingen dømmer her — verken deg eller gummianden.</p>
+      <textarea id="problem-input" placeholder="F.eks: Jeg klarer ikke å starte på rapporten som skal leveres på fredag..."></textarea>
+      <div id="category-preview" class="category-preview hidden"></div>
+      <button id="analyze-btn" class="btn btn-primary">Analyser problemet →</button>
+    </section>
+
+    <section class="panel hidden" id="panel-perspective">
+      <h2>2. Skift perspektiv</h2>
+      <p class="hint">Spin hjulet for et lite tankeeksperiment før du planlegger noe.</p>
+      <div class="technique-card" id="technique-card">
+        <div class="technique-title">Trykk «Spin» for å starte 🎡</div>
+        <div class="technique-desc"></div>
+      </div>
+      <div class="technique-actions">
+        <button id="spin-btn" class="btn btn-secondary">🎡 Spin</button>
+        <button id="lock-technique-btn" class="btn btn-primary" disabled>Bruk denne →</button>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="panel-plan">
+      <h2>3. Handlingsplanen din</h2>
+      <p class="hint">Tre konkrete skritt. Kryss av når de er gjort — hver av dem gir XP.</p>
+      <ul id="steps-list" class="steps-list"></ul>
+      <button id="new-problem-btn" class="btn btn-secondary hidden">🧹 Nytt problem</button>
+    </section>
+
+  </main>
+
+  <aside class="history-panel">
+    <h2>Knuste problemer 🏆</h2>
+    <p class="hint">Dine siste seire, lagret lokalt i nettleseren.</p>
+    <ul id="history-list" class="history-list"></ul>
+    <button id="clear-history-btn" class="btn btn-ghost">Nullstill historikk</button>
+  </aside>
+
+</div>
+
+<script src="../shared/js/dom-utils.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
