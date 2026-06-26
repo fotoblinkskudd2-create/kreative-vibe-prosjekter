@@ -1,0 +1,64 @@
+# Konsepter som matcher disse kategoriene/nøkkelordene blokkeres automatisk av
+# risk_filter.py og vises aldri i scoring-rapportene som anbefalte konsepter.
+# Søket skjer i name + domain + problem + solution, case-insensitive, på hele ord.
+blocked_categories:
+  - category: "våpen"
+    keywords:
+      - "våpen"
+      - "weapon"
+      - "ammunisjon"
+      - "ammunition"
+      - "sprengstoff"
+      - "explosive"
+      - "missile"
+      - "stridshode"
+
+  - category: "skjult overvåkning"
+    keywords:
+      - "skjult overvåkning"
+      - "covert surveillance"
+      - "spionasje"
+      - "spyware"
+      - "hidden camera"
+      - "skjult kamera"
+
+  - category: "personsporing"
+    keywords:
+      - "personsporing"
+      - "person tracking"
+      - "individtracking"
+      - "stalking"
+      - "spore en person"
+
+  - category: "jamming"
+    keywords:
+      - "jamming"
+      - "signal jammer"
+      - "jammer"
+      - "gps-jamming"
+      - "radiojamming"
+
+  - category: "militær taktikk"
+    keywords:
+      - "militær taktikk"
+      - "military tactics"
+      - "combat doctrine"
+      - "stridsteknikk"
+      - "krigføring"
+
+  - category: "skadefunksjon"
+    keywords:
+      - "skadefunksjon"
+      - "harm function"
+      - "sabotasje"
+      - "sabotage"
+      - "disable target"
+      - "uskadeliggjøre"
+
+  - category: "autonom angrepsevne"
+    keywords:
+      - "autonom angrepsevne"
+      - "autonomous attack"
+      - "angrepsdrone"
+      - "lethal autonomous"
+      - "selvstyrt våpen"
