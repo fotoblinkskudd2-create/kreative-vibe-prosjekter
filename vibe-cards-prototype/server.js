@@ -23,6 +23,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Noe gikk galt på serveren.' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Vibe Cards server kjører på http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Vibe Cards server kjører på http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
