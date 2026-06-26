@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Art Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>AI Art Generator</h1>
+    <p>Describe it. Generate it. Keep the gold, kill the trash, breed consorts from your favorites.</p>
+  </header>
+
+  <main class="container">
+    <section class="prompt-bar">
+      <textarea id="prompt" placeholder="A neon dragon coiled around a glass mountain, cinematic lighting..." rows="2"></textarea>
+      <div class="controls">
+        <label>
+          Count
+          <select id="count">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </label>
+        <label>
+          Size
+          <select id="size">
+            <option value="1024x1024" selected>Square</option>
+            <option value="1792x1024">Wide</option>
+            <option value="1024x1792">Tall</option>
+          </select>
+        </label>
+        <button id="generateBtn">Generate</button>
+      </div>
+      <p id="status" class="status"></p>
+    </section>
+
+    <section id="gallery" class="gallery"></section>
+  </main>
+
+  <template id="cardTemplate">
+    <div class="card">
+      <img class="card-img" alt="Generated art" />
+      <div class="card-actions">
+        <button class="keep-btn" title="Keep">⭐ Keep</button>
+        <button class="discard-btn" title="Discard">🗑 Discard</button>
+        <button class="consort-btn" title="Generate consorts">🧬 Consorts</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
