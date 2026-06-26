@@ -141,12 +141,19 @@ function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) { /* ignore corrupt storage */ }
+  } catch (e) {
+    console.warn("Corrupt localStorage data for", STORAGE_KEY, "— resetting:", e.message);
+    localStorage.removeItem(STORAGE_KEY);
+  }
   return { xp: 0, streak: 0, lastSolvedDate: null, history: [] };
 }
 
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error("Failed to save state to localStorage:", e.message);
+  }
 }
 
 let state = loadState();

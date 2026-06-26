@@ -9,7 +9,18 @@ import yaml
 def load_risk_rules(path):
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
-    return data["blocked_categories"]
+
+    if not isinstance(data, dict) or "blocked_categories" not in data:
+        raise ValueError(f"Risk rules file {path} must contain a 'blocked_categories' list")
+
+    categories = data["blocked_categories"]
+    for i, cat in enumerate(categories):
+        if "category" not in cat or "keywords" not in cat:
+            raise ValueError(
+                f"Risk rule entry {i} in {path} must have 'category' and 'keywords' fields"
+            )
+
+    return categories
 
 
 def _concept_text(concept):

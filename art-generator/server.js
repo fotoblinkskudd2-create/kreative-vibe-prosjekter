@@ -110,6 +110,22 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, hasApiKey: Boolean(OPENAI_API_KEY) });
 });
 
+app.use((err, req, res, _next) => {
+  console.error("Unhandled error in request:", err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled promise rejection:", reason);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception, shutting down:", err);
+  process.exit(1);
+});
+
 app.listen(PORT, () => {
   console.log(`Art generator running at http://localhost:${PORT}`);
 });

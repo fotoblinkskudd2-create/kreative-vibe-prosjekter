@@ -4,6 +4,8 @@ load concepts -> screen for civilian safety -> score -> plan -> report.
 import sys
 from pathlib import Path
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from concept_loader import load_concepts
@@ -27,12 +29,24 @@ TOP_N_PROTOTYPES = 3
 
 
 def main():
-    concepts = load_concepts(DATA / "concepts.yaml")
-    risk_rules = load_risk_rules(DATA / "risk_rules.yaml")
-    weights = load_weights(DATA / "scoring_weights.yaml")
+    try:
+        concepts = load_concepts(DATA / "concepts.yaml")
+        risk_rules = load_risk_rules(DATA / "risk_rules.yaml")
+        weights = load_weights(DATA / "scoring_weights.yaml")
+    except FileNotFoundError as exc:
+        print(f"Feil: Mangler datafil: {exc.filename}", file=sys.stderr)
+        raise SystemExit(1) from exc
+    except (ValueError, yaml.YAMLError) as exc:
+        print(f"Feil: Ugyldig data: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
 
     safe, blocked = screen_concepts(concepts, risk_rules)
     scored = score_concepts(safe, weights)
+
+    if not scored:
+        print("Advarsel: Alle konsepter ble blokkert av risk_filter. Ingen rapporter generert.",
+              file=sys.stderr)
+        raise SystemExit(1)
 
     REPORTS.mkdir(exist_ok=True)
     render_concept_scores(scored, blocked, REPORTS / "concept_scores.md")

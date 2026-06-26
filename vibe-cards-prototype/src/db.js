@@ -57,11 +57,26 @@ function load() {
     fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
     return initial;
   }
-  return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+  try {
+    return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+  } catch (err) {
+    console.error(`Corrupt db file ${DB_FILE}, resetting to seed data:`, err.message);
+    const initial = seedData();
+    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
+    return initial;
+  }
 }
 
 function save(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  const tmp = DB_FILE + '.tmp';
+  try {
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+    fs.renameSync(tmp, DB_FILE);
+  } catch (err) {
+    console.error('Failed to persist db state:', err.message);
+    try { fs.unlinkSync(tmp); } catch (_) { /* cleanup best-effort */ }
+    throw err;
+  }
 }
 
 let state = load();

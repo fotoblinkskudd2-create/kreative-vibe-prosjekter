@@ -2,10 +2,28 @@
 import yaml
 
 
+REQUIRED_WEIGHT_KEYS = [
+    "sales_potential",
+    "prototype_speed",
+    "ip_potential",
+    "customer_pain",
+    "civilian_safety",
+]
+
+
 def load_weights(path):
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
-    return data["weights"]
+
+    if not isinstance(data, dict) or "weights" not in data:
+        raise ValueError(f"Scoring weights file {path} must contain a 'weights' mapping")
+
+    weights = data["weights"]
+    missing = [k for k in REQUIRED_WEIGHT_KEYS if k not in weights]
+    if missing:
+        raise ValueError(f"Scoring weights file {path} is missing keys: {missing}")
+
+    return weights
 
 
 def score_concept(concept, weights):
