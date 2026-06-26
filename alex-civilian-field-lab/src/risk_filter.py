@@ -2,14 +2,17 @@
 jamming, military tactics, harm functions or autonomous attack capability.
 """
 import re
+import sys
+from pathlib import Path
 
-import yaml
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared" / "python"))
+
+from yaml_utils import load_yaml, extract_list
 
 
 def load_risk_rules(path):
-    with open(path, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    return data["blocked_categories"]
+    data = load_yaml(path)
+    return extract_list(data, "blocked_categories")
 
 
 def _concept_text(concept):

@@ -1,3 +1,4 @@
+// Uses shared: escapeHtml, el, setStatus from /shared/js/dom-utils.js
 const promptEl = document.getElementById("prompt");
 const countEl = document.getElementById("count");
 const sizeEl = document.getElementById("size");
@@ -6,9 +7,8 @@ const statusEl = document.getElementById("status");
 const gallery = document.getElementById("gallery");
 const cardTemplate = document.getElementById("cardTemplate");
 
-function setStatus(message, isError = false) {
-  statusEl.textContent = message;
-  statusEl.classList.toggle("error", isError);
+function showStatus(message, isError = false) {
+  setStatus(statusEl, message, isError);
 }
 
 function imageSrc(image) {
@@ -43,12 +43,12 @@ function addCard(image) {
 async function generate() {
   const prompt = promptEl.value.trim();
   if (!prompt) {
-    setStatus("Type a prompt first.", true);
+    showStatus("Type a prompt first.", true);
     return;
   }
 
   generateBtn.disabled = true;
-  setStatus("Generating art...");
+  showStatus("Generating art...");
 
   try {
     const res = await fetch("/api/generate", {
@@ -64,9 +64,9 @@ async function generate() {
     if (!res.ok) throw new Error(data.error || "Generation failed.");
 
     data.images.forEach(addCard);
-    setStatus(`Generated ${data.images.length} image(s).`);
+    showStatus(`Generated ${data.images.length} image(s).`);
   } catch (err) {
-    setStatus(err.message, true);
+    showStatus(err.message, true);
   } finally {
     generateBtn.disabled = false;
   }
@@ -74,12 +74,12 @@ async function generate() {
 
 async function makeConsorts(image, button) {
   if (!image.url) {
-    setStatus("Consorts require a hosted image URL (not available for this image).", true);
+    showStatus("Consorts require a hosted image URL (not available for this image).", true);
     return;
   }
 
   button.disabled = true;
-  setStatus("Breeding consorts from this image...");
+  showStatus("Breeding consorts from this image...");
 
   try {
     const res = await fetch("/api/variations", {
@@ -91,9 +91,9 @@ async function makeConsorts(image, button) {
     if (!res.ok) throw new Error(data.error || "Consort generation failed.");
 
     data.images.forEach(addCard);
-    setStatus(`Bred ${data.images.length} consort(s).`);
+    showStatus(`Bred ${data.images.length} consort(s).`);
   } catch (err) {
-    setStatus(err.message, true);
+    showStatus(err.message, true);
   } finally {
     button.disabled = false;
   }

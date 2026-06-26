@@ -13,6 +13,7 @@ const VARIATION_MODEL = "dall-e-2"; // the only OpenAI model that supports true 
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/shared", express.static(path.join(__dirname, "../shared")));
 
 function requireApiKey(res) {
   if (!OPENAI_API_KEY) {

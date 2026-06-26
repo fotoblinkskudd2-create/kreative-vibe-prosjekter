@@ -1,5 +1,13 @@
-"""Load and validate civilian field-lab concepts from YAML."""
-import yaml
+"""Load and validate civilian field-lab concepts from YAML.
+
+Refactored to use shared yaml_utils for common YAML/validation patterns.
+"""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared" / "python"))
+
+from yaml_utils import load_and_validate, validate_score_range
 
 REQUIRED_FIELDS = [
     "name",
@@ -25,22 +33,10 @@ SCORE_FIELDS = [
 
 
 def load_concepts(path):
-    with open(path, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-
-    concepts = data.get("concepts") if data else None
-    if not concepts:
-        raise ValueError(f"No concepts found in {path}")
+    concepts = load_and_validate(path, "concepts", REQUIRED_FIELDS)
 
     for concept in concepts:
-        missing = [field for field in REQUIRED_FIELDS if field not in concept]
-        if missing:
-            raise ValueError(f"Concept '{concept.get('name', '?')}' missing fields: {missing}")
         for field in SCORE_FIELDS:
-            value = concept[field]
-            if not isinstance(value, (int, float)) or not (1 <= value <= 10):
-                raise ValueError(
-                    f"Concept '{concept['name']}' field '{field}' must be a number 1-10, got {value!r}"
-                )
+            validate_score_range(concept[field], f"{concept['name']}.{field}")
 
     return concepts

@@ -1,10 +1,14 @@
 """Compute the weighted civilian field-lab value score for each concept."""
-import yaml
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared" / "python"))
+
+from yaml_utils import load_yaml
 
 
 def load_weights(path):
-    with open(path, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+    data = load_yaml(path)
     return data["weights"]
 
 

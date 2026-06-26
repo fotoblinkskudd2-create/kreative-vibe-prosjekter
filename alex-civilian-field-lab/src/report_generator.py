@@ -1,44 +1,54 @@
-"""Render the markdown reports for the civilian field-lab pipeline."""
+"""Render the markdown reports for the civilian field-lab pipeline.
+
+Refactored to use shared markdown_writer for report output.
+"""
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared" / "python"))
+
+from markdown_writer import write_report, heading, table_header, table_row
+
+
+SCORE_COLUMNS = ["Navn", "Domene", "Score", "Salg", "ProtoSpeed", "IP", "Kundesmerte", "Sivil sikkerhet"]
 
 
 def _score_row(c):
-    return (
-        f"| {c['name']} | {c['domain']} | {c['value_score']} | {c['sales_potential']} "
-        f"| {c['prototype_speed']} | {c['ip_potential']} | {c['customer_pain']} | {c['civilian_safety']} |"
-    )
+    return table_row([
+        c['name'], c['domain'], c['value_score'], c['sales_potential'],
+        c['prototype_speed'], c['ip_potential'], c['customer_pain'], c['civilian_safety']
+    ])
 
 
 def render_concept_scores(scored, blocked, path):
     lines = [
-        "# Concept Scores",
+        heading("Concept Scores"),
         "",
         "Verdiformel: `sales_potential*0.30 + prototype_speed*0.20 + ip_potential*0.20 "
         "+ customer_pain*0.20 + civilian_safety*0.10`",
         "",
         f"Totalt {len(scored) + len(blocked)} konsepter vurdert. {len(scored)} godkjent, {len(blocked)} blokkert av risk_filter.",
         "",
-        "| Navn | Domene | Score | Salg | ProtoSpeed | IP | Kundesmerte | Sivil sikkerhet |",
-        "|---|---|---|---|---|---|---|---|",
+        *table_header(SCORE_COLUMNS),
     ]
     lines += [_score_row(c) for c in scored]
 
     if blocked:
-        lines += ["", "## Blokkert av risk_filter", ""]
+        lines += ["", heading("Blokkert av risk_filter", level=2), ""]
         for b in blocked:
             lines.append(
                 f"- **{b['name']}** - blokkert kategori: {b['_blocked_category']} "
                 f"(treff på nøkkelord '{b['_blocked_keyword']}')"
             )
 
-    Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_report(path, lines)
 
 
 def render_top_ideas(scored, path, top_n=5):
-    lines = ["# Top Ideas", "", f"Topp {top_n} konsepter rangert etter value_score.", ""]
+    lines = [heading("Top Ideas"), "", f"Topp {top_n} konsepter rangert etter value_score.", ""]
     for i, c in enumerate(scored[:top_n], 1):
         lines += [
-            f"## {i}. {c['name']} (score {c['value_score']})",
+            heading(f"{i}. {c['name']} (score {c['value_score']})", level=2),
             f"- **Domene:** {c['domain']}",
             f"- **Kunde:** {c['customer']}",
             f"- **Problem:** {c['problem']}",
@@ -46,11 +56,11 @@ def render_top_ideas(scored, path, top_n=5):
             f"- **Estimert kostnad prototype:** {c['estimated_cost']} NOK",
             "",
         ]
-    Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    write_report(path, lines)
 
 
 def render_prototype_plan(plans, path):
-    Path(path).write_text("\n\n".join(plans) + "\n", encoding="utf-8")
+    write_report(path, ["\n".join(plans)])
 
 
 def build_sales_angle(concept):
@@ -74,4 +84,4 @@ def build_sales_angle(concept):
 
 
 def render_sales_angles(angles, path):
-    Path(path).write_text("\n\n".join(angles) + "\n", encoding="utf-8")
+    write_report(path, ["\n".join(angles)])

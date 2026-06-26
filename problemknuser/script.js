@@ -1,4 +1,5 @@
 "use strict";
+// Uses shared: escapeHtml, showPanel from /shared/js/dom-utils.js (loaded via index.html)
 
 /* ============================== DATA ============================== */
 
@@ -262,11 +263,7 @@ function renderHistory() {
   });
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
+// escapeHtml is now provided by /shared/js/dom-utils.js
 
 /* ============================== FLOW: STEP 1 — INPUT ============================== */
 
@@ -294,7 +291,7 @@ analyzeBtn.addEventListener("click", () => {
   session.problemText = text;
   session.category = detectCategory(text);
   renderCategoryPreview();
-  showPanel("panel-perspective");
+  switchPanel("panel-perspective");
 });
 
 /* ============================== FLOW: STEP 2 — PERSPECTIVE ============================== */
@@ -318,7 +315,7 @@ spinBtn.addEventListener("click", () => {
 
 lockTechniqueBtn.addEventListener("click", () => {
   buildSteps();
-  showPanel("panel-plan");
+  switchPanel("panel-plan");
 });
 
 /* ============================== FLOW: STEP 3 — ACTION PLAN ============================== */
@@ -408,16 +405,16 @@ function resetSession() {
   lockTechniqueBtn.disabled = true;
   stepsList.innerHTML = "";
   newProblemBtn.classList.add("hidden");
-  showPanel("panel-input");
+  switchPanel("panel-input");
   problemInput.focus();
 }
 
 /* ============================== PANEL SWITCHING ============================== */
 
-function showPanel(id) {
-  ["panel-input", "panel-perspective", "panel-plan"].forEach((pid) => {
-    document.getElementById(pid).classList.toggle("hidden", pid !== id);
-  });
+const PANEL_IDS = ["panel-input", "panel-perspective", "panel-plan"];
+
+function switchPanel(id) {
+  showPanel(id, PANEL_IDS);
 }
 
 /* ============================== HISTORY CLEAR ============================== */
@@ -504,7 +501,7 @@ function init() {
   renderDailyVibe();
   renderHistory();
   renderCategoryPreview();
-  showPanel("panel-input");
+  switchPanel("panel-input");
 }
 
 init();

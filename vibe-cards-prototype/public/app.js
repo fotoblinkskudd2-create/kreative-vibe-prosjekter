@@ -1,4 +1,6 @@
 // Vanilla JS frontend for Vibe Cards - ingen byggesteg nødvendig.
+// Uses shared: escapeHtml, el from /shared/js/dom-utils.js
+// Uses shared: createApiClient from /shared/js/api-client.js
 const state = {
   token: localStorage.getItem('vibe_token') || null,
   user: JSON.parse(localStorage.getItem('vibe_user') || 'null'),
@@ -7,22 +9,11 @@ const state = {
   activeMood: null,
 };
 
-const el = (id) => document.getElementById(id);
-
-async function api(path, options = {}) {
-  const headers = { 'Content-Type': 'application/json', ...options.headers };
-  if (state.token) headers.Authorization = `Bearer ${state.token}`;
-
-  const res = await fetch(`/api${path}`, { ...options, headers });
-  if (res.status === 204) return null;
-
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const message = data.error || (data.errors && data.errors.join(' ')) || 'Noe gikk feil.';
-    throw new Error(message);
-  }
-  return data;
-}
+const apiClient = createApiClient({
+  baseUrl: '/api',
+  getToken: () => state.token,
+});
+const api = (path, options = {}) => apiClient.request(path, options);
 
 function setAuth(token, user) {
   state.token = token;
@@ -107,11 +98,7 @@ function renderCards() {
   });
 }
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
+// escapeHtml is now provided by /shared/js/dom-utils.js
 
 async function loadCards() {
   const query = state.activeMood ? `?mood=${encodeURIComponent(state.activeMood)}` : '';
