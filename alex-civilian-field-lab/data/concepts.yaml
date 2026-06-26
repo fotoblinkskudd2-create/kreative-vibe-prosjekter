@@ -1,0 +1,216 @@
+concepts:
+  - name: "FjordPipe Sentinel"
+    domain: "vann / kommunal infrastruktur"
+    customer: "kommunalt vannverk / VA-avdeling"
+    problem: "Skjulte lekkasjer i sjøledninger for kommunalt vann/avløp oppdages ofte måneder etter at de starter, og koster millioner i vanntap og oppgraving."
+    solution: "Akustisk lyttebøye som henges på sjøledningen, fanger lekkasjelyd (turbulens) kontinuerlig, sender data via LoRaWAN til land og flagger avvik mot baseline."
+    prototype_difficulty: 6
+    sales_potential: 8
+    ip_potential: 6
+    civilian_safety: 10
+    estimated_cost: 35000
+    customer_pain: 8
+
+  - name: "MerdStress Listener"
+    domain: "oppdrett"
+    customer: "oppdrettsselskap"
+    problem: "Nøter i oppdrettsanlegg utsettes for slitasje og strekkbelastning fra strøm og vær; brudd fører til rømming, bøter og tap av fisk."
+    solution: "Klypesensor med akselerometer og strekkmåler festet på notrammen, lytter etter unormalt vibrasjons- og strekkmønster og varsler før brudd."
+    prototype_difficulty: 5
+    sales_potential: 9
+    ip_potential: 7
+    civilian_safety: 10
+    estimated_cost: 18000
+    customer_pain: 9
+
+  - name: "FrostDock Marker"
+    domain: "is / kulde / havn"
+    customer: "havnevesen / marina / kommune"
+    problem: "Isdannelse på flytebrygger og kaikanter er usynlig til den blir farlig - glatt is, strukturell belastning og uforutsett skade på utstyr og personer."
+    solution: "Liten frost- og issensor med temperatur- og fuktmåling, lokal varsellampe pluss app-varsel, plassert på utsatte punkter på brygge."
+    prototype_difficulty: 3
+    sales_potential: 6
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 6000
+    customer_pain: 6
+
+  - name: "LeakPulse Tile"
+    domain: "vann / kommunal infrastruktur"
+    customer: "borettslag / boligselskap / kommune"
+    problem: "Lekkasjer i rør under gulv eller i kjeller oppdages ofte først etter at fuktskaden har spredd seg, og forsikringssaker tar uker."
+    solution: "Tynn klebbar sensor-flis som limes på rørvegg eller gulv, registrerer fuktighet og lydendring kontinuerlig og varsler direkte på telefon."
+    prototype_difficulty: 4
+    sales_potential: 8
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 4500
+    customer_pain: 9
+
+  - name: "HarborBio Scanner"
+    domain: "havn / oppdrett"
+    customer: "havnevesen / oppdrettsselskap / skipsverft"
+    problem: "Begroing på skrog, not og kaikonstruksjoner øker drivstofforbruk og skjuler korrosjon og skader, men inspeksjon krever dyr dykkertjeneste."
+    solution: "ROV- eller dronemontert kamera- og sonarmodul som kjører faste ruter under vann, klassifiserer begroingsgrad med bildeanalyse og leverer rapport."
+    prototype_difficulty: 7
+    sales_potential: 7
+    ip_potential: 6
+    civilian_safety: 9
+    estimated_cost: 55000
+    customer_pain: 7
+
+  - name: "RoofIce Watcher"
+    domain: "is / snø / kulde"
+    customer: "borettslag / boligselskap / næringseiendom"
+    problem: "Snølast og ishenging på tak forårsaker kollapsrisiko og takras-skader; manuell inspeksjon er dyr og sjelden, og forsikring krever dokumentasjon."
+    solution: "Trådløs strekklapp-sensor på takkonstruksjonen kombinert med snødybde-radar, varsler når snølasten nærmer seg grenseverdi."
+    prototype_difficulty: 5
+    sales_potential: 6
+    ip_potential: 5
+    civilian_safety: 9
+    estimated_cost: 12000
+    customer_pain: 6
+
+  - name: "PipeWhisper Clamp"
+    domain: "vann / kommunal infrastruktur"
+    customer: "kommunalt vannverk / rørleggerfirma"
+    problem: "Lekkasjesøk i kommunale rørnett gjøres i dag manuelt med lyttestav, krever erfarne teknikere og dekker bare en kort strekning per dag."
+    solution: "Klemme-på akustisk sensor med AI-mønstergjenkjenning som monteres på flere punkter samtidig, samler data i sky og rangerer sannsynlige lekkasjepunkt."
+    prototype_difficulty: 6
+    sales_potential: 8
+    ip_potential: 7
+    civilian_safety: 10
+    estimated_cost: 22000
+    customer_pain: 8
+
+  - name: "CabinWater Guard"
+    domain: "hytte / vannberedskap"
+    customer: "hytteeiere / hytteforeninger"
+    problem: "Frostsprengte rør i ubebodde hytter om vinteren er en av de vanligste og dyreste forsikringssakene i Norge, og eieren får vite det først ved neste besøk."
+    solution: "Batteridrevet enhet som overvåker temperatur, fuktighet og vanntrykk i hyttens rørsystem og sender SMS- eller app-varsel ved fare for frost eller lekkasje."
+    prototype_difficulty: 3
+    sales_potential: 9
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 3500
+    customer_pain: 10
+
+  - name: "FishFarm Net Mapper"
+    domain: "oppdrett"
+    customer: "oppdrettsselskap"
+    problem: "Nettinspeksjon for hull og slitasje gjøres av dykkere, er dyrt, sjeldent utført og farlig i sterk strøm; udetekterte hull gir rømming og bøter."
+    solution: "Liten undervanns-ROV som følger notoverflaten med kamera og fotogrammetri, og bygger et 3D-kart over slitasjepunkter over tid."
+    prototype_difficulty: 7
+    sales_potential: 9
+    ip_potential: 7
+    civilian_safety: 9
+    estimated_cost: 60000
+    customer_pain: 9
+
+  - name: "RoadSalt Sensor"
+    domain: "kommunal infrastruktur / is og snø"
+    customer: "kommune (vei og drift) / vegentreprenører"
+    problem: "Veisalting gjøres etter skjønn og værmelding, ikke faktisk veibanetemperatur, noe som gir overforbruk (kostnad og miljø) eller underforbruk (glattføre-ulykker)."
+    solution: "Klips-på veibanesensor som måler temperatur, salinitet og fuktighet i realtid og kobles til kommunens driftssystem for saltevarsling."
+    prototype_difficulty: 5
+    sales_potential: 7
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 9000
+    customer_pain: 7
+
+  - name: "DroneNet Inspector V2"
+    domain: "sivil drone / oppdrett og infrastruktur"
+    customer: "oppdrettsselskap / kommune (bru- og anleggsinspeksjon)"
+    problem: "Inspeksjon av høye eller vanskelig tilgjengelige konstruksjoner som bruer, siloer og nottårn krever stillas eller klatrere, noe som er dyrt og tidkrevende."
+    solution: "Clean-room sivil inspeksjonsdrone med standard kamerapayload og forhåndsdefinerte inspeksjonsruter, som kun produserer strukturell bildedokumentasjon."
+    prototype_difficulty: 6
+    sales_potential: 7
+    ip_potential: 6
+    civilian_safety: 9
+    estimated_cost: 40000
+    customer_pain: 6
+
+  - name: "DuggGuard Mirror"
+    domain: "kulde / byggsystemer"
+    customer: "bilverksted / marina / helseinstitusjoner"
+    problem: "Dugg og kondens på kameralinser, speil og sensorer i fuktige og kalde miljøer reduserer funksjon og krever manuell tørking gjentatte ganger om dagen."
+    solution: "Liten peltier- og luftstrømsmodul som monteres ved siden av linsen eller speilet og holder lokal overflatetemperatur over duggpunktet automatisk."
+    prototype_difficulty: 4
+    sales_potential: 5
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 2500
+    customer_pain: 5
+
+  - name: "AnbudRadar Pro"
+    domain: "anbud / småbedrifter"
+    customer: "små bygg- og anleggsfirma / rørleggerfirma"
+    problem: "Små firma mister anbud fordi de ikke har tid eller kompetanse til å overvåke Doffin og kommunale anbudsportaler kontinuerlig."
+    solution: "Automatisert overvåkning av offentlige anbudsdatabaser med filtrering på bransje, geografi og størrelse, som sender ferdig sammendrag og fristpåminnelse."
+    prototype_difficulty: 3
+    sales_potential: 7
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 1500
+    customer_pain: 7
+
+  - name: "GebyrSjekk Auto"
+    domain: "offentlig systemrot / småbedrifter"
+    customer: "borettslag / småbedrifter / privatpersoner"
+    problem: "Kommunale gebyrer for vann, avløp, renovasjon og eiendomsskatt inneholder ofte feil beregningsgrunnlag som ingen kontrollerer fordi det krever å lese forskrifter."
+    solution: "Verktøy som leser inn kommunal faktura og takstgrunnlag, sammenligner mot gjeldende forskrift og sats, og flagger sannsynlig feilfakturering med klagetekst."
+    prototype_difficulty: 3
+    sales_potential: 6
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 1000
+    customer_pain: 7
+
+  - name: "NabovarselBot"
+    domain: "byggesak / borettslag"
+    customer: "byggherrer / arkitektkontor / eiendomsutviklere"
+    problem: "Nabovarsel ved byggesøknad er et manuelt og feilutsatt arbeid (riktige naboer, riktig frist, riktig dokumentasjon) som ofte forsinker byggesaker."
+    solution: "Verktøy som henter eiendomsgrenser fra matrikkelen, identifiserer varslingspliktige naboer automatisk og genererer samt sporer nabovarsel-utsendelse."
+    prototype_difficulty: 3
+    sales_potential: 6
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 1000
+    customer_pain: 6
+
+  - name: "TekstkvernAI"
+    domain: "AI-agentverktøy / småbedrifter"
+    customer: "småbedrifter / regnskapsførere / byggesaksbehandlere"
+    problem: "Småbedrifter drukner i dokumentasjonskrav som tilbud, kontrakter, HMS-rapporter og søknader, og har ikke ressurser til egen administrasjon."
+    solution: "Lokal AI-agent som tar ferdige maler og rådata fra kunden og produserer korrekt utfylte dokumenter på minutter, med menneskelig kontroll før utsendelse."
+    prototype_difficulty: 3
+    sales_potential: 8
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 500
+    customer_pain: 8
+
+  - name: "PatentWhiteSpace Finder"
+    domain: "patent whitespace / IP"
+    customer: "oppfinnere / småbedrifter"
+    problem: "Oppfinnere vet ikke om idéen deres allerede er patentert eller hvor 'white space' finnes i et teknologifelt, og bruker dyre patentadvokater til grovsøk."
+    solution: "Verktøy som søker i åpne patentdatabaser etter nøkkelord og klasser, kartlegger tette versus tomme områder, og gir et første 'er dette nytt'-signal."
+    prototype_difficulty: 4
+    sales_potential: 6
+    ip_potential: 8
+    civilian_safety: 10
+    estimated_cost: 500
+    customer_pain: 6
+
+  - name: "ROV ClearView Probe"
+    domain: "ROV / subsea / kommunal infrastruktur"
+    customer: "kommunalt vannverk / havnevesen / dykkerfirma"
+    problem: "Inspeksjon av sjøledninger, kummer og kaikonstruksjoner under vann krever dykkere, er dyrt og har sikkerhetsrisiko ved dårlig sikt eller strøm."
+    solution: "Liten tjoret civil ROV med kamera, LED-lys og sonar, styrt fra land eller båt via kabel, som dokumenterer tilstand uten at en dykker går i vannet."
+    prototype_difficulty: 6
+    sales_potential: 8
+    ip_potential: 5
+    civilian_safety: 9
+    estimated_cost: 45000
+    customer_pain: 7
