@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 const authRoutes = require('./src/routes/auth');
@@ -8,7 +10,16 @@ const cardRoutes = require('./src/routes/cards');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(helmet());
+app.use(express.json({ limit: '100kb' }));
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'For mange forsøk. Prøv igjen om 15 minutter.' },
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // API-ruter
 app.use('/api/auth', authRoutes);

@@ -8,10 +8,27 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+const ALLOWED_IMAGE_HOSTS = [
+  "oaidalleapiprodscus.blob.core.windows.net",
+  "dalleproduse.blob.core.windows.net",
+];
+
+function isAllowedImageUrl(urlString) {
+  try {
+    const parsed = new URL(urlString);
+    if (parsed.protocol !== "https:") return false;
+    return ALLOWED_IMAGE_HOSTS.some((host) => parsed.hostname === host);
+  } catch {
+    return false;
+  }
+}
+
 const GENERATION_MODEL = process.env.IMAGE_MODEL || "dall-e-3";
 const VARIATION_MODEL = "dall-e-2"; // the only OpenAI model that supports true image-to-image variations
 
-app.use(express.json());
+const ALLOWED_SIZES = ["256x256", "512x512", "1024x1024", "1024x1792", "1792x1024"];
+
+app.use(express.json({ limit: "100kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
 function requireApiKey(res) {
@@ -32,6 +49,9 @@ app.post("/api/generate", async (req, res) => {
   const { prompt, size = "1024x1024", count = 1 } = req.body || {};
   if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
     return res.status(400).json({ error: "A text prompt is required." });
+  }
+  if (!ALLOWED_SIZES.includes(size)) {
+    return res.status(400).json({ error: `size must be one of: ${ALLOWED_SIZES.join(", ")}` });
   }
   const n = Math.min(Math.max(Number(count) || 1, 1), 4);
 
@@ -77,6 +97,14 @@ app.post("/api/variations", async (req, res) => {
   if (!imageUrl) {
     return res.status(400).json({ error: "imageUrl is required." });
   }
+  if (!isAllowedImageUrl(imageUrl)) {
+    return res.status(400).json({
+      error: "imageUrl must be an HTTPS URL from a trusted OpenAI image host.",
+    });
+  }
+  if (!ALLOWED_SIZES.includes(size)) {
+    return res.status(400).json({ error: `size must be one of: ${ALLOWED_SIZES.join(", ")}` });
+  }
   const n = Math.min(Math.max(Number(count) || 2, 1), 4);
 
   try {
@@ -107,7 +135,7 @@ app.post("/api/variations", async (req, res) => {
 });
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, hasApiKey: Boolean(OPENAI_API_KEY) });
+  res.json({ ok: true });
 });
 
 app.listen(PORT, () => {

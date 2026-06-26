@@ -42,7 +42,7 @@ function renderAuthArea() {
   const area = el('authArea');
   if (state.user) {
     area.innerHTML = `
-      <span class="card-mood">Hei, ${state.user.name}</span>
+      <span class="card-mood">Hei, ${escapeHtml(state.user.name)}</span>
       <button class="btn btn-ghost" id="logoutBtn">Logg ut</button>
     `;
     el('logoutBtn').addEventListener('click', () => setAuth(null, null));

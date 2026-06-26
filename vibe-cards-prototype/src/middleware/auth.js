@@ -1,6 +1,14 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
+if (!process.env.JWT_SECRET) {
+  console.error(
+    'FATAL: JWT_SECRET environment variable is not set. ' +
+    'Copy .env.example to .env and set a strong random value.'
+  );
+  process.exit(1);
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Krever en gyldig "Bearer <token>" Authorization-header.
 function requireAuth(req, res, next) {
@@ -12,7 +20,7 @@ function requireAuth(req, res, next) {
   }
 
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
     req.userId = payload.sub;
     next();
   } catch {
