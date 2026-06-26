@@ -1,0 +1,63 @@
+# Felttest-protokoller gruppert per domene. Brukes som referanse av
+# prototype_planner.py (dag 8-10: test) og av docs/field_test_checklist.md.
+protocols:
+  - domain: "vann"
+    steps:
+      - "Velg en kjent eller simulert lekkasje (kontrollert ventil-lekkasje på testrigg eller reelt rør)."
+      - "Monter sensor minimum 2 meter fra lekkasjepunktet for å teste reell deteksjonsavstand."
+      - "Logg baseline-lyd/fukt i 24 timer uten lekkasje før test."
+      - "Åpne kontrollert lekkasje og mål tid fra start til varsel."
+      - "Test i minst 2 ulike rørmaterialer (PVC og stål/duktilt jern)."
+    pass_criteria: "Varsel innen 30 minutter fra lekkasjestart, under 10% falske positiver over 24 timer baseline."
+    duration_days: 3
+
+  - domain: "oppdrett"
+    steps:
+      - "Monter sensor på not-ramme ved en faktisk eller simulert anleggsstrekning."
+      - "Logg normal strøm- og bølgebevegelse i minst 48 timer som baseline."
+      - "Simuler unormal belastning (kontrollert trekk/vibrasjon) og mål responstid."
+      - "Test korrosjonsbestandighet ved nedsenking i saltvann i minst 72 timer."
+    pass_criteria: "Varsel innen 5 minutter fra unormal belastning, ingen korrosjonsskade etter 72 timer saltvannseksponering."
+    duration_days: 5
+
+  - domain: "is_og_kulde"
+    steps:
+      - "Plasser sensor på utsatt punkt (brygge, tak, vei) før forventet frostperiode."
+      - "Sammenlign sensoravlesning mot manuell måling (termometer/fuktmåler) tre ganger daglig."
+      - "Test batterilevetid ved temperaturer under -10C i minst 5 dager."
+      - "Verifiser at lokalt varsel (lampe/lyd) og app-varsel utløses samtidig."
+    pass_criteria: "Avvik under 1 grad mot manuell måling, batteri holder minst 5 dager i kulde, varsel utløses innen 2 minutter."
+    duration_days: 5
+
+  - domain: "havn_og_rov"
+    steps:
+      - "Test ROV/drone i kontrollert vannbasseng eller skjermet havnebasseng før felttest."
+      - "Kjør forhåndsdefinert inspeksjonsrute og sammenlign video/sonar mot manuell visuell kontroll."
+      - "Test driftstid på full batterilading og mål reell dekningsbredde per tur."
+      - "Verifiser at video/sonar-data lagres og kan eksporteres til rapport."
+    pass_criteria: "Driftstid minst 30 minutter per lading, dekning av planlagt rute uten manuell overstyring i mer enn 2 punkter."
+    duration_days: 4
+
+  - domain: "byggesak_og_dokumentasjon"
+    steps:
+      - "Test mot en reell eller historisk byggesak med kjent utfall."
+      - "Sammenlign automatisk generert dokument/varsel mot det som faktisk ble sendt i saken."
+      - "Verifiser at alle juridisk påkrevde felt fylles ut korrekt (frister, eiendomsgrenser, mottakere)."
+    pass_criteria: "100% korrekt utfylling av påkrevde felt, ingen manuell etterredigering nødvendig for kjernefeltene."
+    duration_days: 2
+
+  - domain: "ai_agentverktoy"
+    steps:
+      - "Test med minst 10 reelle eller representative dokumenteksempler fra kundens arkiv."
+      - "Mål tidsbruk fra rådata til ferdig utkast, sammenlignet med manuell prosess."
+      - "La en menneskelig reviewer godkjenne eller avvise hvert utkast og logg avvisningsgrunn."
+    pass_criteria: "Minst 80% av utkastene godkjennes uten større endring, tidsbruk redusert med minst 50% mot manuell prosess."
+    duration_days: 2
+
+  - domain: "anbud_og_offentlig_systemrot"
+    steps:
+      - "Kjør søk/parsing mot minst 20 reelle offentlige dokumenter (anbud, fakturaer, forskrifter)."
+      - "Sammenlign treff/avvik mot manuell gjennomgang av samme dokumenter."
+      - "Test varslingsfunksjon (e-post/SMS) med reell frist eller avviksdato."
+    pass_criteria: "Minst 90% treffsikkerhet mot manuell gjennomgang, varsel sendt korrekt minst 48 timer før frist."
+    duration_days: 2
