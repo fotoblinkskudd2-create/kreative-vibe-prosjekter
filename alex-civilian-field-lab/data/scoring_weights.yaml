@@ -1,0 +1,14 @@
+weights:
+  sales_potential: 0.30
+  prototype_speed: 0.20
+  ip_potential: 0.20
+  customer_pain: 0.20
+  civilian_safety: 0.10
+
+notes: >
+  value_score = sales_potential*0.30 + prototype_speed*0.20 + ip_potential*0.20
+  + customer_pain*0.20 + civilian_safety*0.10.
+  prototype_speed beregnes i scorer.py som (11 - prototype_difficulty), slik at
+  konsepter som er lette å bygge (lav prototype_difficulty i concepts.yaml) gir
+  en høy speed-score. Alle delscorer er på 1-10 skala, totalscore er derfor
+  maks 10.0.
