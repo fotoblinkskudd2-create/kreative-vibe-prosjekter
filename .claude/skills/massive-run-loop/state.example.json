@@ -1,0 +1,17 @@
+{
+  "run_id": "2026-06-27-drone-anti-icing",
+  "mission": "Bygg 3 nye skills til skill-lager basert på funn fra drone anti-icing R&D",
+  "budget_hours": 24,
+  "time_elapsed_hours": 0,
+  "status": "running",
+  "todo_list": [
+    "Definer kvalitetskrav for de 3 skillene",
+    "Skill 1: ice-detection-sensor-eval",
+    "Skill 2: deicing-power-budget-calc",
+    "Skill 3: flight-log-anomaly-flagger",
+    "Skriv sluttrapport"
+  ],
+  "progress_log": [],
+  "artifacts_dir": "./artifacts",
+  "log_file": "./log.md"
+}
