@@ -1,0 +1,348 @@
+concepts:
+  - name: "FjordPipe Sentinel"
+    domain: "vann / kommunal infrastruktur"
+    customer: "kommunalt vannverk / VA-avdeling"
+    problem: "Skjulte lekkasjer i sjøledninger for kommunalt vann/avløp oppdages ofte måneder etter at de starter, og koster millioner i vanntap og oppgraving."
+    solution: "Akustisk lyttebøye som henges på sjøledningen, fanger lekkasjelyd (turbulens) kontinuerlig, sender data via LoRaWAN til land og flagger avvik mot baseline."
+    prototype_difficulty: 6
+    sales_potential: 8
+    ip_potential: 6
+    civilian_safety: 10
+    estimated_cost: 35000
+    customer_pain: 8
+
+  - name: "MerdStress Listener"
+    domain: "oppdrett"
+    customer: "oppdrettsselskap"
+    problem: "Nøter i oppdrettsanlegg utsettes for slitasje og strekkbelastning fra strøm og vær; brudd fører til rømming, bøter og tap av fisk."
+    solution: "Klypesensor med akselerometer og strekkmåler festet på notrammen, lytter etter unormalt vibrasjons- og strekkmønster og varsler før brudd."
+    prototype_difficulty: 5
+    sales_potential: 9
+    ip_potential: 7
+    civilian_safety: 10
+    estimated_cost: 18000
+    customer_pain: 9
+
+  - name: "FrostDock Marker"
+    domain: "is / kulde / havn"
+    customer: "havnevesen / marina / kommune"
+    problem: "Isdannelse på flytebrygger og kaikanter er usynlig til den blir farlig - glatt is, strukturell belastning og uforutsett skade på utstyr og personer."
+    solution: "Liten frost- og issensor med temperatur- og fuktmåling, lokal varsellampe pluss app-varsel, plassert på utsatte punkter på brygge."
+    prototype_difficulty: 3
+    sales_potential: 6
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 6000
+    customer_pain: 6
+
+  - name: "LeakPulse Tile"
+    domain: "vann / kommunal infrastruktur"
+    customer: "borettslag / boligselskap / kommune"
+    problem: "Lekkasjer i rør under gulv eller i kjeller oppdages ofte først etter at fuktskaden har spredd seg, og forsikringssaker tar uker."
+    solution: "Tynn klebbar sensor-flis som limes på rørvegg eller gulv, registrerer fuktighet og lydendring kontinuerlig og varsler direkte på telefon."
+    prototype_difficulty: 4
+    sales_potential: 8
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 4500
+    customer_pain: 9
+
+  - name: "HarborBio Scanner"
+    domain: "havn / oppdrett"
+    customer: "havnevesen / oppdrettsselskap / skipsverft"
+    problem: "Begroing på skrog, not og kaikonstruksjoner øker drivstofforbruk og skjuler korrosjon og skader, men inspeksjon krever dyr dykkertjeneste."
+    solution: "ROV- eller dronemontert kamera- og sonarmodul som kjører faste ruter under vann, klassifiserer begroingsgrad med bildeanalyse og leverer rapport."
+    prototype_difficulty: 7
+    sales_potential: 7
+    ip_potential: 6
+    civilian_safety: 9
+    estimated_cost: 55000
+    customer_pain: 7
+
+  - name: "RoofIce Watcher"
+    domain: "is / snø / kulde"
+    customer: "borettslag / boligselskap / næringseiendom"
+    problem: "Snølast og ishenging på tak forårsaker kollapsrisiko og takras-skader; manuell inspeksjon er dyr og sjelden, og forsikring krever dokumentasjon."
+    solution: "Trådløs strekklapp-sensor på takkonstruksjonen kombinert med snødybde-radar, varsler når snølasten nærmer seg grenseverdi."
+    prototype_difficulty: 5
+    sales_potential: 6
+    ip_potential: 5
+    civilian_safety: 9
+    estimated_cost: 12000
+    customer_pain: 6
+
+  - name: "PipeWhisper Clamp"
+    domain: "vann / kommunal infrastruktur"
+    customer: "kommunalt vannverk / rørleggerfirma"
+    problem: "Lekkasjesøk i kommunale rørnett gjøres i dag manuelt med lyttestav, krever erfarne teknikere og dekker bare en kort strekning per dag."
+    solution: "Klemme-på akustisk sensor med AI-mønstergjenkjenning som monteres på flere punkter samtidig, samler data i sky og rangerer sannsynlige lekkasjepunkt."
+    prototype_difficulty: 6
+    sales_potential: 8
+    ip_potential: 7
+    civilian_safety: 10
+    estimated_cost: 22000
+    customer_pain: 8
+
+  - name: "CabinWater Guard"
+    domain: "hytte / vannberedskap"
+    customer: "hytteeiere / hytteforeninger"
+    problem: "Frostsprengte rør i ubebodde hytter om vinteren er en av de vanligste og dyreste forsikringssakene i Norge, og eieren får vite det først ved neste besøk."
+    solution: "Batteridrevet enhet som overvåker temperatur, fuktighet og vanntrykk i hyttens rørsystem og sender SMS- eller app-varsel ved fare for frost eller lekkasje."
+    prototype_difficulty: 3
+    sales_potential: 9
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 3500
+    customer_pain: 10
+
+  - name: "FishFarm Net Mapper"
+    domain: "oppdrett"
+    customer: "oppdrettsselskap"
+    problem: "Nettinspeksjon for hull og slitasje gjøres av dykkere, er dyrt, sjeldent utført og farlig i sterk strøm; udetekterte hull gir rømming og bøter."
+    solution: "Liten undervanns-ROV som følger notoverflaten med kamera og fotogrammetri, og bygger et 3D-kart over slitasjepunkter over tid."
+    prototype_difficulty: 7
+    sales_potential: 9
+    ip_potential: 7
+    civilian_safety: 9
+    estimated_cost: 60000
+    customer_pain: 9
+
+  - name: "RoadSalt Sensor"
+    domain: "kommunal infrastruktur / is og snø"
+    customer: "kommune (vei og drift) / vegentreprenører"
+    problem: "Veisalting gjøres etter skjønn og værmelding, ikke faktisk veibanetemperatur, noe som gir overforbruk (kostnad og miljø) eller underforbruk (glattføre-ulykker)."
+    solution: "Klips-på veibanesensor som måler temperatur, salinitet og fuktighet i realtid og kobles til kommunens driftssystem for saltevarsling."
+    prototype_difficulty: 5
+    sales_potential: 7
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 9000
+    customer_pain: 7
+
+  - name: "DroneNet Inspector V2"
+    domain: "sivil drone / oppdrett og infrastruktur"
+    customer: "oppdrettsselskap / kommune (bru- og anleggsinspeksjon)"
+    problem: "Inspeksjon av høye eller vanskelig tilgjengelige konstruksjoner som bruer, siloer og nottårn krever stillas eller klatrere, noe som er dyrt og tidkrevende."
+    solution: "Clean-room sivil inspeksjonsdrone med standard kamerapayload og forhåndsdefinerte inspeksjonsruter, som kun produserer strukturell bildedokumentasjon."
+    prototype_difficulty: 6
+    sales_potential: 7
+    ip_potential: 6
+    civilian_safety: 9
+    estimated_cost: 40000
+    customer_pain: 6
+
+  - name: "DuggGuard Mirror"
+    domain: "kulde / byggsystemer"
+    customer: "bilverksted / marina / helseinstitusjoner"
+    problem: "Dugg og kondens på kameralinser, speil og sensorer i fuktige og kalde miljøer reduserer funksjon og krever manuell tørking gjentatte ganger om dagen."
+    solution: "Liten peltier- og luftstrømsmodul som monteres ved siden av linsen eller speilet og holder lokal overflatetemperatur over duggpunktet automatisk."
+    prototype_difficulty: 4
+    sales_potential: 5
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 2500
+    customer_pain: 5
+
+  - name: "AnbudRadar Pro"
+    domain: "anbud / småbedrifter"
+    customer: "små bygg- og anleggsfirma / rørleggerfirma"
+    problem: "Små firma mister anbud fordi de ikke har tid eller kompetanse til å overvåke Doffin og kommunale anbudsportaler kontinuerlig."
+    solution: "Automatisert overvåkning av offentlige anbudsdatabaser med filtrering på bransje, geografi og størrelse, som sender ferdig sammendrag og fristpåminnelse."
+    prototype_difficulty: 3
+    sales_potential: 7
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 1500
+    customer_pain: 7
+
+  - name: "GebyrSjekk Auto"
+    domain: "offentlig systemrot / småbedrifter"
+    customer: "borettslag / småbedrifter / privatpersoner"
+    problem: "Kommunale gebyrer for vann, avløp, renovasjon og eiendomsskatt inneholder ofte feil beregningsgrunnlag som ingen kontrollerer fordi det krever å lese forskrifter."
+    solution: "Verktøy som leser inn kommunal faktura og takstgrunnlag, sammenligner mot gjeldende forskrift og sats, og flagger sannsynlig feilfakturering med klagetekst."
+    prototype_difficulty: 3
+    sales_potential: 6
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 1000
+    customer_pain: 7
+
+  - name: "NabovarselBot"
+    domain: "byggesak / borettslag"
+    customer: "byggherrer / arkitektkontor / eiendomsutviklere"
+    problem: "Nabovarsel ved byggesøknad er et manuelt og feilutsatt arbeid (riktige naboer, riktig frist, riktig dokumentasjon) som ofte forsinker byggesaker."
+    solution: "Verktøy som henter eiendomsgrenser fra matrikkelen, identifiserer varslingspliktige naboer automatisk og genererer samt sporer nabovarsel-utsendelse."
+    prototype_difficulty: 3
+    sales_potential: 6
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 1000
+    customer_pain: 6
+
+  - name: "TekstkvernAI"
+    domain: "AI-agentverktøy / småbedrifter"
+    customer: "småbedrifter / regnskapsførere / byggesaksbehandlere"
+    problem: "Småbedrifter drukner i dokumentasjonskrav som tilbud, kontrakter, HMS-rapporter og søknader, og har ikke ressurser til egen administrasjon."
+    solution: "Lokal AI-agent som tar ferdige maler og rådata fra kunden og produserer korrekt utfylte dokumenter på minutter, med menneskelig kontroll før utsendelse."
+    prototype_difficulty: 3
+    sales_potential: 8
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 500
+    customer_pain: 8
+
+  - name: "PatentWhiteSpace Finder"
+    domain: "patent whitespace / IP"
+    customer: "oppfinnere / småbedrifter"
+    problem: "Oppfinnere vet ikke om idéen deres allerede er patentert eller hvor 'white space' finnes i et teknologifelt, og bruker dyre patentadvokater til grovsøk."
+    solution: "Verktøy som søker i åpne patentdatabaser etter nøkkelord og klasser, kartlegger tette versus tomme områder, og gir et første 'er dette nytt'-signal."
+    prototype_difficulty: 4
+    sales_potential: 6
+    ip_potential: 8
+    civilian_safety: 10
+    estimated_cost: 500
+    customer_pain: 6
+
+  - name: "ROV ClearView Probe"
+    domain: "ROV / subsea / kommunal infrastruktur"
+    customer: "kommunalt vannverk / havnevesen / dykkerfirma"
+    problem: "Inspeksjon av sjøledninger, kummer og kaikonstruksjoner under vann krever dykkere, er dyrt og har sikkerhetsrisiko ved dårlig sikt eller strøm."
+    solution: "Liten tjoret civil ROV med kamera, LED-lys og sonar, styrt fra land eller båt via kabel, som dokumenterer tilstand uten at en dykker går i vannet."
+    prototype_difficulty: 6
+    sales_potential: 8
+    ip_potential: 5
+    civilian_safety: 9
+    estimated_cost: 45000
+    customer_pain: 7
+
+  - name: "FiskeriLogger Pro"
+    domain: "fiskeri / oppdrett / IoT"
+    customer: "kystfiskere / fiskebåteiere / fiskarlag"
+    problem: "Fiskebåter er pålagt å logge fangst, posisjon og redskapsbruk manuelt i papirlogg eller utdatert software, noe som er tidkrevende og feilutsatt og gir bøter ved avvik."
+    solution: "Enkel IoT-enhet med GPS og RFID-basert fangsregistrering som automatisk genererer lovpålagt logg i Fiskeridirektoratets format og sender via 4G/satellitt."
+    prototype_difficulty: 4
+    sales_potential: 8
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 8000
+    customer_pain: 9
+
+  - name: "ByggeROM Monitor"
+    domain: "bygg og anlegg / HMS"
+    customer: "byggeentreprenører / HMS-ansvarlige på store prosjekter"
+    problem: "Arbeidsulykker og nær-uhell på byggeplasser skyldes ofte uforsvarlige arbeidsforhold som støv, støy og oksygennivå som ingen måler kontinuerlig."
+    solution: "Trådløse HMS-sensorer (støv PM2.5, støy dB, O2-nivå, CO) spredt på byggeplass, samler data til et live-dashboard og varsler HMS-ansvarlig automatisk ved avvik."
+    prototype_difficulty: 4
+    sales_potential: 7
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 12000
+    customer_pain: 8
+
+  - name: "VeiBevarer Scan"
+    domain: "kommunal infrastruktur / vei og drift"
+    customer: "kommune (vei og drift) / Statens vegvesen"
+    problem: "Sprekker og setningsskader i kommunale veier oppdages for sent — inspeksjon skjer manuelt med bil og clipboard maks én gang per sesong, noe som gir dyr akuttlapping."
+    solution: "Sykkelmonter kamera- og vibrasjonsensor-kit som kartlegger veistandard automatisk langs faste ruter, og leverer GIS-kart med prioriterte reparasjonspunkter."
+    prototype_difficulty: 5
+    sales_potential: 7
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 15000
+    customer_pain: 8
+
+  - name: "SmoltGuard Nett"
+    domain: "oppdrett / miljø"
+    customer: "oppdrettsselskap / Miljødirektoratet / sjømatrådet"
+    problem: "Smoltrømming fra oppdrettsanlegg er en av de største truslene mot villaksbestand, men nettbrudd oppdages ofte timer etter det skjer — for sent til å stanse rømming."
+    solution: "Selvkalibrerende akustisk nettsensor som lytter etter bruddsignatur i not og varsler driftsleder med lokalisering av bruddet innen 90 sekunder."
+    prototype_difficulty: 6
+    sales_potential: 9
+    ip_potential: 7
+    civilian_safety: 10
+    estimated_cost: 28000
+    customer_pain: 10
+
+  - name: "KommuneKlage AI"
+    domain: "offentlig systemrot / AI-agentverktøy"
+    customer: "privatpersoner / borettslag / småbedrifter"
+    problem: "Feil i kommunale vedtak, avslag og gebyrer klages sjelden fordi klageprosessen krever kunnskap om forvaltningsretten og koster tusenvis i advokathonorar."
+    solution: "AI-verktøy som leser inn vedtaket, sjekker mot forvaltningsloven og gjeldende praksis, og genererer et klart og juridisk holdbart klagebrev uten advokat."
+    prototype_difficulty: 3
+    sales_potential: 8
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 800
+    customer_pain: 9
+
+  - name: "StrandRen Scout"
+    domain: "miljø / drone / kommunal infrastruktur"
+    customer: "kommuner (strandrydding) / frivilligorganisasjoner"
+    problem: "Kartlegging av strandsøppel langs norske kystlinjer gjøres manuelt og sporadisk — data er ikke systematisk nok til å sette inn tiltak der de monner mest."
+    solution: "Kystnær sivil drone med vidvinkelkamera og bildeanalyse-AI som kartlegger søppelmengde og type langs strandlinje og lager en GIS-rapport med prioriteringsanbefaling."
+    prototype_difficulty: 5
+    sales_potential: 6
+    ip_potential: 5
+    civilian_safety: 10
+    estimated_cost: 20000
+    customer_pain: 6
+
+  - name: "VarmeLekkasje Detektor"
+    domain: "bygg / energieffektivisering"
+    customer: "borettslag / eiendomsforvaltere / kommunale bygg"
+    problem: "Varmelekkasjer i eldre bygg koster borettslag og kommuner hundretusenvis i varmeregning per år, men termografering er dyrt og krever spesialist med IR-kamera."
+    solution: "App-koblet termisk kamera-adapter for smarttelefon kombinert med guidet analyse-AI som identifiserer kuldebroer, utette vinduer og isolasjonssvikt og estimerer besparingspotensial."
+    prototype_difficulty: 3
+    sales_potential: 8
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 3500
+    customer_pain: 8
+
+  - name: "HavneTilgang ID"
+    domain: "havn / sikkerhet / IoT"
+    customer: "havnevesen / private marinaer / fiskeriselskap"
+    problem: "Adgangskontroll til havner og kaier håndteres med nøkkelkort og manuelle lister — tapt kort gir ubegrenset tilgang til kritisk infrastruktur inntil manuell sperring."
+    solution: "Mobilbasert QR/NFC-adgangssystem med tidsavgrenset tilgang, automatisk logg og fjernrevokeringsknapp for havneadministrasjon — ingen nøkkelkort å miste."
+    prototype_difficulty: 3
+    sales_potential: 7
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 5000
+    customer_pain: 7
+
+  - name: "KuldeLager Sentinal"
+    domain: "kulde / mat og drikke / logistikk"
+    customer: "restauranter / matgrossister / supermarkedkjeder"
+    problem: "Temperaturavvik i kjølerom og fryselagre oppdages ofte etter at varer allerede er ødelagt — manuell temperaturlogg oppfyller ikke Mattilsynets krav til sporbarhet."
+    solution: "Trådløse temperatursensorer med 5-minutters loggintervall, automatisk HACCP-kompatibel rapport og SMS-varsel ved avvik — godkjent for Mattilsynet-revisjon."
+    prototype_difficulty: 2
+    sales_potential: 8
+    ip_potential: 3
+    civilian_safety: 10
+    estimated_cost: 2500
+    customer_pain: 9
+
+  - name: "SkogsKart Analyse"
+    domain: "skog / bærekraft / drone"
+    customer: "skogeiere / skogentreprenører / kommuneskoger"
+    problem: "Skogtaksering for å beregne tømmerpotensial og hogstmodenhet gjøres manuelt av taksatorer — dyrt, sjeldent og unøyaktig på ulendt terreng."
+    solution: "Sivil drone med LiDAR-payload som flyr forhåndsdefinert rute over skog og genererer 3D-trehøydekart, volumestimater og hogstmoden-klassifisering automatisk."
+    prototype_difficulty: 6
+    sales_potential: 7
+    ip_potential: 6
+    civilian_safety: 10
+    estimated_cost: 50000
+    customer_pain: 7
+
+  - name: "RørPressur Tracker"
+    domain: "vann / kommunal infrastruktur"
+    customer: "kommunalt vannverk / VA-avdeling"
+    problem: "Trykkfall i vannledningsnettet er en tidlig indikator på lekkasje eller pumpesvikt, men mange kommuner har ingen kontinuerlig trykklogging og oppdager problemet for sent."
+    solution: "Klemme-på trykksensor med 2G/LoRaWAN som logger trykk hvert minutt, sender daglig trend til et enkelt webdashboard, og varsler ved plutselig trykkfall over terskelverdi."
+    prototype_difficulty: 3
+    sales_potential: 7
+    ip_potential: 4
+    civilian_safety: 10
+    estimated_cost: 4000
+    customer_pain: 8

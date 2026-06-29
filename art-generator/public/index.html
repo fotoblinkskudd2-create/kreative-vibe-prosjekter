@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Kunstgenerator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>🎨 AI Kunstgenerator</h1>
+    <p>Beskriv det. Generer det. Behold gull, kast søppel, avl varianter fra favorittene dine.</p>
+  </header>
+
+  <main class="container">
+    <section class="prompt-bar">
+      <textarea id="prompt" placeholder="En neon-drage kveilet rundt et glassberg, kinematisk lyssetting..." rows="2"></textarea>
+      <div class="controls">
+        <label>
+          Stil
+          <select id="style">
+            <option value="">Ingen (standard)</option>
+            <option value="photorealistic, 8K">Fotorealistisk</option>
+            <option value="oil painting, impressionist">Oljemaling</option>
+            <option value="watercolor, soft">Akvarell</option>
+            <option value="pixel art, retro">Pikselkunst</option>
+            <option value="sketch, pencil drawing">Blyantskisse</option>
+            <option value="cinematic lighting, dramatic">Kinematisk</option>
+            <option value="anime style, vibrant">Anime</option>
+            <option value="minimalist, flat design">Minimalistisk</option>
+          </select>
+        </label>
+        <label>
+          Antall
+          <select id="count">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </label>
+        <label>
+          Størrelse
+          <select id="size">
+            <option value="1024x1024" selected>Kvadrat (1024)</option>
+            <option value="1792x1024">Bred (1792×1024)</option>
+            <option value="1024x1792">Høy (1024×1792)</option>
+          </select>
+        </label>
+        <button id="generateBtn">✨ Generer</button>
+      </div>
+
+      <div class="prompt-history" id="promptHistory"></div>
+      <p id="status" class="status"></p>
+    </section>
+
+    <section id="gallery" class="gallery"></section>
+  </main>
+
+  <template id="cardTemplate">
+    <div class="card">
+      <img class="card-img" alt="Generert kunst" loading="lazy" />
+      <div class="card-prompt-label"></div>
+      <div class="card-actions">
+        <button class="keep-btn" title="Behold">⭐ Behold</button>
+        <button class="discard-btn" title="Kast">🗑 Kast</button>
+        <button class="consort-btn" title="Generer varianter">🧬 Varianter</button>
+        <button class="download-btn" title="Last ned">⬇ Last ned</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

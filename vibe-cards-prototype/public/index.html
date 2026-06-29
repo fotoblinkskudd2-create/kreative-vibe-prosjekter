@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Cards</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="logo">✨ Vibe Cards</h1>
+    <div id="authArea" class="auth-area">
+      <button class="btn btn-ghost btn-sm" id="loginBtn">Logg inn</button>
+      <button class="btn btn-primary btn-sm" id="registerBtn">Registrer</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h2>Fang stemningen. Del vibe-en.</h2>
+      <p>Lag korte stemningskort for hvordan dagen din føles — og se hva andre deler.</p>
+    </section>
+
+    <div id="statsBar" class="stats-bar"></div>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="filters" id="moodFilters"></div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="searchInput" type="search" placeholder="Søk i kort..." autocomplete="off" />
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-primary" id="newCardBtn" disabled title="Logg inn for å lage kort">
+          + Nytt kort
+        </button>
+      </div>
+    </section>
+
+    <section class="grid" id="cardGrid"></section>
+    <div id="pagination" class="pagination"></div>
+  </main>
+
+  <!-- Toast-varsel -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Modal: Login -->
+  <dialog id="loginModal" class="modal">
+    <form id="loginForm" class="modal-form">
+      <h3>Logg inn</h3>
+      <label>E-post <input type="email" name="email" required autocomplete="email" /></label>
+      <label>Passord <input type="password" name="password" required autocomplete="current-password" /></label>
+      <p class="form-error" id="loginError"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="loginModal">Avbryt</button>
+        <button type="submit" class="btn btn-primary">Logg inn</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: Registrer -->
+  <dialog id="registerModal" class="modal">
+    <form id="registerForm" class="modal-form">
+      <h3>Registrer deg</h3>
+      <label>Navn <input type="text" name="name" required autocomplete="name" /></label>
+      <label>E-post <input type="email" name="email" required autocomplete="email" /></label>
+      <label>Passord <input type="password" name="password" minlength="6" required autocomplete="new-password" /></label>
+      <p class="form-error" id="registerError"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="registerModal">Avbryt</button>
+        <button type="submit" class="btn btn-primary">Registrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: Nytt kort -->
+  <dialog id="cardModal" class="modal">
+    <form id="cardForm" class="modal-form">
+      <h3>Nytt vibe-kort</h3>
+      <label>Tittel <input type="text" name="title" maxlength="80" required placeholder="Kort og fengende" /></label>
+      <label>Mood
+        <select name="mood" required>
+          <option value="rolig">🌊 Rolig</option>
+          <option value="energisk">⚡ Energisk</option>
+          <option value="kreativ">🎨 Kreativ</option>
+          <option value="nostalgisk">🍂 Nostalgisk</option>
+          <option value="fokusert">🎯 Fokusert</option>
+        </select>
+      </label>
+      <label>Farge <input type="color" name="color" value="#7FB3A8" /></label>
+      <label>Beskrivelse <textarea name="description" rows="3" maxlength="500" placeholder="Beskriv stemningen..."></textarea></label>
+      <label>Tags (kommaseparert) <input type="text" name="tags" placeholder="ro, kaffe, morgen" /></label>
+      <p class="form-error" id="cardError"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="cardModal">Avbryt</button>
+        <button type="submit" class="btn btn-primary">Lagre kort</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: Rediger kort -->
+  <dialog id="editModal" class="modal">
+    <form id="editForm" class="modal-form">
+      <h3>Rediger kort</h3>
+      <label>Tittel <input type="text" id="editTitle" maxlength="80" required /></label>
+      <label>Mood
+        <select id="editMood" required>
+          <option value="rolig">🌊 Rolig</option>
+          <option value="energisk">⚡ Energisk</option>
+          <option value="kreativ">🎨 Kreativ</option>
+          <option value="nostalgisk">🍂 Nostalgisk</option>
+          <option value="fokusert">🎯 Fokusert</option>
+        </select>
+      </label>
+      <label>Farge <input type="color" id="editColor" /></label>
+      <label>Beskrivelse <textarea id="editDescription" rows="3" maxlength="500"></textarea></label>
+      <label>Tags (kommaseparert) <input type="text" id="editTags" /></label>
+      <p class="form-error" id="editError"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close="editModal">Avbryt</button>
+        <button type="submit" class="btn btn-primary">Lagre endringer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
