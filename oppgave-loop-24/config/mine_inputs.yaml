@@ -1,0 +1,39 @@
+# ============================================================
+# DINE PRIVATE INPUTS - OPPGAVE-LOOP-24
+# Fyll inn din info her. Denne filen er lokal og privat.
+# ============================================================
+
+bruker:
+  navn: "Alexander"
+  spraak: "norsk-engelsk mix"  # norsk / engelsk / mix
+
+# Nivå: beginner / intermediate / advanced / expert
+nivaа: "intermediate"
+
+# Hva vil du fokusere på? (teknologier, språk, rammeverk)
+fokus:
+  - "Python"
+  - "React"
+  - "Next.js"
+  # Legg til flere: "algorithms", "system design", "SQL", "Rust", osv.
+
+# Ditt mål for denne sessionen
+sesjonsmaal: "Bygge SaaS dashboard – clean code + algorithms"
+
+# Tema for oppgavene
+tema: "web development"  # web / algorithms / data / fullstack / devops / intervju-prep
+
+# Timer per dag du planlegger å jobbe
+planlagte_timer: 8
+
+# Vanskelighetsgrad start (1-10)
+startnivaа: 4
+
+# Auto-ramp vanskelighetsgrad?
+auto_ramp: true
+
+# Egne notater / kontekst / prosjektinfo
+kontekst: |
+  Jobber på et personlig prosjekt. Vil ha oppgaver som
+  er relevante for real-world SaaS-utvikling.
+  Foretrekker clean code og gode tester.
