@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 AI-produkter – Norsk Innovasjonslab</title>
+<style>
+  :root {
+    --blue: #0059b3;
+    --red: #ef2b2d;
+    --white: #ffffff;
+    --dark: #0a0a1a;
+    --card-bg: #111128;
+    --accent: #00d4ff;
+    --gold: #ffd700;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--dark);
+    color: #e8eaf0;
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, #000824 0%, #001a4d 50%, #000824 100%);
+    padding: 60px 20px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center, rgba(0,212,255,0.08) 0%, transparent 60%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
+  .norway-flag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .flag { font-size: 2rem; }
+  .badge {
+    background: linear-gradient(135deg, var(--blue), #003d80);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent) 50%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  header p {
+    font-size: 1.1rem;
+    color: #a0b4cc;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--accent);
+  }
+  .stat-label { font-size: 0.8rem; color: #7a90aa; text-transform: uppercase; letter-spacing: 1px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    max-width: 1400px;
+    margin: -40px auto 60px;
+    padding: 0 20px;
+    position: relative;
+    z-index: 10;
+  }
+  .card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.07);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0,212,255,0.15);
+    border-color: rgba(0,212,255,0.3);
+  }
+  .card-header {
+    padding: 28px 28px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  .card:nth-child(1) .icon { background: linear-gradient(135deg, #1a6b3a, #2d9e57); }
+  .card:nth-child(2) .icon { background: linear-gradient(135deg, #6b2d8b, #9b59b6); }
+  .card:nth-child(3) .icon { background: linear-gradient(135deg, #c4700a, #f39c12); }
+  .card:nth-child(4) .icon { background: linear-gradient(135deg, #1a3a6b, #2e86c1); }
+  .card:nth-child(5) .icon { background: linear-gradient(135deg, #6b1a1a, #c0392b); }
+  .card-title { font-size: 1.25rem; font-weight: 800; color: white; }
+  .card-tagline { font-size: 0.8rem; color: #7a90aa; margin-top: 2px; }
+  .card-body { padding: 0 28px 24px; }
+  .problem {
+    background: rgba(239,43,45,0.08);
+    border-left: 3px solid var(--red);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: #c8d0e0;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .solution {
+    font-size: 0.9rem;
+    color: #b0c0d8;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .metrics {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .metric {
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 16px;
+  }
+  .price { font-size: 1rem; font-weight: 700; color: white; }
+  .price span { color: #7a90aa; font-weight: 400; font-size: 0.8rem; }
+  .btn-demo {
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-demo:hover { opacity: 0.85; }
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: #4a5a6a;
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .roi-banner {
+    background: linear-gradient(135deg, rgba(0,89,179,0.3), rgba(0,212,255,0.1));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 16px;
+    padding: 20px 28px;
+    margin: 0 auto 40px;
+    max-width: 800px;
+    text-align: center;
+  }
+  .roi-banner h3 { color: var(--accent); font-size: 1rem; margin-bottom: 6px; }
+  .roi-banner p { color: #8090a8; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="norway-flag">
+    <span class="flag">🇳🇴</span>
+    <span class="badge">AI-Innovasjonslab 2026</span>
+  </div>
+  <h1>5 AI-produkter som selger seg selv</h1>
+  <p>Fem ferdige konsepter med patenterbar AI-kjerne, lav kjøpsterskel og målbar ROI fra dag én – designet for det norske markedet.</p>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Produkter</div></div>
+    <div class="stat"><div class="stat-num">100K+</div><div class="stat-label">Potensielle brukere</div></div>
+    <div class="stat"><div class="stat-num">48t</div><div class="stat-label">Tid til ROI</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Patentmuligheter</div></div>
+  </div>
+</header>
+
+<div class="grid">
+
+  <a class="card" href="matvakt.html">
+    <div class="card-header">
+      <div class="icon">🥦</div>
+      <div>
+        <div class="card-title">MatVakt AI</div>
+        <div class="card-tagline">Kjøleskapskamera + smart matplanlegger</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="ai-badge">⚡ Patent-potensielt AI</div>
+      <div class="problem">🔴 Problem: Norske husstander kaster 30–40 % av maten. «Hva skal vi spise i kveld?» koster 200–500 kr/mnd i unødvendig matavfall.</div>
+      <div class="solution">Clip-on-kamera gjenkjenner varer, spår bedervelse, foreslår norske oppskrifter og lager automatisk handleliste – integrert med Rema/Coop/delivery.</div>
+      <div class="metrics">
+        <span class="metric">Vision AI</span>
+        <span class="metric">Spoilage-prediksjon</span>
+        <span class="metric">Personlig smak-agent</span>
+      </div>
+      <div class="price-row">
+        <div class="price">799 kr <span>+ 49 kr/mnd</span></div>
+        <div class="btn-demo">Se demo →</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="eldretrygg.html">
+    <div class="card-header">
+      <div class="icon">💜</div>
+      <div>
+        <div class="card-title">EldreTrygg AI</div>
+        <div class="card-tagline">Privat vakt for familier med eldre</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="ai-badge">⚡ Patent-potensielt AI</div>
+      <div class="problem">🔴 Problem: Norsk eldrebølge + mangel på helsepersonell. Familier er redde for fall/ensomhet uten å ville sende mamma til institusjon.</div>
+      <div class="solution">Edge-AI hub (ser ut som en fin lampe) + sensorer + norsk dialekt-stemmebot som predikerer fall, minner om medisiner og varsler familien med kontekst.</div>
+      <div class="metrics">
+        <span class="metric">Anomalideteksjon</span>
+        <span class="metric">Empatisk LLM</span>
+        <span class="metric">Privacy-first (lokal AI)</span>
+      </div>
+      <div class="price-row">
+        <div class="price">1499 kr <span>+ 99 kr/mnd</span></div>
+        <div class="btn-demo">Se demo →</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="stromoacle.html">
+    <div class="card-header">
+      <div class="icon">⚡</div>
+      <div>
+        <div class="card-title">StrømOracle Hub</div>
+        <div class="card-tagline">Energismart hjemmesentral</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="ai-badge">⚡ Patent-potensielt AI</div>
+      <div class="problem">🔴 Problem: Strømpriser svinger vilt i Norge. Vinteren tærer på lommeboken og folk betaler tusenvis for mye hvert år.</div>
+      <div class="solution">Vegg-hub til sikringsskap/EV-lader/varmepumpe. Predikerer Nordpool-priser + vær, optimaliserer automatisk og selger overskudd tilbake til nettet.</div>
+      <div class="metrics">
+        <span class="metric">Energi-twin agent</span>
+        <span class="metric">Nordpool API</span>
+        <span class="metric">V2G-optimalisering</span>
+      </div>
+      <div class="price-row">
+        <div class="price">1990 kr <span>+ 79 kr/mnd</span></div>
+        <div class="btn-demo">Se demo →</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="klaermatch.html">
+    <div class="card-header">
+      <div class="icon">👗</div>
+      <div>
+        <div class="card-title">KlærMatch AI</div>
+        <div class="card-tagline">Personlig vær-stylist med AR</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="ai-badge">⚡ Patent-potensielt AI</div>
+      <div class="problem">🔴 Problem: Bergens-vær + «hva i all verden har jeg på meg?» + dårlige kleskjøp som aldri brukes og klær som bare henger i skapet.</div>
+      <div class="solution">App + kamera scanner garderoben. Vær-API + kalender + kroppsscan → foreslår outfit i AR. «I dag: Regn + møte → denne frakken + sko».</div>
+      <div class="metrics">
+        <span class="metric">AR try-on</span>
+        <span class="metric">Vær-fusion AI</span>
+        <span class="metric">Sustainable-score</span>
+      </div>
+      <div class="price-row">
+        <div class="price">Gratis basis <span>+ 69 kr/mnd premium</span></div>
+        <div class="btn-demo">Se demo →</div>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="regnskapshield.html">
+    <div class="card-header">
+      <div class="icon">🛡️</div>
+      <div>
+        <div class="card-title">RegnskapShield AI</div>
+        <div class="card-tagline">Fullstendig agent for håndverkere/SMB</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="ai-badge">⚡ Patent-potensielt AI</div>
+      <div class="problem">🔴 Problem: Småbedrifter bruker 10–15 timer/mnd på regnskap, moms, skatt og fakturaer – og betaler regnskapsfører alt for dyrt.</div>
+      <div class="solution">Voice-agent du snakker med: «Send faktura til Ole, legg inn kvittering fra Bunnpris». Scanner alt, fører regnskap etter norske regler, predikerer skatt.</div>
+      <div class="metrics">
+        <span class="metric">Agentic RAG</span>
+        <span class="metric">Altinn-integrasjon</span>
+        <span class="metric">Voice-first</span>
+      </div>
+      <div class="price-row">
+        <div class="price">299 kr/mnd <span>per bedrift</span></div>
+        <div class="btn-demo">Se demo →</div>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<div style="max-width:800px;margin:0 auto 40px;padding:0 20px;">
+  <div class="roi-banner">
+    <h3>Klikk på et produkt for å se interaktiv prototype</h3>
+    <p>Alle 5 prototyper viser reelle brukerflyter, AI-simuleringer og ROI-kalkulator. Perfekt for investorpresentasjon, brukertest eller MVP-planlegging.</p>
+  </div>
+</div>
+
+<footer>
+  Norsk AI-Innovasjonslab 2026 &nbsp;·&nbsp; 5 produkter med patenterbar kjerne &nbsp;·&nbsp; Bygget for det norske markedet
+</footer>
+</body>
+</html>

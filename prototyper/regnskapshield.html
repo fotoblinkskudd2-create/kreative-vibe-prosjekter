@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RegnskapShield AI – Agent for håndverkere og SMB</title>
+<style>
+  :root {
+    --red: #6b1a1a;
+    --red-light: #c0392b;
+    --dark: #0a0808;
+    --card: #1a0f0f;
+    --card2: #221515;
+    --accent: #ff6b6b;
+    --green: #27ae60;
+    --warn: #f39c12;
+    --white: #f8e8e8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--dark); color: var(--white); min-height: 100vh; }
+
+  nav {
+    background: rgba(10,8,8,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,107,107,0.15);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .back { color: #8a5a5a; text-decoration: none; font-size: 0.85rem; }
+  .back:hover { color: var(--accent); }
+  .nav-brand { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+  .moms-badge {
+    margin-left: auto;
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #1a0808 0%, #2e0f0f 50%, #1a0808 100%);
+    padding: 50px 24px 40px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.5rem; font-weight: 900; color: white; margin-bottom: 8px; }
+  .hero p { color: #9a7a7a; font-size: 1rem; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
+  .hero-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--red), var(--red-light));
+    color: white;
+    font-weight: 900;
+    font-size: 1rem;
+    padding: 10px 28px;
+    border-radius: 50px;
+  }
+
+  .main {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media(max-width:720px){ .main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid rgba(255,107,107,0.1);
+  }
+  .panel-full { grid-column: 1 / -1; }
+  .panel-header {
+    background: rgba(255,107,107,0.04);
+    border-bottom: 1px solid rgba(255,107,107,0.08);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-title { font-weight: 700; font-size: 0.95rem; }
+  .panel-body { padding: 16px; }
+
+  /* Voice Interface */
+  .voice-interface {
+    background: linear-gradient(180deg, #200d0d 0%, #170808 100%);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .mic-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--red), var(--red-light));
+    border: none;
+    cursor: pointer;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    box-shadow: 0 0 0 0 rgba(192,57,43,0.4);
+    transition: all 0.3s;
+  }
+  .mic-btn.listening {
+    animation: micPulse 1.5s infinite;
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+  }
+  @keyframes micPulse {
+    0% { box-shadow: 0 0 0 0 rgba(231,76,60,0.5); }
+    70% { box-shadow: 0 0 0 20px rgba(231,76,60,0); }
+    100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
+  }
+  .mic-status { font-size: 0.85rem; color: #8a6a6a; margin-bottom: 10px; }
+  .voice-transcript {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    min-height: 60px;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #c8a8a8;
+    line-height: 1.5;
+    border: 1px solid rgba(255,107,107,0.1);
+  }
+  .transcript-you { color: white; font-weight: 600; }
+  .transcript-ai { color: var(--accent); font-weight: 600; }
+
+  .quick-cmds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .cmd-chip {
+    background: rgba(255,107,107,0.08);
+    border: 1px solid rgba(255,107,107,0.2);
+    color: #cc8888;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.73rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cmd-chip:hover { background: rgba(255,107,107,0.15); color: var(--accent); border-color: rgba(255,107,107,0.4); }
+
+  /* Receipt scanner */
+  .receipt-scanner {
+    background: var(--card2);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .scan-zone {
+    border: 2px dashed rgba(255,107,107,0.3);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 10px;
+  }
+  .scan-zone:hover { border-color: rgba(255,107,107,0.6); background: rgba(255,107,107,0.04); }
+  .scan-icon { font-size: 2.5rem; margin-bottom: 6px; }
+  .scan-text { font-size: 0.82rem; color: #8a6a6a; }
+  .scan-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--red), var(--red-light));
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: opacity 0.2s;
+  }
+  .scan-btn:hover { opacity: 0.85; }
+  .scan-result-box {
+    background: rgba(39,174,96,0.06);
+    border: 1px solid rgba(39,174,96,0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: #88aa88;
+    display: none;
+    line-height: 1.6;
+  }
+  .scan-result-box.show { display: block; }
+  .scan-result-box strong { color: var(--green); }
+
+  /* Invoice list */
+  .invoice-list { list-style: none; }
+  .inv-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .inv-item:last-child { border-bottom: none; }
+  .inv-icon { font-size: 1.2rem; width: 28px; text-align: center; flex-shrink: 0; }
+  .inv-info { flex: 1; }
+  .inv-name { font-size: 0.88rem; font-weight: 600; color: white; }
+  .inv-date { font-size: 0.72rem; color: #7a5a5a; margin-top: 1px; }
+  .inv-amount { font-size: 0.95rem; font-weight: 800; }
+  .inv-paid { color: var(--green); }
+  .inv-pending { color: var(--warn); }
+  .inv-overdue { color: var(--accent); }
+  .inv-status-badge {
+    font-size: 0.62rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .s-paid { background: rgba(39,174,96,0.12); color: var(--green); }
+  .s-pending { background: rgba(243,156,18,0.12); color: var(--warn); }
+  .s-overdue { background: rgba(255,107,107,0.12); color: var(--accent); }
+  .send-btn {
+    margin-top: 12px;
+    width: 100%;
+    background: linear-gradient(135deg, var(--red), var(--red-light));
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  /* Tax section */
+  .tax-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .tax-box {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .tax-num { font-size: 1.5rem; font-weight: 900; }
+  .tax-label { font-size: 0.7rem; color: #7a5a5a; margin-top: 3px; }
+  .moms-bar { margin-bottom: 12px; }
+  .moms-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: #7a5a5a; margin-bottom: 5px; }
+  .moms-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 8px; }
+  .moms-fill { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--red), var(--accent)); }
+
+  .risk-list { list-style: none; }
+  .risk-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.82rem;
+    align-items: flex-start;
+  }
+  .risk-item:last-child { border-bottom: none; }
+  .risk-icon { flex-shrink: 0; font-size: 1rem; }
+  .risk-text { flex: 1; color: #b08888; line-height: 1.4; }
+  .risk-text strong { color: white; }
+  .risk-sev {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .rs-low { background: rgba(39,174,96,0.12); color: var(--green); }
+  .rs-mid { background: rgba(243,156,18,0.12); color: var(--warn); }
+  .rs-high { background: rgba(255,107,107,0.12); color: var(--accent); }
+
+  .altinn-status {
+    background: rgba(39,174,96,0.06);
+    border: 1px solid rgba(39,174,96,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.82rem;
+  }
+  .altinn-icon { font-size: 1.5rem; }
+  .altinn-text { flex: 1; color: #88aa88; }
+  .altinn-text strong { color: var(--green); display: block; }
+  .altinn-btn {
+    background: rgba(39,174,96,0.15);
+    border: 1px solid rgba(39,174,96,0.3);
+    color: var(--green);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+
+  .roi-section {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+  .roi-card {
+    background: linear-gradient(135deg, rgba(107,26,26,0.25), rgba(10,8,8,0.8));
+    border: 1px solid rgba(255,107,107,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .roi-item { text-align: center; }
+  .roi-num { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
+  .roi-label { font-size: 0.8rem; color: #7a5a5a; margin-top: 4px; }
+  .roi-sub { font-size: 0.72rem; color: #5a3a3a; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="back" href="index.html">← Tilbake</a>
+  <span class="nav-brand">🛡️ RegnskapShield AI</span>
+  <span class="moms-badge">Neste moms: 10 aug · 14 dager</span>
+</nav>
+
+<div class="hero">
+  <h1>RegnskapShield AI</h1>
+  <p>Voice-agent som fører regnskap etter norske regler, scanner kvitteringer, sender fakturaer og predikerer skattebetalinger – helt automatisk.</p>
+  <div class="hero-pill">Sparer 48 000 kr/år + 8 timer i uken for håndverkere</div>
+</div>
+
+<div class="main">
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🎙️ Voice-agent</span>
+        <span style="font-size:0.75rem;color:#7a5a5a;">Norsk · Dialektforståelse</span>
+      </div>
+      <div class="panel-body">
+        <div class="voice-interface">
+          <button class="mic-btn" id="micBtn" onclick="toggleListen()">🎙️</button>
+          <div class="mic-status" id="micStatus">Trykk for å snakke med RegnskapShield AI</div>
+          <div class="voice-transcript" id="transcript">
+            <span style="color:#5a3a3a;font-size:0.8rem;font-style:italic;">Eksempel: «Send faktura til Byggefirma AS for takarbeid, 45 000 kr»</span>
+          </div>
+        </div>
+        <div class="quick-cmds">
+          <span class="cmd-chip" onclick="runCmd(this)">📄 Send faktura til Ole</span>
+          <span class="cmd-chip" onclick="runCmd(this)">🧾 Legg inn kvittering fra Bunnpris</span>
+          <span class="cmd-chip" onclick="runCmd(this)">💰 Vis meg momssaldo</span>
+          <span class="cmd-chip" onclick="runCmd(this)">📊 Hva skylder jeg i skatt?</span>
+          <span class="cmd-chip" onclick="runCmd(this)">✅ Send til regnskapsfører</span>
+          <span class="cmd-chip" onclick="runCmd(this)">📅 Neste frister Altinn</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📷 Kvitteringsskanner</span>
+      </div>
+      <div class="panel-body">
+        <div class="receipt-scanner">
+          <div class="scan-zone" onclick="scanReceipt()">
+            <div class="scan-icon">📸</div>
+            <div class="scan-text">Ta bilde av kvittering eller last opp<br><span style="font-size:0.7rem;color:#5a4a4a;">AI leser og bokfører automatisk</span></div>
+          </div>
+          <button class="scan-btn" onclick="scanReceipt()">🤖 Skann kvittering med AI</button>
+          <div class="scan-result-box" id="scanResult">
+            <strong>✅ Kvittering analysert!</strong><br>
+            Butikk: Bunnpris Stord<br>
+            Dato: 30. juni 2026<br>
+            Beløp: 847,50 kr (inkl. moms)<br>
+            Moms (25%): 169,50 kr<br>
+            Kategori: Materialer – Byggevarer<br>
+            <strong>Bokført → konto 4000 (Varekostnad)</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📋 Fakturaer – Juni 2026</span>
+        <span style="font-size:0.75rem;color:#7a5a5a;">Totalt: 214 500 kr</span>
+      </div>
+      <div class="panel-body">
+        <ul class="invoice-list">
+          <li class="inv-item">
+            <span class="inv-icon">🔨</span>
+            <div class="inv-info">
+              <div class="inv-name">Takarbeid – Bergensveien 14</div>
+              <div class="inv-date">Faktura #2026-047 · Sendt 20. juni</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="inv-amount inv-paid">85 000 kr</div>
+              <span class="inv-status-badge s-paid">BETALT</span>
+            </div>
+          </li>
+          <li class="inv-item">
+            <span class="inv-icon">🪟</span>
+            <div class="inv-info">
+              <div class="inv-name">Vindusbytte – Solbergvegen 8</div>
+              <div class="inv-date">Faktura #2026-048 · Sendt 25. juni</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="inv-amount inv-pending">42 500 kr</div>
+              <span class="inv-status-badge s-pending">VENTER</span>
+            </div>
+          </li>
+          <li class="inv-item">
+            <span class="inv-icon">🏗️</span>
+            <div class="inv-info">
+              <div class="inv-name">Graving – Nygårdsparken</div>
+              <div class="inv-date">Faktura #2026-049 · Forfalt 15. juni</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="inv-amount inv-overdue">32 000 kr</div>
+              <span class="inv-status-badge s-overdue">FORFALT</span>
+            </div>
+          </li>
+          <li class="inv-item">
+            <span class="inv-icon">🔌</span>
+            <div class="inv-info">
+              <div class="inv-name">Elektrikerarbeid – Åsane</div>
+              <div class="inv-date">Faktura #2026-050 · Sendt 28. juni</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="inv-amount inv-paid">55 000 kr</div>
+              <span class="inv-status-badge s-paid">BETALT</span>
+            </div>
+          </li>
+        </ul>
+        <button class="send-btn" onclick="newInvoice()">+ Ny faktura med AI</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">💸 Skatt &amp; MVA-oversikt</span>
+      </div>
+      <div class="panel-body">
+        <div class="tax-overview">
+          <div class="tax-box">
+            <div class="tax-num" style="color:#ff6b6b;">28 750 kr</div>
+            <div class="tax-label">MVA innkrevd (25%)</div>
+          </div>
+          <div class="tax-box">
+            <div class="tax-num" style="color:#27ae60;">-8 420 kr</div>
+            <div class="tax-label">MVA fradrag</div>
+          </div>
+          <div class="tax-box">
+            <div class="tax-num" style="color:#f39c12;">20 330 kr</div>
+            <div class="tax-label">MVA å betale 10. aug</div>
+          </div>
+          <div class="tax-box">
+            <div class="tax-num" style="color:#f39c12;">94 200 kr</div>
+            <div class="tax-label">Foreløpig skatt 2026</div>
+          </div>
+        </div>
+        <div class="moms-bar">
+          <div class="moms-label"><span>Skatteprovisjon satt av</span><span>62%</span></div>
+          <div class="moms-track"><div class="moms-fill" style="width:62%;"></div></div>
+        </div>
+        <div class="moms-bar">
+          <div class="moms-label"><span>MVA-periode Q2 fullstendig</span><span>88%</span></div>
+          <div class="moms-track"><div class="moms-fill" style="width:88%;"></div></div>
+        </div>
+        <div class="altinn-status">
+          <span class="altinn-icon">🇳🇴</span>
+          <div class="altinn-text">
+            <strong>Altinn-integrasjon aktiv</strong>
+            MVA-melding klar – sendes automatisk 10. august
+          </div>
+          <button class="altinn-btn" onclick="previewAltinn()">Forhåndsvis</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel panel-full">
+    <div class="panel-header">
+      <span class="panel-title">⚠️ AI Compliance-varsler</span>
+      <span style="font-size:0.75rem;color:#7a5a5a;">Predikert risiko – proaktivt</span>
+    </div>
+    <div class="panel-body">
+      <ul class="risk-list">
+        <li class="risk-item">
+          <span class="risk-icon">✅</span>
+          <div class="risk-text"><strong>Faktura #2026-049 er forfalt 15 dager</strong> – AI sendte automatisk betalingspåminnelse 3 og 10 dager etter forfall. Forslag: Send inkassovarsel?</div>
+          <span class="risk-sev rs-high">HØY</span>
+        </li>
+        <li class="risk-item">
+          <span class="risk-icon">⚠️</span>
+          <div class="risk-text"><strong>Kjøretøy-kostnad mangler dokumentasjon</strong> – 3 reiser i juni er ikke knyttet til oppdrag. Kan ikke fradragsføres uten kjørebok. AI oppretter kjørebok automatisk.</div>
+          <span class="risk-sev rs-mid">MIDDELS</span>
+        </li>
+        <li class="risk-item">
+          <span class="risk-icon">💡</span>
+          <div class="risk-text"><strong>Skattefradrag du ikke har brukt</strong> – Hjemmekontor-fradrag på ~8 400 kr er ikke aktivert. Basert på arbeidsadresse-data kan dette aktiveres automatisk.</div>
+          <span class="risk-sev rs-low">MULIGHET</span>
+        </li>
+        <li class="risk-item">
+          <span class="risk-icon">📅</span>
+          <div class="risk-text"><strong>A-melding forfaller 5. juli (5 dager)</strong> – RegnskapShield sender automatisk. Ansatte: Kjetil Larsen, ansatt 15. mai, ikke registrert i Aa-registeret ennå.</div>
+          <span class="risk-sev rs-mid">MIDDELS</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="roi-section">
+  <div class="roi-card">
+    <div class="roi-item">
+      <div class="roi-num">48 000 kr</div>
+      <div class="roi-label">Spart per år</div>
+      <div class="roi-sub">vs. regnskapsfører</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">8t/uke</div>
+      <div class="roi-label">Spart i arbeidstid</div>
+      <div class="roi-sub">Regnskap er automatisk</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">100%</div>
+      <div class="roi-label">MVA-compliance</div>
+      <div class="roi-sub">Ingen feil siste 14 mnd</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">134x</div>
+      <div class="roi-label">ROI på abonnement</div>
+      <div class="roi-sub">299 kr/mnd → 4 000 kr spart</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const voiceConversations = [
+    {
+      user: 'Send faktura til Byggefirma AS for takarbeid, 45 000 kroner',
+      ai: 'Faktura opprettes: Byggefirma AS, takarbeid, kr 45 000 eks. moms (56 250 inkl.). Betalingsfrist 14 dager. Sender nå?'
+    },
+    {
+      user: 'Legg inn kvittering fra Bunnpris, 847 kroner',
+      ai: 'Kvittering bokført: Bunnpris, 847,50 kr, kategori Materialer/4000. MVA-fradrag 169,50 kr registrert. Alt i orden!'
+    },
+    {
+      user: 'Hva skylder jeg i skatt neste kvartal?',
+      ai: 'Basert på inntjening hittil: ca. 42 000 kr i skatt Q3. Anbefaler å sette av 14 000 kr per måned. Vil jeg opprette automatisk sparing?'
+    },
+    {
+      user: 'Vis meg momssaldo',
+      ai: 'MVA klar for 10. august: 20 330 kr. Innkrevd 28 750 kr, fradrag 8 420 kr. Vil jeg sende melding til Altinn nå?'
+    },
+  ];
+  let convIdx = 0;
+  let isListening = false;
+
+  function toggleListen() {
+    isListening = !isListening;
+    const btn = document.getElementById('micBtn');
+    const status = document.getElementById('micStatus');
+    if (isListening) {
+      btn.classList.add('listening');
+      btn.textContent = '🔴';
+      status.textContent = 'Lytter... snakk nå';
+      setTimeout(() => {
+        const conv = voiceConversations[convIdx % voiceConversations.length];
+        showConversation(conv);
+        convIdx++;
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.textContent = '🎙️';
+        status.textContent = 'Trykk for å snakke med RegnskapShield AI';
+      }, 2000);
+    }
+  }
+
+  function showConversation(conv) {
+    const t = document.getElementById('transcript');
+    t.innerHTML = `<span class="transcript-you">Du:</span> "${conv.user}"<br><br><span class="transcript-ai">RegnskapShield AI:</span> "${conv.ai}"`;
+  }
+
+  function runCmd(el) {
+    const cmd = el.textContent;
+    const t = document.getElementById('transcript');
+    t.innerHTML = `<span class="transcript-you">Du:</span> "${cmd.replace(/[📄🧾💰📊✅📅]\s/,'')}"<br><br><span class="transcript-ai">RegnskapShield AI:</span> Analyserer...`;
+    setTimeout(() => {
+      const conv = voiceConversations[convIdx % voiceConversations.length];
+      showConversation({ user: cmd.replace(/[📄🧾💰📊✅📅]\s/,''), ai: conv.ai });
+      convIdx++;
+    }, 1200);
+  }
+
+  function scanReceipt() {
+    const btn = document.querySelector('.scan-btn');
+    btn.textContent = '🔄 AI analyserer kvittering...';
+    btn.disabled = true;
+    setTimeout(() => {
+      document.getElementById('scanResult').classList.add('show');
+      btn.textContent = '✅ Kvittering bokført!';
+      btn.style.background = 'linear-gradient(135deg, #1e8449, #27ae60)';
+      setTimeout(() => {
+        btn.textContent = '🤖 Skann kvittering med AI';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    }, 1800);
+  }
+
+  function newInvoice() {
+    alert('🤖 RegnskapShield AI:\n\n«Hvem skal fakturaen til, og hva gjelder jobben?»\n\n[Dikter eller skriv – AI lager faktura, setter riktig momssats, og sender på epost.]');
+  }
+
+  function previewAltinn() {
+    alert('📄 MVA-melding Q2 2026\n\nOrgnr: 912 345 678\nPeriode: April–Juni 2026\n\nUtgående MVA (25%): 28 750 kr\nInngående MVA (fradrag): -8 420 kr\nMVA å betale: 20 330 kr\n\nSendes automatisk 10. august.\n✅ Klar for innsending til Altinn');
+  }
+</script>
+</body>
+</html>

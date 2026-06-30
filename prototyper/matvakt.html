@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatVakt AI – Kjøleskapskamera + App</title>
+<style>
+  :root {
+    --green: #1a6b3a;
+    --green-light: #2d9e57;
+    --dark: #0a0f0a;
+    --card: #0f1f10;
+    --card2: #12211a;
+    --accent: #4cff82;
+    --warn: #ff9800;
+    --danger: #ef2b2d;
+    --white: #e8f0e8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--dark); color: var(--white); min-height: 100vh; }
+
+  nav {
+    background: rgba(10,15,10,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(77,255,130,0.15);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .back { color: #4a8a5a; text-decoration: none; font-size: 0.85rem; }
+  .back:hover { color: var(--accent); }
+  .nav-brand { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+  .nav-tag { background: rgba(77,255,130,0.1); border: 1px solid rgba(77,255,130,0.3); color: var(--accent); padding: 3px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+
+  .hero {
+    background: linear-gradient(135deg, #051a08 0%, #0a2e12 50%, #051a08 100%);
+    padding: 50px 24px 40px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.5rem; font-weight: 900; color: white; margin-bottom: 8px; }
+  .hero p { color: #7a9a7a; font-size: 1rem; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
+  .savings-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: white;
+    font-weight: 900;
+    font-size: 1.1rem;
+    padding: 10px 28px;
+    border-radius: 50px;
+  }
+
+  .app-layout {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media(max-width:720px){ .app-layout { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid rgba(77,255,130,0.1);
+    overflow: hidden;
+  }
+  .panel-header {
+    background: rgba(77,255,130,0.05);
+    border-bottom: 1px solid rgba(77,255,130,0.1);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-title { font-weight: 700; font-size: 0.95rem; }
+  .live-badge { background: rgba(77,255,130,0.15); border: 1px solid rgba(77,255,130,0.4); color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; animation: blink 2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .panel-body { padding: 16px; }
+
+  .fridge {
+    background: linear-gradient(180deg, #0d2a12 0%, #0a1f0e 100%);
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 280px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    align-content: start;
+  }
+  .food-item {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .food-item:hover { transform: scale(1.05); border-color: rgba(77,255,130,0.3); }
+  .food-item.expiring { border-color: rgba(255,152,0,0.5); background: rgba(255,152,0,0.06); }
+  .food-item.expired { border-color: rgba(239,43,45,0.5); background: rgba(239,43,45,0.06); }
+  .food-emoji { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+  .food-name { font-size: 0.68rem; color: #8aaa8a; font-weight: 600; }
+  .food-days { font-size: 0.62rem; margin-top: 2px; }
+  .days-ok { color: var(--accent); }
+  .days-warn { color: var(--warn); }
+  .days-bad { color: var(--danger); }
+  .ai-scan-btn {
+    width: 100%;
+    margin-top: 12px;
+    background: linear-gradient(135deg, var(--green), var(--green-light));
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .ai-scan-btn:hover { opacity: 0.85; }
+  .scan-result {
+    margin-top: 12px;
+    background: rgba(77,255,130,0.05);
+    border: 1px solid rgba(77,255,130,0.2);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.82rem;
+    color: #8aaa8a;
+    line-height: 1.6;
+    display: none;
+  }
+  .scan-result.show { display: block; }
+  .scan-result strong { color: var(--accent); }
+
+  .recipe-card {
+    background: var(--card2);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .recipe-card:hover { border-color: rgba(77,255,130,0.3); }
+  .recipe-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .recipe-icon { font-size: 1.5rem; }
+  .recipe-name { font-weight: 700; font-size: 0.95rem; color: white; }
+  .recipe-sub { font-size: 0.75rem; color: #6a8a6a; }
+  .recipe-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .rtag {
+    background: rgba(77,255,130,0.08);
+    border: 1px solid rgba(77,255,130,0.15);
+    color: var(--accent);
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .match-bar { margin-top: 8px; }
+  .match-label { font-size: 0.7rem; color: #6a8a6a; display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .match-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 5px; }
+  .match-fill { background: linear-gradient(90deg, var(--green), var(--accent)); height: 5px; border-radius: 4px; transition: width 1s; }
+
+  .shopping-list { list-style: none; }
+  .shopping-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.88rem;
+  }
+  .shopping-item:last-child { border-bottom: none; }
+  .shop-check {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(77,255,130,0.4);
+    border-radius: 4px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+  }
+  .shop-check.checked { background: var(--green); border-color: var(--green); color: white; }
+  .shop-name { flex: 1; }
+  .shop-qty { color: #6a8a6a; font-size: 0.78rem; }
+  .shop-store { background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.2); color: var(--warn); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; }
+  .order-btn {
+    width: 100%;
+    margin-top: 14px;
+    background: linear-gradient(135deg, #c4700a, #f39c12);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+  }
+  .order-btn:hover { opacity: 0.85; }
+
+  .roi-section {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+  .roi-card {
+    background: linear-gradient(135deg, rgba(26,107,58,0.3), rgba(10,31,14,0.8));
+    border: 1px solid rgba(77,255,130,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .roi-item { text-align: center; }
+  .roi-num { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
+  .roi-label { font-size: 0.8rem; color: #6a9a6a; margin-top: 4px; }
+  .roi-sub { font-size: 0.72rem; color: #4a6a4a; }
+
+  .notification-demo {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--card);
+    border: 1px solid rgba(77,255,130,0.3);
+    border-radius: 14px;
+    padding: 14px 18px;
+    max-width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    transform: translateX(350px);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 200;
+  }
+  .notification-demo.show { transform: translateX(0); }
+  .notif-icon { font-size: 1.5rem; margin-bottom: 6px; }
+  .notif-title { font-weight: 700; font-size: 0.9rem; color: white; margin-bottom: 4px; }
+  .notif-text { font-size: 0.78rem; color: #8aaa8a; line-height: 1.4; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="back" href="index.html">← Tilbake</a>
+  <span class="nav-brand">🥦 MatVakt AI</span>
+  <span class="nav-tag">Live Prototype</span>
+</nav>
+
+<div class="hero">
+  <h1>MatVakt AI</h1>
+  <p>Kjøleskapskamera + app som gjenkjenner mat, spår bedervelse og foreslår middager fra det du allerede har.</p>
+  <div class="savings-pill">Sparer 200–500 kr/mnd i matavfall</div>
+</div>
+
+<div class="app-layout">
+
+  <div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">📷 Kjøleskap – AI-skanning</span>
+        <span class="live-badge">● LIVE</span>
+      </div>
+      <div class="panel-body">
+        <div class="fridge">
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🥛</span>
+            <div class="food-name">Melk</div>
+            <div class="food-days days-warn">2 dager</div>
+          </div>
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🥚</span>
+            <div class="food-name">Egg ×3</div>
+            <div class="food-days days-ok">8 dager</div>
+          </div>
+          <div class="food-item expiring" onclick="selectFood(this)">
+            <span class="food-emoji">🧀</span>
+            <div class="food-name">Jarlsberg</div>
+            <div class="food-days days-warn">1 dag!</div>
+          </div>
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🥕</span>
+            <div class="food-name">Gulrot ×4</div>
+            <div class="food-days days-ok">5 dager</div>
+          </div>
+          <div class="food-item expired" onclick="selectFood(this)">
+            <span class="food-emoji">🍗</span>
+            <div class="food-name">Kylling</div>
+            <div class="food-days days-bad">Brukt!</div>
+          </div>
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🧅</span>
+            <div class="food-name">Løk ×2</div>
+            <div class="food-days days-ok">12 dager</div>
+          </div>
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🍅</span>
+            <div class="food-name">Tomat ×3</div>
+            <div class="food-days days-warn">3 dager</div>
+          </div>
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🧈</span>
+            <div class="food-name">Smør</div>
+            <div class="food-days days-ok">21 dager</div>
+          </div>
+          <div class="food-item" onclick="selectFood(this)">
+            <span class="food-emoji">🥬</span>
+            <div class="food-name">Salat</div>
+            <div class="food-days days-warn">2 dager</div>
+          </div>
+        </div>
+        <button class="ai-scan-btn" onclick="runScan()">🤖 Kjør AI-analyse nå</button>
+        <div class="scan-result" id="scanResult">
+          <strong>MatVakt AI analyserte kjøleskapet ditt:</strong><br><br>
+          ⚠️ <strong>Jarlsberg</strong> og <strong>Melk</strong> bør brukes i dag<br>
+          🗑️ <strong>Kylling</strong> er gått ut – kast<br>
+          ✅ Du har ingredienser til <strong>3 middager</strong> uten å handle<br>
+          💡 Forslag: Omelett med Jarlsberg og tomat til middag i dag!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:20px;">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">👨‍🍳 AI Oppskriftsforslag</span>
+        <span style="font-size:0.75rem;color:#6a9a6a;">Basert på ditt kjøleskap</span>
+      </div>
+      <div class="panel-body">
+        <div class="recipe-card" onclick="selectRecipe(this)">
+          <div class="recipe-top">
+            <span class="recipe-icon">🍳</span>
+            <div>
+              <div class="recipe-name">Norsk Omelett med Jarlsberg</div>
+              <div class="recipe-sub">20 min · 2 porsjoner · Bruker varer som utgår</div>
+            </div>
+          </div>
+          <div class="recipe-tags">
+            <span class="rtag">Rask</span><span class="rtag">Bruker snart-utgåtte</span><span class="rtag">Norsk</span>
+          </div>
+          <div class="match-bar">
+            <div class="match-label"><span>Ingrediensdekning</span><span>87%</span></div>
+            <div class="match-track"><div class="match-fill" style="width:87%"></div></div>
+          </div>
+        </div>
+        <div class="recipe-card" onclick="selectRecipe(this)">
+          <div class="recipe-top">
+            <span class="recipe-icon">🥗</span>
+            <div>
+              <div class="recipe-name">Gulrot- og tomatsalat</div>
+              <div class="recipe-sub">10 min · 4 porsjoner · Vegetarisk</div>
+            </div>
+          </div>
+          <div class="recipe-tags">
+            <span class="rtag">Sunn</span><span class="rtag">Vegansk</span><span class="rtag">Enkel</span>
+          </div>
+          <div class="match-bar">
+            <div class="match-label"><span>Ingrediensdekning</span><span>100%</span></div>
+            <div class="match-track"><div class="match-fill" style="width:100%"></div></div>
+          </div>
+        </div>
+        <div class="recipe-card" onclick="selectRecipe(this)">
+          <div class="recipe-top">
+            <span class="recipe-icon">🍜</span>
+            <div>
+              <div class="recipe-name">Løksuppe med brød</div>
+              <div class="recipe-sub">30 min · 3 porsjoner · Klassiker</div>
+            </div>
+          </div>
+          <div class="recipe-tags">
+            <span class="rtag">Varm</span><span class="rtag">Mettende</span><span class="rtag">Billig</span>
+          </div>
+          <div class="match-bar">
+            <div class="match-label"><span>Ingrediensdekning</span><span>75%</span></div>
+            <div class="match-track"><div class="match-fill" style="width:75%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🛒 Handlekurv (AI-generert)</span>
+        <span style="font-size:0.75rem;color:#6a9a6a;">Til uke 27</span>
+      </div>
+      <div class="panel-body">
+        <ul class="shopping-list">
+          <li class="shopping-item">
+            <div class="shop-check" onclick="toggleCheck(this)"></div>
+            <span class="shop-name">Økologisk kyllingfilet</span>
+            <span class="shop-qty">500g</span>
+            <span class="shop-store">Rema</span>
+          </li>
+          <li class="shopping-item">
+            <div class="shop-check" onclick="toggleCheck(this)"></div>
+            <span class="shop-name">Melk 3.5%</span>
+            <span class="shop-qty">1L</span>
+            <span class="shop-store">Coop</span>
+          </li>
+          <li class="shopping-item">
+            <div class="shop-check" onclick="toggleCheck(this)"></div>
+            <span class="shop-name">Fullkornsbrød</span>
+            <span class="shop-qty">1 stk</span>
+            <span class="shop-store">Rema</span>
+          </li>
+          <li class="shopping-item">
+            <div class="shop-check" onclick="toggleCheck(this)"></div>
+            <span class="shop-name">Paprika</span>
+            <span class="shop-qty">3 stk</span>
+            <span class="shop-store">Coop</span>
+          </li>
+          <li class="shopping-item">
+            <div class="shop-check" onclick="toggleCheck(this)"></div>
+            <span class="shop-name">Pasta</span>
+            <span class="shop-qty">500g</span>
+            <span class="shop-store">Rema</span>
+          </li>
+        </ul>
+        <button class="order-btn" onclick="orderNow()">📦 Bestill hos Rema – Levering om 2t</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="roi-section">
+  <div class="roi-card">
+    <div class="roi-item">
+      <div class="roi-num">347 kr</div>
+      <div class="roi-label">Spart denne måneden</div>
+      <div class="roi-sub">I matavfall unngått</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">12</div>
+      <div class="roi-label">Middager laget av restemat</div>
+      <div class="roi-sub">Siden oppstart</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">0.8 kg</div>
+      <div class="roi-label">Matsvinn redusert</div>
+      <div class="roi-sub">Denne uken</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">4.2x</div>
+      <div class="roi-label">ROI første måned</div>
+      <div class="roi-sub">Abonnement vs. besparelse</div>
+    </div>
+  </div>
+</div>
+
+<div class="notification-demo" id="notif">
+  <div class="notif-icon">📸</div>
+  <div class="notif-title">MatVakt AI skannet kjøleskapet</div>
+  <div class="notif-text">Jarlsberg utgår i morgen. Forslag: Omelett til middag? Oppskrift klar! 🧀</div>
+</div>
+
+<script>
+  function runScan() {
+    const btn = document.querySelector('.ai-scan-btn');
+    btn.textContent = '🔄 Analyserer...';
+    btn.disabled = true;
+    setTimeout(() => {
+      document.getElementById('scanResult').classList.add('show');
+      btn.textContent = '✅ Analyse fullført!';
+      setTimeout(() => {
+        btn.textContent = '🤖 Kjør AI-analyse nå';
+        btn.disabled = false;
+      }, 3000);
+      showNotif();
+    }, 1800);
+  }
+  function selectFood(el) {
+    el.style.borderColor = 'rgba(77,255,130,0.6)';
+    setTimeout(() => { el.style.borderColor = ''; }, 800);
+  }
+  function selectRecipe(el) {
+    el.style.background = 'rgba(77,255,130,0.08)';
+    setTimeout(() => { el.style.background = ''; }, 600);
+  }
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+    el.textContent = el.classList.contains('checked') ? '✓' : '';
+  }
+  function orderNow() {
+    const btn = document.querySelector('.order-btn');
+    btn.textContent = '✅ Bestilling sendt til Rema!';
+    btn.style.background = 'linear-gradient(135deg, #1a6b3a, #2d9e57)';
+    setTimeout(() => {
+      btn.textContent = '📦 Bestill hos Rema – Levering om 2t';
+      btn.style.background = '';
+    }, 3000);
+  }
+  function showNotif() {
+    const n = document.getElementById('notif');
+    n.classList.add('show');
+    setTimeout(() => n.classList.remove('show'), 5000);
+  }
+  setTimeout(showNotif, 3000);
+</script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KlærMatch AI – Personlig vær-stylist</title>
+<style>
+  :root {
+    --blue: #1a3a6b;
+    --blue-light: #2e86c1;
+    --dark: #08080f;
+    --card: #0f0f1f;
+    --card2: #151525;
+    --accent: #64b5f6;
+    --pink: #f48fb1;
+    --safe: #81c784;
+    --warn: #ffb74d;
+    --white: #e8eaf6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--dark); color: var(--white); min-height: 100vh; }
+
+  nav {
+    background: rgba(8,8,15,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(100,181,246,0.15);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .back { color: #5a7a9a; text-decoration: none; font-size: 0.85rem; }
+  .back:hover { color: var(--accent); }
+  .nav-brand { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+  .weather-now {
+    margin-left: auto;
+    background: rgba(100,181,246,0.1);
+    border: 1px solid rgba(100,181,246,0.3);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #080820 0%, #0f1540 50%, #080820 100%);
+    padding: 50px 24px 40px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.5rem; font-weight: 900; color: white; margin-bottom: 8px; }
+  .hero p { color: #7a8aaa; font-size: 1rem; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
+  .hero-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+    font-weight: 900;
+    font-size: 1rem;
+    padding: 10px 28px;
+    border-radius: 50px;
+  }
+
+  .app {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+  }
+  @media(max-width:760px){ .app { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid rgba(100,181,246,0.1);
+    overflow: hidden;
+  }
+  .panel-header {
+    background: rgba(100,181,246,0.04);
+    border-bottom: 1px solid rgba(100,181,246,0.08);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-title { font-weight: 700; font-size: 0.95rem; }
+  .panel-body { padding: 16px; }
+
+  .weather-widget {
+    background: linear-gradient(135deg, #0d1a2e, #1a2e4a);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .w-city { font-size: 0.75rem; color: #5a7a9a; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .w-main { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .w-icon { font-size: 2.5rem; }
+  .w-temp { font-size: 2rem; font-weight: 900; color: white; }
+  .w-desc { font-size: 0.82rem; color: #7a9aaa; }
+  .w-details { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .w-detail { font-size: 0.75rem; color: #5a7a9a; }
+  .w-detail span { color: var(--accent); font-weight: 600; }
+  .w-forecast { display: flex; gap: 6px; margin-top: 10px; }
+  .w-day { flex: 1; background: rgba(100,181,246,0.06); border-radius: 8px; padding: 6px; text-align: center; }
+  .w-day-name { font-size: 0.65rem; color: #5a7a9a; }
+  .w-day-icon { font-size: 1rem; margin: 3px 0; }
+  .w-day-temp { font-size: 0.7rem; font-weight: 700; color: var(--accent); }
+
+  .calendar-widget {
+    background: var(--card2);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .cal-title { font-size: 0.82rem; font-weight: 700; color: white; margin-bottom: 8px; }
+  .cal-event {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.78rem;
+  }
+  .cal-event:last-child { border-bottom: none; }
+  .cal-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .cal-time { color: #5a7a9a; width: 42px; }
+  .cal-name { color: #b0c0d8; flex: 1; }
+  .cal-type { font-size: 0.65rem; }
+
+  .wardrobe-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  @media(max-width:900px){ .wardrobe-grid { grid-template-columns: repeat(3, 1fr); } }
+  .cloth-item {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .cloth-item:hover { border-color: rgba(100,181,246,0.4); transform: scale(1.04); }
+  .cloth-item.selected { border-color: var(--accent); background: rgba(100,181,246,0.08); }
+  .cloth-emoji { font-size: 1.8rem; display: block; margin-bottom: 4px; }
+  .cloth-name { font-size: 0.62rem; color: #6a8aaa; font-weight: 600; }
+  .cloth-uses { font-size: 0.58rem; color: #4a6a8a; }
+  .sustain-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .s-green { background: var(--safe); }
+  .s-yellow { background: var(--warn); }
+  .s-red { background: #ef5350; }
+
+  .outfit-recommendation {
+    background: linear-gradient(135deg, rgba(26,58,107,0.4), rgba(15,15,31,0.6));
+    border: 1px solid rgba(100,181,246,0.2);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .outfit-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .outfit-ai-badge {
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .outfit-title { font-size: 1rem; font-weight: 800; color: white; }
+  .outfit-sub { font-size: 0.78rem; color: #5a7aaa; margin-top: 2px; }
+  .outfit-items { display: flex; gap: 10px; margin: 12px 0; }
+  .outfit-piece {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 12px 10px;
+    text-align: center;
+    flex: 1;
+    border: 1px solid rgba(100,181,246,0.15);
+  }
+  .outfit-piece .emoji { font-size: 2rem; display: block; margin-bottom: 4px; }
+  .outfit-piece .name { font-size: 0.7rem; color: #7a9aaa; }
+  .outfit-why {
+    background: rgba(100,181,246,0.06);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    color: #8aaaca;
+    line-height: 1.5;
+  }
+  .outfit-why strong { color: var(--accent); }
+
+  .ar-preview {
+    background: linear-gradient(180deg, #0d1530 0%, #0a1020 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    cursor: pointer;
+  }
+  .ar-figure {
+    font-size: 6rem;
+    filter: drop-shadow(0 0 20px rgba(100,181,246,0.3));
+    animation: float 3s ease-in-out infinite;
+    transition: all 0.5s;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .ar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(8,8,15,0.9));
+    padding: 12px 14px 14px;
+  }
+  .ar-label { font-size: 0.78rem; color: var(--accent); font-weight: 700; }
+  .ar-sub { font-size: 0.68rem; color: #5a7a9a; margin-top: 2px; }
+  .ar-scan-ring {
+    position: absolute;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 2px solid rgba(100,181,246,0.3);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: scanRing 3s ease-in-out infinite;
+  }
+  @keyframes scanRing { 0%,100%{opacity:0.3;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)} }
+
+  .outfit-btns { display: flex; gap: 8px; }
+  .obtn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.82rem;
+    transition: opacity 0.2s;
+  }
+  .obtn:hover { opacity: 0.85; }
+  .obtn-yes { background: linear-gradient(135deg, var(--blue), var(--blue-light)); color: white; }
+  .obtn-next { background: rgba(100,181,246,0.1); border: 1px solid rgba(100,181,246,0.3); color: var(--accent); }
+  .obtn-buy { background: linear-gradient(135deg, #c4700a, #f39c12); color: white; }
+
+  .sustain-section {
+    background: var(--card2);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .sus-title { font-size: 0.85rem; font-weight: 700; color: white; margin-bottom: 10px; }
+  .sus-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 0.8rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .sus-item:last-child { border-bottom: none; }
+  .sus-label { color: #7a9aaa; }
+  .sus-bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .sus-bar { width: 60px; height: 5px; background: rgba(255,255,255,0.06); border-radius: 3px; }
+  .sus-fill { height: 5px; border-radius: 3px; }
+
+  .roi-section {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+  .roi-card {
+    background: linear-gradient(135deg, rgba(26,58,107,0.25), rgba(8,8,15,0.8));
+    border: 1px solid rgba(100,181,246,0.2);
+    border-radius: 16px;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .roi-item { text-align: center; }
+  .roi-num { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
+  .roi-label { font-size: 0.8rem; color: #5a7a9a; margin-top: 4px; }
+  .roi-sub { font-size: 0.72rem; color: #3a5a7a; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="back" href="index.html">← Tilbake</a>
+  <span class="nav-brand">👗 KlærMatch AI</span>
+  <span class="weather-now">🌧️ Bergen · 9°C · Regn</span>
+</nav>
+
+<div class="hero">
+  <h1>KlærMatch AI</h1>
+  <p>AI-stylist som kombinerer garderobedataen din, dagens vær i Bergen og kalenderavtaler for å foreslå perfekt antrekk – med AR-prøving.</p>
+  <div class="hero-pill">Aldri mer feil kledd – av med stresset</div>
+</div>
+
+<div class="app">
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🌦️ Vær – Bergen</span>
+      </div>
+      <div class="panel-body">
+        <div class="weather-widget">
+          <div class="w-city">Bergen · Nå</div>
+          <div class="w-main">
+            <span class="w-icon">🌧️</span>
+            <div>
+              <div class="w-temp">9°C</div>
+              <div class="w-desc">Lett regn, vind 8 m/s</div>
+            </div>
+          </div>
+          <div class="w-details">
+            <div class="w-detail">Luftfuktighet <span>92%</span></div>
+            <div class="w-detail">Nedbør <span>4 mm</span></div>
+            <div class="w-detail">Sko-risiko <span style="color:#f48fb1;">Høy</span></div>
+            <div class="w-detail">UV-indeks <span>1 (Lav)</span></div>
+          </div>
+          <div class="w-forecast">
+            <div class="w-day"><div class="w-day-name">I dag</div><div class="w-day-icon">🌧️</div><div class="w-day-temp">9°</div></div>
+            <div class="w-day"><div class="w-day-name">Tirs</div><div class="w-day-icon">⛅</div><div class="w-day-temp">12°</div></div>
+            <div class="w-day"><div class="w-day-name">Ons</div><div class="w-day-icon">🌦️</div><div class="w-day-temp">11°</div></div>
+            <div class="w-day"><div class="w-day-name">Tors</div><div class="w-day-icon">☀️</div><div class="w-day-temp">15°</div></div>
+            <div class="w-day"><div class="w-day-name">Fre</div><div class="w-day-icon">🌧️</div><div class="w-day-temp">10°</div></div>
+          </div>
+        </div>
+        <div class="calendar-widget">
+          <div class="cal-title">📅 Kalender i dag</div>
+          <div class="cal-event">
+            <div class="cal-dot" style="background:#64b5f6;"></div>
+            <span class="cal-time">09:00</span>
+            <span class="cal-name">Teammøte (Kontor)</span>
+            <span class="cal-type" style="color:#64b5f6;">👔 Formell</span>
+          </div>
+          <div class="cal-event">
+            <div class="cal-dot" style="background:#81c784;"></div>
+            <span class="cal-time">12:00</span>
+            <span class="cal-name">Lunsj ute – Zachariasbryggen</span>
+            <span class="cal-type" style="color:#81c784;">☂️ Regn</span>
+          </div>
+          <div class="cal-event">
+            <div class="cal-dot" style="background:#f48fb1;"></div>
+            <span class="cal-time">19:00</span>
+            <span class="cal-name">Middag med venner</span>
+            <span class="cal-type" style="color:#f48fb1;">🍷 Casual</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">🤖 AI Antrekk-anbefaling</span>
+        <span style="font-size:0.75rem;color:#5a7a9a;">Basert på vær + kalender</span>
+      </div>
+      <div class="panel-body">
+        <div class="outfit-recommendation">
+          <div class="outfit-header">
+            <span class="outfit-ai-badge">AI-anbefalt</span>
+          </div>
+          <div class="outfit-title">Kontor → Lunsj → Middag</div>
+          <div class="outfit-sub">Regn 9°C · Formell på dag, casual på kveld</div>
+          <div class="outfit-items">
+            <div class="outfit-piece"><span class="emoji">🧥</span><span class="name">Mørk blazer</span></div>
+            <div class="outfit-piece"><span class="emoji">👔</span><span class="name">Navy skjorte</span></div>
+            <div class="outfit-piece"><span class="emoji">👖</span><span class="name">Chinos mørk</span></div>
+            <div class="outfit-piece"><span class="emoji">🥾</span><span class="name">Vanntette støvler</span></div>
+          </div>
+          <div class="outfit-why">
+            <strong>Hvorfor dette antrekket:</strong> Blazer gir deg formell look på møtet og holder deg varm. Vanntette støvler er essensielle – du spiser ute i regnet. Samme antrekk funker på kveld med å fjerne blazen. Du har brukt støvlene bare 3 ganger → høy verdi-score! ☁️
+          </div>
+          <div class="outfit-btns" style="margin-top:12px;">
+            <button class="obtn obtn-yes" onclick="wearThis()">✓ Bruk dette</button>
+            <button class="obtn obtn-next" onclick="nextOutfit()">→ Neste forslag</button>
+            <button class="obtn obtn-buy" onclick="buyItem()">🛍️ Kjøp manglende</button>
+          </div>
+        </div>
+
+        <div class="ar-preview" onclick="toggleAR(this)">
+          <div class="ar-scan-ring"></div>
+          <div class="ar-figure" id="arFigure">🧍</div>
+          <div class="ar-overlay">
+            <div class="ar-label">AR-PRØVING AKTIV</div>
+            <div class="ar-sub">Trykk for å bytte antrekk</div>
+          </div>
+        </div>
+
+        <div class="sustain-section">
+          <div class="sus-title">♻️ Bærekrafts-score for garderobe</div>
+          <div class="sus-item">
+            <span class="sus-label">Mørk blazer</span>
+            <div class="sus-bar-wrap">
+              <div class="sus-bar"><div class="sus-fill" style="width:85%;background:#81c784;"></div></div>
+              <span style="font-size:0.72rem;color:#81c784;font-weight:700;">85 – brukt 18 ganger</span>
+            </div>
+          </div>
+          <div class="sus-item">
+            <span class="sus-label">Vanntette støvler</span>
+            <div class="sus-bar-wrap">
+              <div class="sus-bar"><div class="sus-fill" style="width:15%;background:#ffb74d;"></div></div>
+              <span style="font-size:0.72rem;color:#ffb74d;font-weight:700;">15 – brukt 3 ganger</span>
+            </div>
+          </div>
+          <div class="sus-item">
+            <span class="sus-label">Navy skjorte</span>
+            <div class="sus-bar-wrap">
+              <div class="sus-bar"><div class="sus-fill" style="width:60%;background:#81c784;"></div></div>
+              <span style="font-size:0.72rem;color:#81c784;font-weight:700;">60 – brukt 12 ganger</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">👚 Garderobe – 32 plagg skannet</span>
+        <span style="font-size:0.75rem;color:#5a7a9a;">Klikk for å velge/fjerne</span>
+      </div>
+      <div class="panel-body">
+        <div class="wardrobe-grid">
+          <div class="cloth-item selected" onclick="selectCloth(this)"><span class="sustain-dot s-green"></span><span class="cloth-emoji">🧥</span><div class="cloth-name">Blazer</div><div class="cloth-uses">18 ganger</div></div>
+          <div class="cloth-item selected" onclick="selectCloth(this)"><span class="sustain-dot s-yellow"></span><span class="cloth-emoji">🥾</span><div class="cloth-name">Støvler</div><div class="cloth-uses">3 ganger</div></div>
+          <div class="cloth-item selected" onclick="selectCloth(this)"><span class="sustain-dot s-green"></span><span class="cloth-emoji">👔</span><div class="cloth-name">Navy skjorte</div><div class="cloth-uses">12 ganger</div></div>
+          <div class="cloth-item selected" onclick="selectCloth(this)"><span class="sustain-dot s-green"></span><span class="cloth-emoji">👖</span><div class="cloth-name">Chinos</div><div class="cloth-uses">22 ganger</div></div>
+          <div class="cloth-item" onclick="selectCloth(this)"><span class="sustain-dot s-red"></span><span class="cloth-emoji">👟</span><div class="cloth-name">Sneakers</div><div class="cloth-uses">1 gang</div></div>
+          <div class="cloth-item" onclick="selectCloth(this)"><span class="sustain-dot s-green"></span><span class="cloth-emoji">🧣</span><div class="cloth-name">Ullskjerf</div><div class="cloth-uses">7 ganger</div></div>
+          <div class="cloth-item" onclick="selectCloth(this)"><span class="sustain-dot s-yellow"></span><span class="cloth-emoji">👒</span><div class="cloth-name">Lue</div><div class="cloth-uses">4 ganger</div></div>
+          <div class="cloth-item" onclick="selectCloth(this)"><span class="sustain-dot s-green"></span><span class="cloth-emoji">🧤</span><div class="cloth-name">Hansker</div><div class="cloth-uses">9 ganger</div></div>
+        </div>
+        <div style="display:flex;gap:6px;font-size:0.68rem;color:#5a7a9a;">
+          <span>● Grønn = høy bruk (bra!)</span>
+          <span>● Gul = middels</span>
+          <span>● Rød = lite brukt (advarsel!)</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="roi-section">
+  <div class="roi-card">
+    <div class="roi-item">
+      <div class="roi-num">-34%</div>
+      <div class="roi-label">Færre impulskjøp</div>
+      <div class="roi-sub">Siste 3 måneder</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">1 800 kr</div>
+      <div class="roi-label">Spart på unødvendige klær</div>
+      <div class="roi-sub">Siden oppstart</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">92%</div>
+      <div class="roi-label">Bruker plagget AI foreslo</div>
+      <div class="roi-sub">Tilfredshet</div>
+    </div>
+    <div class="roi-item">
+      <div class="roi-num">+67%</div>
+      <div class="roi-label">Garderobeutnyttelse</div>
+      <div class="roi-sub">Opp fra 41%</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const outfits = [
+    { title: 'Kontor → Lunsj → Middag', items: ['🧥','👔','👖','🥾'] },
+    { title: 'Casual ute i regn', items: ['🧥','👕','👖','🥾'] },
+    { title: 'Smart casual kveld', items: ['🧣','👔','👖','👟'] },
+  ];
+  let outfitIdx = 0;
+  const arFigures = ['🧍', '🧍‍♀️', '🕴️'];
+  let arIdx = 0;
+
+  function wearThis() {
+    const btn = event.target;
+    btn.textContent = '✅ Registrert!';
+    btn.style.background = 'linear-gradient(135deg, #1e8449, #27ae60)';
+    setTimeout(() => {
+      btn.textContent = '✓ Bruk dette';
+      btn.style.background = '';
+    }, 2500);
+  }
+
+  function nextOutfit() {
+    outfitIdx = (outfitIdx + 1) % outfits.length;
+    const o = outfits[outfitIdx];
+    document.querySelector('.outfit-title').textContent = o.title;
+    const pieces = document.querySelectorAll('.outfit-piece .emoji');
+    o.items.forEach((item, i) => { if(pieces[i]) pieces[i].textContent = item; });
+  }
+
+  function toggleAR(el) {
+    arIdx = (arIdx + 1) % arFigures.length;
+    const fig = document.getElementById('arFigure');
+    fig.style.transform = 'scale(0.5)';
+    setTimeout(() => {
+      fig.textContent = arFigures[arIdx];
+      fig.style.transform = 'scale(1)';
+    }, 300);
+  }
+
+  function buyItem() {
+    alert('🛍️ KlærMatch AI fant:\n\nHelly Hansen regnjakke – 1 249 kr (Zalando)\nMatching bukse – 549 kr (H&M)\n\nBegge matcher din nåværende garderobe og passer Bergens-vær! Legger i handlevogn?');
+  }
+
+  function selectCloth(el) {
+    el.classList.toggle('selected');
+  }
+</script>
+</body>
+</html>
