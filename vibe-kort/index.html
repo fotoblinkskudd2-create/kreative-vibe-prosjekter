@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vibe-kort — 100 kreative gnister</title>
+<meta name="description" content="Vibe-kort: en kortstokk med 100 idealistiske prosjekter, musikkidéer, satireprosjekter og videoidéer. Trekk et kort, bygg noe." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%97%86%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="noise" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">◆</span>
+    <div class="brand-text">
+      <h1>VIBE-KORT</h1>
+      <p class="tagline">100 kreative gnister. Trekk. Bygg. Gjenta.</p>
+    </div>
+  </div>
+  <button id="favToggle" class="icon-btn" aria-haspopup="dialog" aria-controls="favDrawer" aria-expanded="false">
+    <span class="heart">♥</span>
+    <span id="favCount" class="fav-count">0</span>
+    <span class="sr-only">Åpne lagrede kort</span>
+  </button>
+</header>
+
+<main>
+  <nav class="filters" aria-label="Filtrer etter kategori">
+    <button class="chip is-active" data-filter="alle" style="--c:#e5e5ea">
+      <span class="chip-dot">●</span>Alle <span class="chip-n" data-count="alle"></span>
+    </button>
+    <button class="chip" data-filter="idealistisk" style="--c:#34d399">
+      <span class="chip-dot">◆</span>Idealistisk <span class="chip-n" data-count="idealistisk"></span>
+    </button>
+    <button class="chip" data-filter="musikk" style="--c:#c084fc">
+      <span class="chip-dot">♪</span>Musikk <span class="chip-n" data-count="musikk"></span>
+    </button>
+    <button class="chip" data-filter="satire" style="--c:#fb923c">
+      <span class="chip-dot">▲</span>Satire <span class="chip-n" data-count="satire"></span>
+    </button>
+    <button class="chip" data-filter="video" style="--c:#38bdf8">
+      <span class="chip-dot">▶</span>Video <span class="chip-n" data-count="video"></span>
+    </button>
+  </nav>
+
+  <section class="stage" aria-live="polite">
+    <div class="deck-progress">
+      <span id="deckPos">1</span> / <span id="deckTotal">100</span>
+      <span class="deck-hint">bruk piltaster ← → for å bla, mellomrom for å snu</span>
+    </div>
+
+    <div class="card-wrap">
+      <button class="nav-arrow nav-prev" id="prevBtn" aria-label="Forrige kort">‹</button>
+
+      <div class="card" id="card" tabindex="0" role="button" aria-label="Snu kortet">
+        <div class="card-inner">
+          <div class="card-face card-front">
+            <div class="card-symbol" id="frontSymbol">◆</div>
+            <div class="card-front-title">VIBE-KORT</div>
+            <div class="card-front-sub">Trykk for å snu</div>
+            <div class="card-corner card-corner--tl" id="cornerTL">◆</div>
+            <div class="card-corner card-corner--br" id="cornerBR">◆</div>
+          </div>
+          <div class="card-face card-back">
+            <div class="card-back-top">
+              <span class="card-category" id="cardCategory">Idealistisk</span>
+              <button class="save-btn" id="saveBtn" aria-pressed="false" aria-label="Lagre kort">
+                <span class="heart">♥</span>
+              </button>
+            </div>
+            <h2 class="card-title" id="cardTitle">Tittel</h2>
+            <p class="card-pitch" id="cardPitch">Pitch går her.</p>
+            <div class="card-watermark" id="cardWatermark" aria-hidden="true"></div>
+            <div class="card-back-bottom">
+              <span class="effort-badge" id="cardEffort">Lav innsats</span>
+              <span class="card-id" id="cardId">#001</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="nav-arrow nav-next" id="nextBtn" aria-label="Neste kort">›</button>
+    </div>
+
+    <div class="controls">
+      <button id="shuffleBtn" class="btn btn-ghost">⟲ Stokk kortstokken</button>
+      <button id="drawBtn" class="btn btn-primary">✦ Trekk tilfeldig kort</button>
+    </div>
+  </section>
+</main>
+
+<aside id="favDrawer" class="drawer" role="dialog" aria-modal="false" aria-label="Lagrede kort" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Lagrede kort</h2>
+    <button id="favClose" class="icon-btn-plain" aria-label="Lukk">✕</button>
+  </div>
+  <p class="drawer-sub">Bygg et lite idé-sett du kan pitche videre — favoritter lagres lokalt i nettleseren din.</p>
+  <ul id="favList" class="fav-list"></ul>
+  <p id="favEmpty" class="fav-empty">Ingen lagrede kort ennå. Trykk ♥ på et kort du liker.</p>
+  <div class="drawer-actions">
+    <button id="exportBtn" class="btn btn-primary" disabled>⇩ Eksporter pitch-ark (.md)</button>
+    <button id="clearFavBtn" class="btn btn-ghost" disabled>Tøm listen</button>
+  </div>
+</aside>
+<div id="drawerScrim" class="drawer-scrim" hidden></div>
+
+<footer class="site-footer">
+  <p>Vibe-kort — del av <em>kreative-vibe-prosjekter</em>. Ingen server, ingen sporing, ingen build. Bare åpne <code>index.html</code>.</p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="data/cards.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
