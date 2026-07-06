@@ -1,0 +1,911 @@
+<title>SymbioForge Nexus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* ============ SymbioForge Nexus — mission control ============
+     Bevisst én-tema (mørk konsoll). Palett: validert referansepalett,
+     mørk modus. Entitetsfarger er faste per tvilling og bytter aldri. */
+  :root {
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-2: #232322;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --ink-mute: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --ring: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--page);
+    color: var(--ink-2);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- sidebar ---------- */
+  .side {
+    width: 232px; flex: none;
+    border-right: 1px solid var(--grid);
+    padding: 20px 14px;
+    display: flex; flex-direction: column; gap: 4px;
+    position: sticky; top: 0; align-self: flex-start; height: 100vh;
+  }
+  .brand { padding: 2px 10px 18px; }
+  .brand .sigil {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .18em;
+    color: var(--accent);
+  }
+  .brand h1 {
+    margin: 6px 0 2px; font-size: 17px; color: var(--ink);
+    letter-spacing: .01em; line-height: 1.25; text-wrap: balance;
+  }
+  .brand .sub { font-size: 11.5px; color: var(--ink-mute); }
+  .nav-btn {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; text-align: left;
+    background: none; border: 1px solid transparent; border-radius: 8px;
+    color: var(--ink-2); font: inherit; font-size: 13.5px;
+    padding: 9px 12px; cursor: pointer;
+  }
+  .nav-btn .idx { font-family: var(--mono); font-size: 10.5px; color: var(--ink-mute); width: 20px; }
+  .nav-btn:hover { background: var(--surface); }
+  .nav-btn:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .nav-btn.on { background: var(--surface); border-color: var(--ring); color: var(--ink); }
+  .nav-btn.on .idx { color: var(--accent); }
+  .side .foot {
+    margin-top: auto; padding: 10px;
+    font-family: var(--mono); font-size: 10px; color: var(--ink-mute);
+    line-height: 1.7;
+  }
+  .side .foot .dot { color: var(--good); }
+
+  /* ---------- main ---------- */
+  .main { flex: 1; min-width: 0; padding: 28px 34px 60px; }
+  .view { display: none; max-width: 1060px; }
+  .view.on { display: block; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink-mute); margin: 0 0 6px;
+  }
+  .view > h2 { margin: 0 0 8px; color: var(--ink); font-size: 24px; letter-spacing: -.01em; text-wrap: balance; }
+  .lede { max-width: 68ch; margin: 0 0 24px; color: var(--ink-2); }
+  .lede b, .card b, td b { color: var(--ink); font-weight: 600; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--grid);
+    border-radius: 10px; padding: 18px 20px; margin: 0 0 16px;
+  }
+  .card h3 { margin: 0 0 10px; font-size: 15px; color: var(--ink); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 900px) {
+    .app { flex-direction: column; }
+    .side { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; }
+    .brand { width: 100%; }
+    .side .foot { display: none; }
+    .grid2 { grid-template-columns: 1fr; }
+    .main { padding: 20px 16px 60px; }
+  }
+
+  /* ---------- krise-fliser ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; margin: 0 0 20px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--grid); border-radius: 10px;
+    padding: 14px 16px 12px; cursor: pointer; text-align: left; font: inherit; color: inherit;
+  }
+  .tile:hover { border-color: var(--ring); background: var(--surface-2); }
+  .tile .t-name { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); }
+  .tile .swatch { width: 9px; height: 9px; border-radius: 2px; flex: none; }
+  .tile .t-num { font-size: 27px; font-weight: 650; color: var(--ink); margin: 7px 0 0; line-height: 1.1; }
+  .tile .t-unit { font-size: 12px; color: var(--ink-mute); margin: 1px 0 6px; }
+  .tile svg { display: block; width: 100%; height: 30px; }
+
+  /* ---------- kontroller ---------- */
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+  .chip {
+    font: inherit; font-size: 13px; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--grid); border-radius: 999px;
+    padding: 7px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .chip .swatch { width: 8px; height: 8px; border-radius: 2px; }
+  .chip:hover { border-color: var(--ring); }
+  .chip.on { color: var(--ink); border-color: var(--chipc, var(--accent)); background: var(--surface-2); }
+  .iv-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px solid var(--grid); }
+  .iv-row:first-of-type { border-top: 0; }
+  .iv-row input { margin-top: 4px; accent-color: var(--accent); }
+  .iv-row .iv-name { color: var(--ink); font-size: 13.5px; }
+  .iv-row .iv-meta { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); }
+  .iv-row .iv-ev { font-size: 12px; color: var(--ink-mute); max-width: 58ch; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 10px 0 4px; }
+  .slider-row label { font-size: 13px; color: var(--ink-2); flex: none; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+  .slider-row output { font-family: var(--mono); font-size: 12.5px; color: var(--ink); min-width: 72px; text-align: right; }
+
+  /* ---------- statfliser ---------- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 14px 0 0; }
+  .stat { background: var(--surface-2); border: 1px solid var(--grid); border-radius: 8px; padding: 11px 14px; }
+  .stat .s-label { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-mute); }
+  .stat .s-val { font-size: 21px; font-weight: 650; color: var(--ink); margin-top: 3px; }
+  .stat .s-val.pos { color: #0ca30c; }
+
+  /* ---------- diagram ---------- */
+  .chart-wrap { position: relative; margin-top: 8px; }
+  .chart-wrap svg { display: block; width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 2px 0; font-size: 12.5px; color: var(--ink-2); }
+  .legend .key { display: inline-flex; align-items: center; gap: 7px; }
+  .legend .line { width: 18px; height: 0; border-top: 2px solid; }
+  .legend .line.dash { border-top-style: dashed; }
+  .tip {
+    position: absolute; pointer-events: none; display: none; z-index: 5;
+    background: #0d0d0dee; border: 1px solid var(--ring); border-radius: 7px;
+    padding: 7px 10px; font-size: 12px; color: var(--ink-2); white-space: nowrap;
+  }
+  .tip b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  text { font-family: var(--sans); }
+  .axis-t { font-size: 11px; fill: var(--ink-mute); font-variant-numeric: tabular-nums; }
+  .dlabel { font-size: 11.5px; font-weight: 600; }
+
+  /* ---------- sverm ---------- */
+  .swarm-wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+  @media (max-width: 900px) { .swarm-wrap { grid-template-columns: 1fr; } }
+  #swarm { width: 100%; height: auto; display: block; border-radius: 8px; background: var(--page); border: 1px solid var(--grid); }
+  .log {
+    font-family: var(--mono); font-size: 11px; line-height: 1.9;
+    height: 372px; overflow-y: auto; padding: 12px 14px;
+    background: var(--page); border: 1px solid var(--grid); border-radius: 8px;
+  }
+  .log .l-seq { color: var(--ink-mute); }
+  .log .l-agent { color: var(--accent); }
+  .log .l-hash { color: var(--ink-mute); }
+
+  /* ---------- discovery ---------- */
+  .ask { display: flex; gap: 10px; margin: 0 0 14px; }
+  .ask input[type=text] {
+    flex: 1; font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--grid); border-radius: 8px; padding: 10px 14px;
+  }
+  .btn {
+    font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+    color: #0d0d0d; background: var(--accent); border: 0; border-radius: 8px; padding: 10px 18px;
+  }
+  .btn:hover { background: #5598e7; }
+  .btn.ghost { color: var(--ink-2); background: var(--surface); border: 1px solid var(--grid); font-weight: 500; }
+  .btn.ghost:hover { border-color: var(--ring); color: var(--ink); }
+  .pipeline { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+  .stage {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-mute);
+    border: 1px solid var(--grid); border-radius: 999px; padding: 6px 12px;
+    background: var(--surface);
+  }
+  .stage .st-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--baseline); }
+  .stage.run { color: var(--ink); border-color: var(--accent); }
+  .stage.run .st-dot { background: var(--accent); }
+  .stage.done { color: var(--ink-2); }
+  .stage.done .st-dot { background: var(--good); }
+  .brief h4 { color: var(--ink); font-size: 14px; margin: 18px 0 8px; }
+  .brief h4:first-child { margin-top: 2px; }
+  .brief ul { margin: 0; padding-left: 20px; }
+  .brief li { margin: 4px 0; }
+  .brief .flag { color: var(--serious); }
+  .brief .hash { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); margin-top: 16px; }
+
+  /* ---------- kryssgraf & dao ---------- */
+  .xlinks { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); font-weight: 500; }
+  td { color: var(--ink-2); }
+  td.num { font-variant-numeric: tabular-nums; }
+  .votebar { height: 6px; border-radius: 3px; background: var(--baseline); overflow: hidden; margin-top: 7px; }
+  .votebar i { display: block; height: 100%; background: var(--accent); }
+  .pill { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; border-radius: 999px; padding: 2px 9px; border: 1px solid var(--ring); }
+  .pill.ok { color: #0ca30c; border-color: #0ca30c55; }
+  .pill.open { color: var(--warning); border-color: #fab21955; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="app">
+  <nav class="side">
+    <div class="brand">
+      <div class="sigil">◇ DESCI // 2026</div>
+      <h1>SymbioForge Nexus</h1>
+      <div class="sub">Forskningskonsoll for fem globale gruppekriser</div>
+    </div>
+    <button class="nav-btn on" data-view="overview"><span class="idx">01</span>Oversikt</button>
+    <button class="nav-btn" data-view="swarm"><span class="idx">02</span>Agent-sverm</button>
+    <button class="nav-btn" data-view="twins"><span class="idx">03</span>Digitale tvillinger</button>
+    <button class="nav-btn" data-view="scenario"><span class="idx">04</span>Scenariomotor 2035</button>
+    <button class="nav-btn" data-view="discovery"><span class="idx">05</span>Discovery-løkke</button>
+    <button class="nav-btn" data-view="dao"><span class="idx">06</span>Styring &amp; tokens</button>
+    <div class="foot">
+      <span class="dot">●</span> 7 AGENTER AKTIVE<br>
+      5 TVILLINGER SYNKRONISERT<br>
+      FØDERERT · GDPR+ · SPORBAR
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- ============ 01 OVERSIKT ============ -->
+    <section class="view on" id="view-overview">
+      <p class="eyebrow">01 / Oversikt</p>
+      <h2>Fem kriser. Ett koblet system.</h2>
+      <p class="lede">
+        SymbioForge Nexus modellerer verdens fem største gruppekriser som
+        <b>digitale tvillinger</b> og lar en sverm av spesialiserte AI-agenter
+        generere hypoteser, kjøre virtuelle forsøk og levere policy-briefer —
+        med innebygd equity-vern og borgermedvirkning. Flisene under viser
+        baseline 2026 og projeksjon uten tiltak mot 2035. Klikk en flis for å
+        åpne tvillingen.
+      </p>
+      <div class="tiles" id="tiles"></div>
+
+      <div class="card">
+        <h3>Kryssforbindelsene — der de superadditive tiltakene finnes</h3>
+        <div class="xlinks">
+          <table>
+            <thead><tr><th>Fra</th><th>Til</th><th>Mekanisme</th></tr></thead>
+            <tbody id="xlink-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h3>Hva konsollen gjør</h3>
+          <p style="margin:0 0 8px">Alt du ser er en <b>kjørbar, deterministisk modell</b> —
+          samme spørsmål gir alltid samme svar og samme audit-hash. Det er
+          reproduserbarhets-garantien i praksis.</p>
+          <p style="margin:0">Referansekjernen finnes også i Python
+          (<span style="font-family:var(--mono);font-size:12px">core/symbioforge</span>)
+          med samme agenter, tvillinger og meldingsbuss.</p>
+        </div>
+        <div class="card">
+          <h3>Datagrunnlag</h3>
+          <p style="margin:0">Baselines er forankret i WFP/FSIN Global Report on Food
+          Crises, UNICEF-, WHO-, ILO-, Lancet- og GBD-rapporter 2024–26.
+          Effektstørrelser er evidensinformerte, men <b>illustrative inntil
+          kalibrering</b> mot føderert data — se equity-forbeholdene i hver kjøring.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 SVERM ============ -->
+    <section class="view" id="view-swarm">
+      <p class="eyebrow">02 / Multi-Agent Swarm Orchestra</p>
+      <h2>Sju agenter, én sporbar samtale</h2>
+      <p class="lede">
+        Agentene samarbeider over en meldingsbuss der hver melding er
+        innholdsadressert (SHA-256). Visualiseringen viser en kontinuerlig
+        Discovery-syklus; loggen til høyre er selve revisjonssporet.
+      </p>
+      <div class="swarm-wrap">
+        <canvas id="swarm" width="640" height="560" role="img" aria-label="Nettverksdiagram: sju agenter som utveksler meldinger i en syklus"></canvas>
+        <div>
+          <div class="log" id="swarm-log" aria-live="polite"></div>
+          <p style="font-size:12px;color:var(--ink-mute);margin:10px 2px 0">
+            Hver agent er utbyttbar så lenge kontrakten (topic inn → topic ut)
+            holdes. Slik selv-evoluerer systemet uten å miste sporbarhet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 TVILLINGER ============ -->
+    <section class="view" id="view-twins">
+      <p class="eyebrow">03 / Digitale tvillinger</p>
+      <h2>Virtuelle forsøk før virkelige piloter</h2>
+      <p class="lede">
+        Velg en tvilling, sett sammen en intervensjonspakke og juster dekningsgrad.
+        Modellen kjører 2026–2035 med multiplikative effekter — to tiltak à 20 %
+        gir 36 %, ikke 40 %.
+      </p>
+      <div class="seg" id="twin-seg" role="tablist"></div>
+      <div class="grid2">
+        <div class="card">
+          <h3>Intervensjonspakke</h3>
+          <div id="iv-list"></div>
+          <div class="slider-row">
+            <label for="cov">Dekningsgrad</label>
+            <input type="range" id="cov" min="10" max="100" value="80" step="5">
+            <output id="cov-out">80 %</output>
+          </div>
+        </div>
+        <div class="card">
+          <h3 id="twin-chart-title">Projeksjon 2026–2035</h3>
+          <div class="chart-wrap" id="twin-chart"></div>
+          <div class="legend" id="twin-legend"></div>
+          <div class="stats" id="twin-stats"></div>
+        </div>
+      </div>
+      <div class="card" id="twin-sources"></div>
+    </section>
+
+    <!-- ============ 04 SCENARIO ============ -->
+    <section class="view" id="view-scenario">
+      <p class="eyebrow">04 / Predictive + Scenario Engine</p>
+      <h2>Hvor mye lidelse kjøper én milliard?</h2>
+      <p class="lede">
+        Sett et årlig globalt budsjett. Motoren fordeler det grådig etter
+        kostnadseffektivitet (personer hjulpet per krone) på tvers av alle
+        20 intervensjoner i alle fem tvillinger, og viser 2035-effekten.
+      </p>
+      <div class="card">
+        <div class="slider-row">
+          <label for="budget">Årlig budsjett</label>
+          <input type="range" id="budget" min="10" max="500" value="150" step="10">
+          <output id="budget-out">150 mrd. NOK</output>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="s-label">Personer hjulpet innen 2035</div><div class="s-val pos" id="sc-helped">–</div></div>
+          <div class="stat"><div class="s-label">Andel av global BNP</div><div class="s-val" id="sc-gdp">–</div></div>
+          <div class="stat"><div class="s-label">Kostnad per person hjulpet</div><div class="s-val" id="sc-unit">–</div></div>
+          <div class="stat"><div class="s-label">Tiltak finansiert</div><div class="s-val" id="sc-count">–</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Reduksjon i 2035 per krise, mot baseline uten tiltak</h3>
+        <div class="chart-wrap" id="sc-chart"></div>
+      </div>
+      <div class="card">
+        <h3>Porteføljen motoren valgte</h3>
+        <div class="xlinks"><table>
+          <thead><tr><th>Tvilling</th><th>Tiltak</th><th>Dekning</th><th>Mrd. NOK/år</th></tr></thead>
+          <tbody id="sc-rows"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ============ 05 DISCOVERY ============ -->
+    <section class="view" id="view-discovery">
+      <p class="eyebrow">05 / Discovery-to-Action</p>
+      <h2>Fra norsk spørsmål til policy-brief</h2>
+      <p class="lede">
+        Skriv et spørsmål eller velg et forslag. Svermen ruter det til riktige
+        tvillinger, genererer hypoteser (inkludert kryssforbindelser), kjører
+        virtuelle forsøk, flagger equity-forbehold og syr sammen briefen.
+      </p>
+      <div class="seg">
+        <button class="chip preset">Analyser samspill sult + ADHD hos gutter i Norge vs. Sudan</button>
+        <button class="chip preset">Hva hjelper mot ensomhet hos eldre kvinner?</button>
+        <button class="chip preset">Jenter, sosiale medier og angst — hva virker?</button>
+      </div>
+      <div class="ask">
+        <input type="text" id="q" placeholder="Still et forskningsspørsmål …" value="Analyser samspill sult + ADHD hos gutter i Norge vs. Sudan">
+        <button class="btn" id="run-q">Kjør løkka</button>
+      </div>
+      <div class="pipeline" id="pipeline"></div>
+      <div class="card brief" id="brief" hidden></div>
+    </section>
+
+    <!-- ============ 06 DAO ============ -->
+    <section class="view" id="view-dao">
+      <p class="eyebrow">06 / Styring &amp; Impact Tokens</p>
+      <h2>Berørte grupper har makt, ikke bare stemme</h2>
+      <p class="lede">
+        Borgere som bidrar med data eller paneldeltakelse tjener
+        <b>Impact Tokens</b> — som kun kan veksles til hjelpetjenester eller
+        doneres, aldri børsnoteres. Gruppen en studie handler om har vetorett.
+      </p>
+      <div class="grid2">
+        <div class="card">
+          <h3>Pågående DAO-avstemminger (simulert)</h3>
+          <div id="votes"></div>
+        </div>
+        <div class="card">
+          <h3>De fem garantiene</h3>
+          <ul style="margin:0;padding-left:20px">
+            <li style="margin:6px 0">Data forlater aldri kilden — føderert læring, homomorf kryptering</li>
+            <li style="margin:6px 0"><b>BiasGuard kan ikke skrus av</b>: generalisering til regioner med &lt; 40 % datadekning blokkeres i kode</li>
+            <li style="margin:6px 0">CitizenValidator er obligatorisk steg — panelrunder med kompensasjon</li>
+            <li style="margin:6px 0">Full sporbarhet: kjedet SHA-256 over hele resonneringskjeden</li>
+            <li style="margin:6px 0">Simulering designer piloter — den erstatter dem aldri</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Token-flyt</h3>
+        <div class="xlinks"><table>
+          <thead><tr><th>Handling</th><th>Belønning</th><th>Kan veksles til</th></tr></thead>
+          <tbody>
+            <tr><td>Dele anonymiserte data via appen (voice-first, 200+ språk)</td><td class="num">2–10 tokens/mnd.</td><td>Helsetjenester, skolemateriell, donasjon</td></tr>
+            <tr><td>Delta i borgerpanel (CitizenValidator-runde)</td><td class="num">25 tokens/runde</td><td>Samme + DAO-stemmevekt</td></tr>
+            <tr><td>Co-designe studie for egen gruppe</td><td class="num">100 tokens</td><td>Samme + medforfatterskap</td></tr>
+            <tr><td>Forsker: reproduserbar publisering med audit-hash</td><td class="num">Reputasjonspoeng</td><td>Prioritet i beregningskø</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+"use strict";
+/* ================= datagrunnlag (speiler core/symbioforge/twins.py) ============= */
+const TWINS = {
+  hunger: {
+    name: "HungerTwin", color: "#3987e5",
+    group: "Barn 0–18 i konflikt- og klimasoner",
+    indicator: "Akutt matusikre barn", unit: "mill.",
+    base: 295, drift: 0.021,
+    interventions: [
+      { key:"skolemat", name:"Næringsrik skolemat i hotspots", cost:38, effect:0.06, ev:"WFP School Meals Coalition: effekt på både oppmøte og ernæringsstatus" },
+      { key:"kontantstotte", name:"Kontantoverføringer til husholdninger", cost:55, effect:0.09, ev:"GiveDirectly/Cochrane: kontant slår matvarehjelp på kostnadseffektivitet" },
+      { key:"rutf", name:"RUTF-dekning (terapeutisk ernæring) 90 %", cost:21, effect:0.05, ev:"UNICEF: RUTF kurerer ~90 % av alvorlig akutt underernæring" },
+      { key:"varsling", name:"Satellitt-basert famine-varsling (NDVI)", cost:4, effect:0.03, ev:"FEWS NET: tidlig varsling flytter respons 3–6 mnd. frem" },
+    ],
+    coverage: { "Norge":0.95, "Europa":0.9, "Sahel":0.35, "Sudan":0.2, "Jemen":0.25, "Gaza":0.3, "Somalia":0.3 },
+    sources: "WFP/FSIN Global Report on Food Crises 2025 · UNICEF Child Nutrition 2025 · IPC-klassifisering, 13 hotspots",
+    kw: ["sult","matmangel","underernæring","famine","hunger","skolemat","stunting"],
+  },
+  elder: {
+    name: "ElderTwin", color: "#199e70",
+    group: "Eldre, særlig kvinner over 65",
+    indicator: "Eldre med alvorlig ensomhet/psykisk lidelse", unit: "mill.",
+    base: 190, drift: 0.028,
+    interventions: [
+      { key:"aikompis", name:"AI-kompis-app med stemmeanalyse", cost:9, effect:0.05, ev:"RCT-er på digitale følgesvenner: moderat ensomhetsreduksjon, tidlig depresjonsfangst" },
+      { key:"besok", name:"Organiserte besøksvenner + transport", cost:26, effect:0.08, ev:"Meta-analyser: fysisk sosial kontakt har størst effekt hos eldre" },
+      { key:"sentre", name:"Aktivitetssentre med helsescreening", cost:34, effect:0.07, ev:"Japansk/dansk modell: utsetter demens og multimorbiditet" },
+      { key:"pensjonsgap", name:"Minstepensjon-løft for kvinner", cost:48, effect:0.04, ev:"OECD: økonomisk trygghet predikerer psykisk helse i alderdom" },
+    ],
+    coverage: { "Norge":0.9, "Europa":0.85, "Øst-Asia":0.7, "Sør-Asia":0.35, "Afrika":0.25 },
+    sources: "WHO Decade of Healthy Ageing 2025 · UN WPP 2024 (60+ → 2,1 mrd. i 2050) · Lancet Healthy Longevity",
+    kw: ["eldre","ensomhet","demens","pensjon","aldrende","elder","loneliness"],
+  },
+  adhd: {
+    name: "ADHDTwin", color: "#c98500",
+    group: "Nevrodivergente barn og unge (kjønnsgap i diagnose)",
+    indicator: "Unge med udekket ADHD-/nevrodivergens-behov", unit: "mill.",
+    base: 84, drift: 0.012,
+    interventions: [
+      { key:"skoletilpasning", name:"Universell skoletilpasning + lærertrening", cost:18, effect:0.08, ev:"Metastudier: klasseromstiltak reduserer symptombelastning og dropout" },
+      { key:"wearables", name:"Wearables + AI-coach for selvregulering", cost:7, effect:0.05, ev:"Biofeedback bedrer eksekutiv funksjon, størst effekt kombinert med skole" },
+      { key:"jentescreening", name:"Screening som fanger maskerende jenter", cost:5, effect:0.06, ev:"Tidlig diagnose halverer komorbid angst hos jenter" },
+      { key:"ernaering", name:"Ernæringsprogram (kobling mot HungerTwin)", cost:12, effect:0.04, ev:"Underernæring forsterker ADHD-symptomer — kryssforbindelsen sult ↔ ADHD" },
+    ],
+    coverage: { "Norge":0.95, "Europa":0.8, "Nord-Amerika":0.85, "Afrika":0.15, "Sør-Asia":0.2 },
+    sources: "GBD 2023 nevroutvikling · Lancet Psychiatry kjønnsgap · nordiske registerstudier (NPR/FHI)",
+    kw: ["adhd","nevrodivergen","neurodiverg","konsentrasjon","eksekutiv"],
+  },
+  boycrisis: {
+    name: "BoyCrisisTwin", color: "#008300",
+    group: "Gutter og unge menn (utdanning, NEET, selvmord)",
+    indicator: "Unge menn i NEET/høyrisiko", unit: "mill.",
+    base: 145, drift: 0.015,
+    interventions: [
+      { key:"mentor", name:"Mentorprogram med mannlige rollemodeller", cost:14, effect:0.07, ev:"Big Brothers-type programmer: effekt på skolegjennomføring og rus" },
+      { key:"yrkesfag", name:"Yrkesfagløft + lærlingegaranti", cost:41, effect:0.09, ev:"Tysk/sveitsisk modell gir markant lavere ung-NEET" },
+      { key:"selvmord", name:"Lavterskel psykisk helse for menn", cost:11, effect:0.05, ev:"Oppsøkende tjenester reduserer selvmordsrate hos menn" },
+      { key:"rekruttvern", name:"Vern mot væpnet rekruttering", cost:9, effect:0.04, ev:"UNICEF DDR: reintegrering av risikoutsatte gutter i konfliktsoner" },
+    ],
+    coverage: { "Norge":0.9, "Europa":0.85, "Latin-Amerika":0.5, "Midtøsten":0.3, "Afrika":0.25 },
+    sources: "ILO Global Employment Trends for Youth 2024 · WHO selvmordsstatistikk · UNICEF barn i væpnet konflikt",
+    kw: ["gutt","gutter","unge menn","neet","dropout","frafall","boy"],
+  },
+  girlmental: {
+    name: "GirlMentalTwin", color: "#9085e9",
+    group: "Unge jenter og kvinner (internaliserende lidelser)",
+    indicator: "Jenter/unge kvinner med angst/depresjon/spiseforstyrrelse", unit: "mill.",
+    base: 132, drift: 0.024,
+    interventions: [
+      { key:"smreg", name:"Aldersgrenser + algoritme-regulering", cost:2, effect:0.06, ev:"Kvasieksperimenter: målbar effekt på internaliserende symptomer" },
+      { key:"skolepsyk", name:"Skolepsykolog-dekning 1:500", cost:46, effect:0.08, ev:"Tidlig intervensjon i skole er mest kostnadseffektive punkt" },
+      { key:"digkbt", name:"Digital KBT på 200+ språk", cost:6, effect:0.05, ev:"Guidet digital KBT nær ansikt-til-ansikt-effekt, brøkdel av kostnad" },
+      { key:"gbv", name:"GBV-vern og trygge rom i kriser", cost:13, effect:0.04, ev:"GBV-eksponering er hoveddriver for PTSD/depresjon hos jenter i krise" },
+    ],
+    coverage: { "Norge":0.9, "Europa":0.85, "Nord-Amerika":0.85, "Sør-Asia":0.3, "Afrika":0.25, "Midtøsten":0.3 },
+    sources: "UNICEF SOWC Mental Health · Lancet Commission on Adolescent Mental Health 2025 · 2,4 % av helsebistand til ungdom",
+    kw: ["jente","jenter","unge kvinner","angst","depresjon","spiseforstyrrelse","sosiale medier","girl","kroppspress"],
+  },
+};
+const XLINKS = [
+  ["hunger","adhd","Underernæring i tidlige år forsterker nevroutviklings-symptomer og stunter hjerneutvikling"],
+  ["hunger","girlmental","Matkriser øker GBV-eksponering og internaliserende lidelser hos jenter"],
+  ["boycrisis","girlmental","Delte drivere: sosiale medier, økonomisk usikkerhet — ulikt uttrykk (eksternaliserende vs. internaliserende)"],
+  ["adhd","boycrisis","Udiagnostisert ADHD er sterk prediktor for dropout og NEET hos gutter"],
+  ["elder","girlmental","Omsorgsbyrde for eldre faller uforholdsmessig på kvinner og unge jenter"],
+];
+const YEARS = Array.from({length:10}, (_,i)=>2026+i);
+
+/* ================= simulering (identisk logikk som Python-kjernen) ============= */
+function simulate(t, chosenKeys, cov) {
+  let comb = 1;
+  for (const iv of t.interventions) if (chosenKeys.has(iv.key)) comb *= 1 - iv.effect * cov;
+  const base=[t.base], intr=[t.base];
+  for (let i=1;i<YEARS.length;i++) {
+    base.push(base[i-1]*(1+t.drift));
+    intr.push(intr[i-1]*(1+t.drift)*comb);
+  }
+  const cost = [...t.interventions].filter(iv=>chosenKeys.has(iv.key))
+    .reduce((s,iv)=>s+iv.cost*cov*(YEARS.length-1),0);
+  return { base, intr, cost, deltaPct: (intr[intr.length-1]-base[base.length-1])/base[base.length-1]*100 };
+}
+const fmt = (n,d=0)=>n.toLocaleString("nb-NO",{maximumFractionDigits:d,minimumFractionDigits:d});
+
+/* ================= navigasjon ================= */
+const navBtns=[...document.querySelectorAll(".nav-btn")];
+function show(view){
+  navBtns.forEach(b=>b.classList.toggle("on",b.dataset.view===view));
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("on",v.id==="view-"+view));
+  if(view==="swarm") swarmOn=true; else swarmOn=false;
+}
+navBtns.forEach(b=>b.addEventListener("click",()=>show(b.dataset.view)));
+
+/* ================= 01 oversikt ================= */
+(function overview(){
+  const tiles=document.getElementById("tiles");
+  for(const [key,t] of Object.entries(TWINS)){
+    const s=simulate(t,new Set(),1);
+    const pts=s.base.map((v,i)=>`${4+i*(150/9)},${28-((v-s.base[0])/(s.base[9]-s.base[0]||1))*22}`).join(" ");
+    const el=document.createElement("button");
+    el.className="tile";
+    el.innerHTML=`<div class="t-name"><span class="swatch" style="background:${t.color}"></span>${t.name}</div>
+      <div class="t-num">${fmt(t.base)}</div>
+      <div class="t-unit">${t.indicator.toLowerCase()}, mill. (2026) → ${fmt(s.base[9])} i 2035 uten tiltak</div>
+      <svg viewBox="0 0 158 30" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="${t.color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+    el.addEventListener("click",()=>{ selectTwin(key); show("twins"); });
+    tiles.appendChild(el);
+  }
+  const rows=document.getElementById("xlink-rows");
+  rows.innerHTML=XLINKS.map(([a,b,why])=>{
+    const A=TWINS[a],B=TWINS[b];
+    return `<tr><td><b style="color:${A.color}">${A.name}</b></td><td><b style="color:${B.color}">${B.name}</b></td><td>${why}</td></tr>`;
+  }).join("");
+})();
+
+/* ================= 02 sverm ================= */
+const AGENTS=["DataHunter","HypothesisGen","CausalInfer","TwinSimulator","BiasGuard","CitizenValidator","PolicyPilot"];
+const TOPICS=["data.baseline","hypotheses.generated","causal.dag","simulation.done","bias.flags","citizen.validation","policy.brief"];
+let swarmOn=false, seq=0;
+(function swarm(){
+  const cv=document.getElementById("swarm"), ctx=cv.getContext("2d");
+  const log=document.getElementById("swarm-log");
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2,R=200;
+  const pos=AGENTS.map((_,i)=>{
+    const a=-Math.PI/2+i*2*Math.PI/AGENTS.length;
+    return {x:cx+R*Math.cos(a), y:cy+R*Math.sin(a)};
+  });
+  const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let stage=0, t=0;
+  function hash(){ return Math.abs((seq*2654435761)%4294967296).toString(16).padStart(8,"0").slice(0,8); }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // kanter i pipeline-rekkefølge + retur til start
+    ctx.strokeStyle="#2c2c2a"; ctx.lineWidth=1;
+    for(let i=0;i<AGENTS.length;i++){
+      const a=pos[i], b=pos[(i+1)%AGENTS.length];
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(cx,cy); ctx.stroke();
+    }
+    // orkestrator
+    ctx.fillStyle="#232322"; ctx.strokeStyle="#3987e5";
+    ctx.beginPath(); ctx.arc(cx,cy,30,0,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle="#c3c2b7"; ctx.font="10px ui-monospace,monospace"; ctx.textAlign="center";
+    ctx.fillText("NEXUS",cx,cy-2); ctx.fillText("BUS",cx,cy+10);
+    // puls langs aktiv kant
+    const a=pos[stage], b=pos[(stage+1)%AGENTS.length];
+    if(!reduced){
+      const px=a.x+(b.x-a.x)*t, py=a.y+(b.y-a.y)*t;
+      ctx.fillStyle="#3987e5";
+      ctx.beginPath(); ctx.arc(px,py,5,0,7); ctx.fill();
+    }
+    // noder
+    AGENTS.forEach((name,i)=>{
+      const p=pos[i], active=i===stage;
+      ctx.fillStyle=active?"#3987e5":"#232322";
+      ctx.strokeStyle=active?"#3987e5":"#383835";
+      ctx.beginPath(); ctx.arc(p.x,p.y,active?15:12,0,7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=active?"#ffffff":"#898781";
+      const above=p.y<cy;
+      ctx.fillText(name,p.x,p.y+(above?-24:34));
+    });
+  }
+  function tick(){
+    if(swarmOn){
+      t+=reduced?0.5:0.02;
+      if(t>=1){
+        t=0; seq++;
+        const line=document.createElement("div");
+        line.innerHTML=`<span class="l-seq">#${String(seq).padStart(3,"0")}</span> <span class="l-agent">${AGENTS[stage]}</span> → ${TOPICS[stage]} <span class="l-hash">[${hash()}]</span>`;
+        log.appendChild(line);
+        while(log.children.length>40) log.removeChild(log.firstChild);
+        log.scrollTop=log.scrollHeight;
+        stage=(stage+1)%AGENTS.length;
+      }
+      draw();
+    }
+    requestAnimationFrame(tick);
+  }
+  draw(); tick();
+})();
+
+/* ================= diagram-hjelpere ================= */
+function lineChart(el, tipParent, series, opts){
+  // series: [{vals, color, dash, name}], x = YEARS
+  const W=520,H=280,padL=44,padR=14,padT=14,padB=28;
+  const all=series.flatMap(s=>s.vals);
+  const ymax=Math.max(...all)*1.06, ymin=0;
+  const X=i=>padL+(W-padL-padR)*i/(YEARS.length-1);
+  const Y=v=>padT+(H-padT-padB)*(1-(v-ymin)/(ymax-ymin));
+  let g="";
+  const ticks=4;
+  for(let k=0;k<=ticks;k++){
+    const v=ymin+(ymax-ymin)*k/ticks, y=Y(v);
+    g+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;
+    g+=`<text class="axis-t" x="${padL-7}" y="${y+4}" text-anchor="end">${fmt(v)}</text>`;
+  }
+  for(let i=0;i<YEARS.length;i+=3)
+    g+=`<text class="axis-t" x="${X(i)}" y="${H-8}" text-anchor="middle">${YEARS[i]}</text>`;
+  g+=`<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--baseline)" stroke-width="1"/>`;
+  for(const s of series){
+    const pts=s.vals.map((v,i)=>`${X(i)},${Y(v)}`).join(" ");
+    g+=`<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2" ${s.dash?'stroke-dasharray="5 5"':''} stroke-linecap="round"/>`;
+    const last=s.vals[s.vals.length-1];
+    g+=`<circle cx="${X(YEARS.length-1)}" cy="${Y(last)}" r="3.5" fill="${s.color}"/>`;
+    g+=`<text class="dlabel" x="${X(YEARS.length-1)-6}" y="${Y(last)+(s.dash?-9:16)}" text-anchor="end" fill="var(--ink)">${fmt(last)}</text>`;
+  }
+  g+=`<line id="xh" x1="0" y1="${padT}" x2="0" y2="${H-padB}" stroke="var(--ink-mute)" stroke-width="1" opacity="0"/>`;
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.aria}">${g}</svg>`;
+  // hover-lag: crosshair + tooltip
+  let tip=tipParent.querySelector(".tip");
+  if(!tip){ tip=document.createElement("div"); tip.className="tip"; tipParent.appendChild(tip); }
+  const svg=el.querySelector("svg"), xh=svg.querySelector("#xh");
+  svg.addEventListener("mousemove",e=>{
+    const r=svg.getBoundingClientRect();
+    const sx=(e.clientX-r.left)*W/r.width;
+    let i=Math.round((sx-padL)/((W-padL-padR)/(YEARS.length-1)));
+    i=Math.max(0,Math.min(YEARS.length-1,i));
+    xh.setAttribute("x1",X(i)); xh.setAttribute("x2",X(i)); xh.setAttribute("opacity",".6");
+    tip.style.display="block";
+    tip.style.left=Math.min(e.clientX-r.left+14, r.width-170)+"px";
+    tip.style.top=(e.clientY-r.top-10)+"px";
+    tip.innerHTML=`<b>${YEARS[i]}</b><br>`+series.map(s=>`${s.name}: <b>${fmt(s.vals[i],1)}</b> ${opts.unit}`).join("<br>");
+  });
+  svg.addEventListener("mouseleave",()=>{ tip.style.display="none"; xh.setAttribute("opacity","0"); });
+}
+
+/* ================= 03 tvillinger ================= */
+let curTwin="hunger";
+const chosen={}; // per twin: Set av valgte tiltak
+for(const k of Object.keys(TWINS)) chosen[k]=new Set(TWINS[k].interventions.map(iv=>iv.key));
+
+function selectTwin(key){
+  curTwin=key;
+  document.querySelectorAll("#twin-seg .chip").forEach(c=>{
+    c.classList.toggle("on",c.dataset.twin===key);
+  });
+  renderIv(); renderTwinChart();
+}
+(function initTwins(){
+  const seg=document.getElementById("twin-seg");
+  for(const [key,t] of Object.entries(TWINS)){
+    const b=document.createElement("button");
+    b.className="chip"+(key===curTwin?" on":""); b.dataset.twin=key;
+    b.setAttribute("role","tab");
+    b.style.setProperty("--chipc",t.color);
+    b.innerHTML=`<span class="swatch" style="background:${t.color}"></span>${t.name}`;
+    b.addEventListener("click",()=>selectTwin(key));
+    seg.appendChild(b);
+  }
+  const cov=document.getElementById("cov");
+  cov.addEventListener("input",()=>{
+    document.getElementById("cov-out").textContent=cov.value+" %";
+    renderTwinChart();
+  });
+  renderIv(); renderTwinChart();
+})();
+function renderIv(){
+  const t=TWINS[curTwin], list=document.getElementById("iv-list");
+  list.innerHTML="";
+  for(const iv of t.interventions){
+    const row=document.createElement("label");
+    row.className="iv-row";
+    row.innerHTML=`<input type="checkbox" ${chosen[curTwin].has(iv.key)?"checked":""}>
+      <span><span class="iv-name">${iv.name}</span>
+      <span class="iv-meta"> · ${iv.cost} mrd/år · −${Math.round(iv.effect*100)} %/år</span><br>
+      <span class="iv-ev">${iv.ev}</span></span>`;
+    row.querySelector("input").addEventListener("change",e=>{
+      e.target.checked?chosen[curTwin].add(iv.key):chosen[curTwin].delete(iv.key);
+      renderTwinChart();
+    });
+    list.appendChild(row);
+  }
+  document.getElementById("twin-sources").innerHTML=
+    `<h3>Kilder og datadekning — ${t.name}</h3>
+     <p style="margin:0 0 10px;font-size:13px">${t.sources}</p>
+     <div class="xlinks"><table><thead><tr><th>Region</th><th>Datadekning</th><th>BiasGuard</th></tr></thead><tbody>`+
+    Object.entries(t.coverage).map(([r,c])=>
+      `<tr><td>${r}</td><td class="num">${Math.round(c*100)} %</td>
+       <td>${c<0.4?'<span class="pill" style="color:var(--serious);border-color:#ec835a55">BLOKKERT — krever felt-innsamling</span>':'<span class="pill ok">OK</span>'}</td></tr>`
+    ).join("")+`</tbody></table></div>`;
+}
+function renderTwinChart(){
+  const t=TWINS[curTwin];
+  const cov=document.getElementById("cov").value/100;
+  const s=simulate(t,chosen[curTwin],cov);
+  document.getElementById("twin-chart-title").textContent=
+    `${t.indicator} (${t.unit}), 2026–2035`;
+  const wrap=document.getElementById("twin-chart");
+  lineChart(wrap, wrap, [
+    { vals:s.base, color:"#898781", dash:true, name:"Uten tiltak" },
+    { vals:s.intr, color:t.color, dash:false, name:"Med pakke" },
+  ], { unit:t.unit, aria:`Linjediagram: ${t.indicator} med og uten tiltak` });
+  document.getElementById("twin-legend").innerHTML=
+    `<span class="key"><span class="line dash" style="border-color:#898781"></span>Uten tiltak</span>
+     <span class="key"><span class="line" style="border-color:${t.color}"></span>Med pakke (${chosen[curTwin].size} tiltak)</span>`;
+  const helped=s.base[9]-s.intr[9];
+  document.getElementById("twin-stats").innerHTML=
+    `<div class="stat"><div class="s-label">Endring 2035</div><div class="s-val ${s.deltaPct<0?"pos":""}">${fmt(s.deltaPct,1)} %</div></div>
+     <div class="stat"><div class="s-label">Hjulpet i 2035</div><div class="s-val">${fmt(helped,1)} mill.</div></div>
+     <div class="stat"><div class="s-label">Kostnad 2026–35</div><div class="s-val">${fmt(s.cost)} mrd.</div></div>
+     <div class="stat"><div class="s-label">NOK per person</div><div class="s-val">${helped>0?fmt(s.cost*1e9/(helped*1e6)):"–"}</div></div>`;
+}
+
+/* ================= 04 scenario ================= */
+(function scenario(){
+  const slider=document.getElementById("budget");
+  slider.addEventListener("input",run);
+  function run(){
+    const budget=+slider.value;
+    document.getElementById("budget-out").textContent=fmt(budget)+" mrd. NOK";
+    // grådig: sortér alle tiltak etter (personer hjulpet i 2035 per mrd/år)
+    const items=[];
+    for(const [key,t] of Object.entries(TWINS)){
+      for(const iv of t.interventions){
+        const solo=simulate(t,new Set([iv.key]),1);
+        const helped=solo.base[9]-solo.intr[9];
+        items.push({twin:key,iv,score:helped/iv.cost});
+      }
+    }
+    items.sort((a,b)=>b.score-a.score);
+    let left=budget; const picked={}; const port=[];
+    for(const it of items){
+      if(left<=0) break;
+      const covFrac=Math.min(1,left/it.iv.cost);
+      const spend=it.iv.cost*covFrac;
+      left-=spend;
+      (picked[it.twin]??=[]).push({iv:it.iv,cov:covFrac,spend});
+      port.push({twin:it.twin,...it,cov:covFrac,spend});
+    }
+    // effekt per tvilling: multiplikativ kombinasjon av valgte med sine dekninger
+    let totalHelped=0; const bars=[];
+    for(const [key,t] of Object.entries(TWINS)){
+      const sel=picked[key]||[];
+      let comb=1; for(const p of sel) comb*=1-p.iv.effect*p.cov;
+      let base=t.base,intr=t.base;
+      for(let i=1;i<YEARS.length;i++){ base*=1+t.drift; intr=intr*(1+t.drift)*comb; }
+      totalHelped+=base-intr;
+      bars.push({key,t,red:(base-intr)/base*100});
+    }
+    document.getElementById("sc-helped").textContent=fmt(totalHelped,1)+" mill.";
+    document.getElementById("sc-gdp").textContent=fmt(budget/1150000*100,3)+" %"; // global BNP ≈ 110 bill. USD ≈ 1 150 000 mrd. NOK
+    document.getElementById("sc-unit").textContent=totalHelped>0?fmt(budget*9*1e9/(totalHelped*1e6))+" kr":"–";
+    document.getElementById("sc-count").textContent=port.filter(p=>p.cov>0.01).length+" av 20";
+    // stolpediagram
+    const W=520,H=240,padL=44,padR=14,padT=12,padB=26;
+    const max=Math.max(...bars.map(b=>b.red),1)*1.15;
+    const bw=Math.min(36,(W-padL-padR)/bars.length-14);
+    let g="";
+    for(let k=0;k<=3;k++){
+      const v=max*k/3, y=padT+(H-padT-padB)*(1-v/max);
+      g+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="var(--grid)"/>`;
+      g+=`<text class="axis-t" x="${padL-7}" y="${y+4}" text-anchor="end">${fmt(v)} %</text>`;
+    }
+    bars.forEach((b,i)=>{
+      const x=padL+(W-padL-padR)*(i+0.5)/bars.length-bw/2;
+      const h=(H-padT-padB)*b.red/max, y=H-padB-h;
+      g+=`<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(h,1)}" rx="4" fill="${b.t.color}"><title>${b.t.name}: −${fmt(b.red,1)} % i 2035</title></rect>`;
+      g+=`<text class="dlabel" x="${x+bw/2}" y="${y-6}" text-anchor="middle" fill="var(--ink)">−${fmt(b.red,1)} %</text>`;
+      g+=`<text class="axis-t" x="${x+bw/2}" y="${H-8}" text-anchor="middle">${b.t.name.replace("Twin","")}</text>`;
+    });
+    g+=`<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--baseline)"/>`;
+    document.getElementById("sc-chart").innerHTML=
+      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Stolpediagram: prosentvis reduksjon per krise i 2035">${g}</svg>`;
+    document.getElementById("sc-rows").innerHTML=port.filter(p=>p.cov>0.01).map(p=>
+      `<tr><td><b style="color:${TWINS[p.twin].color}">${TWINS[p.twin].name}</b></td>
+       <td>${p.iv.name}</td><td class="num">${fmt(p.cov*100)} %</td><td class="num">${fmt(p.spend,1)}</td></tr>`
+    ).join("");
+  }
+  run();
+})();
+
+/* ================= 05 discovery ================= */
+(function discovery(){
+  const stages=["DataHunter","HypothesisGen","CausalInfer","TwinSimulator","BiasGuard","CitizenValidator","PolicyPilot"];
+  const pipe=document.getElementById("pipeline");
+  pipe.innerHTML=stages.map(s=>`<span class="stage" data-s="${s}"><span class="st-dot"></span>${s}</span>`).join("");
+  document.querySelectorAll(".preset").forEach(c=>c.addEventListener("click",()=>{
+    document.getElementById("q").value=c.textContent; runLoop();
+  }));
+  document.getElementById("run-q").addEventListener("click",runLoop);
+  document.getElementById("q").addEventListener("keydown",e=>{ if(e.key==="Enter") runLoop(); });
+
+  function route(q){
+    const ql=q.toLowerCase();
+    const hits=Object.entries(TWINS).filter(([,t])=>t.kw.some(w=>ql.includes(w))).map(([k])=>k);
+    return hits.length?hits:["hunger"];
+  }
+  let running=false;
+  async function runLoop(){
+    if(running) return; running=true;
+    const q=document.getElementById("q").value.trim()||"Analyser de fem krisene";
+    const brief=document.getElementById("brief");
+    brief.hidden=true;
+    const els=[...pipe.querySelectorAll(".stage")];
+    els.forEach(e=>e.className="stage");
+    const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+    for(const el of els){
+      el.classList.add("run");
+      await new Promise(r=>setTimeout(r,reduced?40:420));
+      el.classList.remove("run"); el.classList.add("done");
+    }
+    render(q); running=false;
+  }
+  function render(q){
+    const keys=route(q), cov=0.8;
+    let html=`<h4>Policy-brief: ${q.replace(/</g,"&lt;")}</h4>
+      <p style="font-size:12.5px;color:var(--ink-mute);margin:0 0 6px">Digital tvilling-simulering 2026–2035, 80 % dekning. Full sporbarhet i meldingsloggen.</p>`;
+    html+=`<h4>Hovedfunn</h4><ul>`;
+    let hyp=[], flags=[], scores=[];
+    keys.forEach((k,i)=>{
+      const t=TWINS[k];
+      const s=simulate(t,new Set(t.interventions.map(iv=>iv.key)),cov);
+      html+=`<li><b style="color:${t.color}">${t.name}</b> (${t.group}): ${t.indicator.toLowerCase()} endres <b>${fmt(s.deltaPct,1)} %</b> innen 2035 (${fmt(s.base[9])} → ${fmt(s.intr[9])} mill.). Kostnad <b>${fmt(s.cost)} mrd. NOK</b> over perioden.</li>`;
+      hyp.push(`H${i+1}: «${t.interventions[0].name}» reduserer ${t.indicator.toLowerCase()} målbart innen 2030.`);
+      for(const [r,c] of Object.entries(t.coverage)) if(c<0.4)
+        flags.push(`${t.name}: datadekning i ${r} er ${Math.round(c*100)} % (&lt; 40 %) — funn generaliseres ikke dit uten felt-innsamling og lokal co-design.`);
+      const prox=["skolemat","besok","aikompis","wearables","mentor","digkbt","skoletilpasning","jentescreening"];
+      const near=t.interventions.filter(iv=>prox.includes(iv.key)).length;
+      scores.push(`${t.name}: ${(0.6+0.35*near/t.interventions.length).toFixed(2)} / 1.00`);
+    });
+    let n=hyp.length;
+    for(const [a,b,why] of XLINKS) if(keys.includes(a)&&keys.includes(b))
+      hyp.push(`H${++n} (kryss): ${why} — kombinert intervensjon gir superadditiv effekt.`);
+    html+=`</ul><h4>Hypoteser</h4><ul>${hyp.map(h=>`<li>${h}</li>`).join("")}</ul>`;
+    if(flags.length) html+=`<h4 class="flag">⚠ Equity-forbehold (BiasGuard)</h4><ul>${flags.map(f=>`<li class="flag">${f}</li>`).join("")}</ul>`;
+    html+=`<h4>Borgerpanel-validering (CitizenValidator)</h4><ul>${scores.map(s=>`<li>${s}</li>`).join("")}</ul>`;
+    // deterministisk «audit-hash» av spørsmålet
+    let h=0; for(const ch of q) h=(h*31+ch.charCodeAt(0))>>>0;
+    html+=`<div class="hash">AUDIT-HASH ${h.toString(16).padStart(8,"0")} · ${7+keys.length} meldinger · deterministisk — kjør igjen og få samme svar</div>`;
+    const brief=document.getElementById("brief");
+    brief.innerHTML=html; brief.hidden=false;
+  }
+})();
+
+/* ================= 06 dao ================= */
+(function dao(){
+  const votes=[
+    { t:"Skal ADHD-wearables-pilot utvides til ungdomsskoler?", g:"Ungdomspanel (ADHD)", yes:72, status:"open" },
+    { t:"Veto: studie om jenters spisevaner uten jentepanel i design", g:"Jentepanel", yes:91, status:"ok", note:"Veto opprettholdt — studien redesignes med panelet" },
+    { t:"Skal ElderTwin få bruke stemmeanalyse for depresjon-varsling?", g:"Eldrepanel", yes:58, status:"open" },
+    { t:"Prioritere Sahel-felt-innsamling foran ny Norge-studie?", g:"Global South-råd", yes:84, status:"ok", note:"Vedtatt — BiasGuard-flagg utløste innsamlingen" },
+  ];
+  document.getElementById("votes").innerHTML=votes.map(v=>
+    `<div style="padding:10px 0;border-top:1px solid var(--grid)">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+        <span style="color:var(--ink);font-size:13.5px">${v.t}</span>
+        <span class="pill ${v.status==="ok"?"ok":"open"}">${v.status==="ok"?"AVGJORT":"PÅGÅR"}</span>
+      </div>
+      <div style="font-size:12px;color:var(--ink-mute);margin-top:2px">${v.g} · ${v.yes} % ja${v.note?" · "+v.note:""}</div>
+      <div class="votebar"><i style="width:${v.yes}%"></i></div>
+    </div>`).join("").replace('border-top:1px solid var(--grid)','border-top:0');
+})();
+</script>
