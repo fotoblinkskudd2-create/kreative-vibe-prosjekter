@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SymbioForge Nexus — konsept-prototype</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --baseline-axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;      /* intervensjon */
+    --series-ref: #898781;    /* basislinje (referanse-grå) */
+    --spark: #86b6ef;         /* de-emphasis for sparklines */
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --accent-wash: rgba(42,120,214,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --baseline-axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-ref: #898781;
+      --spark: #1c5cab;
+      --accent-wash: rgba(57,135,229,0.12);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 20px 64px; }
+  header h1 { font-size: 28px; margin: 0 0 4px; }
+  header p.sub { color: var(--text-secondary); margin: 0; }
+  .badge {
+    display: inline-block; margin-top: 10px; padding: 4px 12px;
+    border: 1px solid var(--border); border-radius: 999px;
+    background: var(--surface-1); color: var(--text-secondary); font-size: 13px;
+  }
+  .badge strong { color: var(--text-primary); }
+  section { margin-top: 40px; }
+  h2 { font-size: 19px; margin: 0 0 4px; }
+  p.lede { color: var(--text-secondary); margin: 0 0 16px; font-size: 14px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+  }
+
+  /* Stat-fliser */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  .tile .label { font-size: 13px; color: var(--text-secondary); min-height: 38px; }
+  .tile .value { font-size: 30px; font-weight: 600; margin: 2px 0 0; }
+  .tile .delta { font-size: 12px; color: var(--text-muted); }
+  .tile svg { display: block; margin-top: 8px; }
+
+  /* Spør Nexus */
+  .ask { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ask input {
+    flex: 1 1 380px; padding: 10px 12px; font: inherit; font-size: 14px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface-1); color: var(--text-primary);
+  }
+  .ask button, .controls select {
+    padding: 10px 18px; font: inherit; font-size: 14px; font-weight: 600;
+    border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    background: var(--series-1); color: #fff;
+  }
+  .ask button:disabled { opacity: .5; cursor: default; }
+  .pipeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 16px; }
+  .step {
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+    background: var(--surface-1); font-size: 13px; opacity: .45; transition: opacity .3s, background .3s;
+    overflow-wrap: break-word;
+  }
+  .step .agent { font-weight: 600; display: block; }
+  .step .what { color: var(--text-secondary); font-size: 12px; }
+  .step.active { opacity: 1; background: var(--accent-wash); }
+  .step.done { opacity: 1; }
+  .step .mark { float: right; color: var(--status-good); font-weight: 700; visibility: hidden; }
+  .step.done .mark { visibility: visible; }
+  #brief { margin-top: 16px; display: none; }
+  #brief h3 { margin: 0 0 6px; font-size: 15px; }
+  #brief ul { margin: 6px 0 0; padding-left: 20px; font-size: 14px; color: var(--text-secondary); }
+  #brief .sim-tag { font-size: 12px; color: var(--text-muted); }
+
+  /* Twin-simulator */
+  .controls { display: flex; gap: 20px; flex-wrap: wrap; align-items: end; margin-bottom: 16px; }
+  .controls label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+  .controls select {
+    background: var(--surface-1); color: var(--text-primary); font-weight: 400; min-width: 220px;
+  }
+  .controls input[type=range] { width: 180px; accent-color: var(--series-1); }
+  .controls .val { font-size: 13px; font-weight: 600; margin-left: 6px; }
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+  .chart-head .metric { font-size: 14px; font-weight: 600; }
+  .legend { display: flex; gap: 16px; font-size: 13px; color: var(--text-secondary); }
+  .legend .key { display: inline-block; width: 18px; height: 2px; vertical-align: middle; margin-right: 6px; border-radius: 1px; }
+  .chartbox { position: relative; }
+  #tooltip {
+    position: absolute; pointer-events: none; display: none;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap; z-index: 2;
+  }
+  #tooltip .yr { font-weight: 600; }
+  #tooltip .row { color: var(--text-secondary); }
+  #tooltip .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+  .effect-line { margin-top: 10px; font-size: 14px; }
+  .effect-line strong { color: var(--text-primary); }
+  details.tableview { margin-top: 12px; font-size: 13px; }
+  details.tableview table { border-collapse: collapse; margin-top: 8px; }
+  details.tableview th, details.tableview td {
+    border: 1px solid var(--grid); padding: 4px 10px; text-align: right;
+    font-variant-numeric: tabular-nums; color: var(--text-secondary);
+  }
+  details.tableview th { color: var(--text-primary); font-weight: 600; }
+
+  /* Agent-sverm */
+  .agents { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+  .agent-card .name { font-weight: 600; font-size: 14px; }
+  .agent-card .role { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; min-height: 34px; }
+  .agent-card .status { font-size: 12px; margin-top: 8px; color: var(--text-secondary); }
+  .agent-card .status .sdot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+
+  footer { margin-top: 48px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--grid); padding-top: 16px; }
+  a { color: var(--series-1); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>SymbioForge Nexus</h1>
+    <p class="sub">Desentralisert, agent-drevet forskningsplattform for fem gruppe-spesifikke verdensproblemer</p>
+    <span class="badge"><strong>Konsept-prototype</strong> · alle tall og agent-kjøringer er simulerte og illustrative</span>
+  </header>
+
+  <section>
+    <h2>De fem problemområdene</h2>
+    <p class="lede">Nøkkeltall fra FN/WFP/UNICEF/Lancet 2025–26. Trendlinjene er illustrative.</p>
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <section>
+    <h2>Spør Nexus</h2>
+    <p class="lede">Demonstrasjon av Discovery-to-Action-sløyfen. Agentene under er simulerte — i MVP-fase 1 erstattes de av ekte RAG- og analyse-pipelines med sporbarhet.</p>
+    <div class="card">
+      <div class="ask">
+        <input id="query" value="Analyser samspill sult × ADHD hos gutter, Norge vs. Sahel" aria-label="Forskningsspørsmål">
+        <button id="run">Kjør sverm</button>
+      </div>
+      <div class="pipeline" id="pipeline"></div>
+      <div class="card" id="brief">
+        <h3>Utkast: policy-brief <span class="sim-tag">(simulert output — krever menneskelig panel)</span></h3>
+        <ul>
+          <li>Hypotese H2 best støttet: underernæring forsterker eksternaliserende ADHD-symptomer via søvn- og konsentrasjonsbane.</li>
+          <li>Virtuell RCT (næringsrik skolemat + AI-coach, 10 000 simulerte elever): symptomtrykk −28 % [KI −12 til −41], dropout −9 %.</li>
+          <li>Anbefalt pilot: 12 skoler i Vestland + 8 i partnerregion, 18 måneder, REK-søknad først.</li>
+          <li>BiasGuard: godkjent med merknad — jenter med maskert ADHD er underrepresentert i treningsdata; CitizenValidator-panel kreves.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Digital twin-simulator</h2>
+    <p class="lede">Illustrativ scenariomotor: velg en twin, juster intervensjonens dekning og intensitet, og se fremskrivning 2026–2035. Modellen er en enkel demonstrasjon — ikke en prediksjon.</p>
+    <div class="card">
+      <div class="controls">
+        <div>
+          <label for="twin">Twin</label>
+          <select id="twin"></select>
+        </div>
+        <div>
+          <label for="cov">Dekning<span class="val" id="covVal">60 %</span></label>
+          <input type="range" id="cov" min="0" max="100" value="60" step="5">
+        </div>
+        <div>
+          <label for="inten">Intensitet<span class="val" id="intenVal">Middels</span></label>
+          <input type="range" id="inten" min="1" max="3" value="2" step="1">
+        </div>
+      </div>
+      <div class="chart-head">
+        <span class="metric" id="metric"></span>
+        <span class="legend">
+          <span><span class="key" style="background:var(--series-ref)"></span>Basislinje</span>
+          <span><span class="key" style="background:var(--series-1)"></span>Med intervensjon</span>
+        </span>
+      </div>
+      <div class="chartbox">
+        <svg id="chart" width="100%" height="300" viewBox="0 0 960 300" role="img" aria-label="Fremskrivning 2026 til 2035, basislinje mot intervensjon"></svg>
+        <div id="tooltip"></div>
+      </div>
+      <p class="effect-line" id="effect"></p>
+      <details class="tableview">
+        <summary>Vis som tabell</summary>
+        <table id="dataTable"></table>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Agent-svermen</h2>
+    <p class="lede">De sju agentrollene fra arkitekturen. BiasGuard og CitizenValidator sitter utenfor produksjonskjeden og kan blokkere den.</p>
+    <div class="agents" id="agents"></div>
+  </section>
+
+  <footer>
+    SymbioForge Nexus · konsept-prototype uten eksterne avhengigheter · full arkitektur i <a href="../docs/arkitektur.md">docs/arkitektur.md</a>.
+    Alle tall på denne siden er simulerte eller illustrative; kildetall for problemområdene er omtalt i prosjektets README.
+  </footer>
+
+</div>
+
+<script>
+"use strict";
+
+/* ---------- Stat-fliser ---------- */
+const problems = [
+  { label: "Barn i akutt matmangel, konflikt- og klimasoner", value: "295 mill.", delta: "13 hotspots · IPC 3+", spark: [232,238,241,250,255,262,268,271,278,284,290,295] },
+  { label: "Verdens 60+-befolkning innen 2050", value: "2,1 mrd", delta: "1 av 6 eldre har psykisk lidelse", spark: [1.05,1.09,1.13,1.18,1.24,1.31,1.38,1.47,1.60,1.75,1.92,2.10] },
+  { label: "ADHD-kjønnsgap: gutter diagnostisert per jente", value: "~2,4×", delta: "jenter maskerer, sen diagnose", spark: [2.9,2.85,2.8,2.75,2.7,2.65,2.6,2.55,2.5,2.47,2.43,2.4] },
+  { label: "NEET-andel unge menn, utsatte regioner", value: "12,4 %", delta: "høyere selvmord og dropout", spark: [10.8,11.0,11.1,11.3,11.5,11.6,11.8,12.0,12.1,12.2,12.3,12.4] },
+  { label: "Ungdom med psykisk lidelse, jenter overrepresentert", value: "1 av 7", delta: "2,4 % av global helsebistand", spark: [11.2,11.5,11.9,12.3,12.7,13.0,13.3,13.6,13.9,14.1,14.2,14.3] },
+];
+
+function sparkline(points) {
+  const w = 150, h = 34, pad = 3;
+  const min = Math.min(...points), max = Math.max(...points);
+  const x = i => pad + i * (w - 2 * pad) / (points.length - 1);
+  const y = v => max === min ? h / 2 : h - pad - (v - min) * (h - 2 * pad) / (max - min);
+  const d = points.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+  const lx = x(points.length - 1), ly = y(points[points.length - 1]);
+  return `<svg width="${w}" height="${h}" aria-hidden="true">
+    <path d="${d}" fill="none" stroke="var(--spark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lx}" cy="${ly}" r="4" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>
+  </svg>`;
+}
+
+document.getElementById("tiles").innerHTML = problems.map(p => `
+  <div class="card tile">
+    <div class="label">${p.label}</div>
+    <div class="value">${p.value}</div>
+    <div class="delta">${p.delta}</div>
+    ${sparkline(p.spark)}
+  </div>`).join("");
+
+/* ---------- Spør Nexus: animert pipeline ---------- */
+const steps = [
+  { agent: "HypothesisGen", what: "Litteratursyntese → 3 rangerte hypoteser" },
+  { agent: "DataHunter", what: "Satellitt-NDVI + FHI + felt-app, federert" },
+  { agent: "CausalInfer", what: "Kausal DAG + sensitivitetsanalyse" },
+  { agent: "TwinSimulator", what: "Virtuell RCT: skolemat + AI-coach" },
+  { agent: "BiasGuard ⛨", what: "Equity- og bias-granskning" },
+  { agent: "PolicyPilot", what: "Pilotdesign + policy-brief-utkast" },
+];
+const pipelineEl = document.getElementById("pipeline");
+pipelineEl.innerHTML = steps.map(s => `
+  <div class="step"><span class="mark">✓</span><span class="agent">${s.agent}</span><span class="what">${s.what}</span></div>`).join("");
+const stepEls = [...pipelineEl.children];
+
+const runBtn = document.getElementById("run");
+runBtn.addEventListener("click", () => {
+  runBtn.disabled = true;
+  document.getElementById("brief").style.display = "none";
+  stepEls.forEach(el => el.classList.remove("active", "done"));
+  let i = 0;
+  const tick = () => {
+    if (i > 0) { stepEls[i - 1].classList.remove("active"); stepEls[i - 1].classList.add("done"); }
+    if (i < stepEls.length) {
+      stepEls[i].classList.add("active");
+      i++;
+      setTimeout(tick, 900);
+    } else {
+      document.getElementById("brief").style.display = "block";
+      runBtn.disabled = false;
+    }
+  };
+  tick();
+});
+
+/* ---------- Twin-simulator ---------- */
+const twins = {
+  hunger: { name: "HungerTwin", metric: "Barn i akutt matmangel (mill.)", start: 295, trend: 0.015, effectMax: 0.40, decimals: 0 },
+  elder:  { name: "ElderTwin", metric: "Eldre 65+ med alvorlig ensomhet (%)", start: 24.0, trend: 0.010, effectMax: 0.30, decimals: 1 },
+  adhd:   { name: "ADHDTwin", metric: "Gutter med ADHD uten fullført videregående (%)", start: 38.0, trend: 0.005, effectMax: 0.35, decimals: 1 },
+  boy:    { name: "BoyTwin", metric: "NEET-andel unge menn (%)", start: 12.4, trend: 0.012, effectMax: 0.28, decimals: 1 },
+  girl:   { name: "GirlTwin", metric: "Jenter 13–19 med høye internaliserende symptomer (%)", start: 21.0, trend: 0.020, effectMax: 0.32, decimals: 1 },
+};
+const YEARS = Array.from({ length: 10 }, (_, i) => 2026 + i);
+
+const twinSel = document.getElementById("twin");
+twinSel.innerHTML = Object.entries(twins).map(([k, t]) => `<option value="${k}">${t.name} — ${t.metric}</option>`).join("");
+
+const covEl = document.getElementById("cov"), intenEl = document.getElementById("inten");
+const intenNames = { 1: "Lav", 2: "Middels", 3: "Høy" };
+
+function simulate(twin, coverage, intensity) {
+  // Illustrativ modell: basislinjen vokser med trend; effekten fases inn over 3 år
+  // og skalerer med dekning og intensitet. Ikke en prediksjon.
+  const effect = twin.effectMax * (coverage / 100) * (0.5 + 0.25 * intensity);
+  const baseline = YEARS.map((_, i) => twin.start * Math.pow(1 + twin.trend, i));
+  const intervention = baseline.map((b, i) => b * (1 - effect * Math.min(1, i / 3)));
+  return { baseline, intervention, effect };
+}
+
+const chart = document.getElementById("chart");
+const tooltip = document.getElementById("tooltip");
+let current = null; // { baseline, intervention, x(), y(), decimals }
+
+function fmt(v, d) { return v.toLocaleString("nb-NO", { minimumFractionDigits: d, maximumFractionDigits: d }); }
+
+function niceTicks(max) {
+  const raw = max / 4;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 5, 10].map(m => m * mag).find(s => s >= raw);
+  const ticks = [];
+  for (let v = 0; v <= max + step * 0.01; v += step) ticks.push(v);
+  return ticks;
+}
+
+function draw() {
+  const twin = twins[twinSel.value];
+  const cov = +covEl.value, inten = +intenEl.value;
+  document.getElementById("covVal").textContent = cov + " %";
+  document.getElementById("intenVal").textContent = intenNames[inten];
+  document.getElementById("metric").textContent = twin.metric + " · 2026–2035";
+
+  const { baseline, intervention, effect } = simulate(twin, cov, inten);
+  const W = 960, H = 300, m = { top: 16, right: 96, bottom: 28, left: 56 };
+  const iw = W - m.left - m.right, ih = H - m.top - m.bottom;
+  const yMax = Math.max(...baseline) * 1.08;
+  const x = i => m.left + i * iw / (YEARS.length - 1);
+  const y = v => m.top + ih - (v / yMax) * ih;
+  current = { baseline, intervention, x, y, decimals: twin.decimals };
+
+  const ticks = niceTicks(yMax);
+  const path = arr => arr.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+  const area = path(intervention) + ` L ${x(YEARS.length - 1).toFixed(1)} ${y(0)} L ${x(0).toFixed(1)} ${y(0)} Z`;
+
+  let svg = "";
+  for (const t of ticks) {
+    svg += `<line x1="${m.left}" x2="${m.left + iw}" y1="${y(t)}" y2="${y(t)}" stroke="var(--grid)" stroke-width="1"/>`;
+    svg += `<text x="${m.left - 8}" y="${y(t) + 4}" text-anchor="end" font-size="11" fill="var(--text-muted)" style="font-variant-numeric:tabular-nums">${fmt(t, 0)}</text>`;
+  }
+  svg += `<line x1="${m.left}" x2="${m.left + iw}" y1="${y(0)}" y2="${y(0)}" stroke="var(--baseline-axis)" stroke-width="1"/>`;
+  YEARS.forEach((yr, i) => {
+    svg += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--text-muted)" style="font-variant-numeric:tabular-nums">${yr}</text>`;
+  });
+
+  svg += `<path d="${area}" fill="var(--series-1)" opacity="0.10"/>`;
+  svg += `<path d="${path(baseline)}" fill="none" stroke="var(--series-ref)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  svg += `<path d="${path(intervention)}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+  const last = YEARS.length - 1;
+  for (const [arr, color] of [[baseline, "var(--series-ref)"], [intervention, "var(--series-1)"]]) {
+    svg += `<circle cx="${x(last)}" cy="${y(arr[last])}" r="4" fill="${color}" stroke="var(--surface-1)" stroke-width="2"/>`;
+    svg += `<text x="${x(last) + 10}" y="${y(arr[last]) + 4}" font-size="12" font-weight="600" fill="var(--text-primary)">${fmt(arr[last], twin.decimals)}</text>`;
+  }
+
+  svg += `<g id="hoverLayer"></g>`;
+  svg += `<rect id="hitArea" x="${m.left}" y="${m.top}" width="${iw}" height="${ih}" fill="transparent"/>`;
+  chart.innerHTML = svg;
+
+  const reduction = (1 - intervention[last] / baseline[last]) * 100;
+  document.getElementById("effect").innerHTML =
+    `Simulert effekt i 2035: <strong>−${fmt(reduction, 0)} %</strong> mot basislinjen ` +
+    `(maks. effekt ${fmt(twin.effectMax * 100, 0)} % × dekning ${cov} % × intensitet ${intenNames[inten].toLowerCase()}). Illustrativ modell.`;
+
+  document.getElementById("dataTable").innerHTML =
+    `<tr><th>År</th>${YEARS.map(yr => `<th>${yr}</th>`).join("")}</tr>` +
+    `<tr><th style="text-align:left">Basislinje</th>${baseline.map(v => `<td>${fmt(v, twin.decimals)}</td>`).join("")}</tr>` +
+    `<tr><th style="text-align:left">Intervensjon</th>${intervention.map(v => `<td>${fmt(v, twin.decimals)}</td>`).join("")}</tr>`;
+
+  attachHover(m, iw, ih);
+}
+
+function attachHover(m, iw, ih) {
+  const hit = chart.querySelector("#hitArea");
+  const layer = chart.querySelector("#hoverLayer");
+  const toSvgX = evt => {
+    const r = chart.getBoundingClientRect();
+    return (evt.clientX - r.left) * (960 / r.width);
+  };
+  hit.addEventListener("mousemove", evt => {
+    const sx = toSvgX(evt);
+    const i = Math.max(0, Math.min(YEARS.length - 1, Math.round((sx - m.left) / (iw / (YEARS.length - 1)))));
+    const { baseline, intervention, x, y, decimals } = current;
+    layer.innerHTML =
+      `<line x1="${x(i)}" x2="${x(i)}" y1="${m.top}" y2="${m.top + ih}" stroke="var(--baseline-axis)" stroke-width="1"/>` +
+      `<circle cx="${x(i)}" cy="${y(baseline[i])}" r="4" fill="var(--series-ref)" stroke="var(--surface-1)" stroke-width="2"/>` +
+      `<circle cx="${x(i)}" cy="${y(intervention[i])}" r="4" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>`;
+    const r = chart.getBoundingClientRect();
+    const px = x(i) * (r.width / 960);
+    tooltip.style.display = "block";
+    tooltip.style.left = Math.min(px + 12, r.width - 190) + "px";
+    tooltip.style.top = "20px";
+    tooltip.innerHTML =
+      `<div class="yr">${YEARS[i]}</div>` +
+      `<div class="row"><span class="dot" style="background:var(--series-ref)"></span>Basislinje: ${fmt(baseline[i], decimals)}</div>` +
+      `<div class="row"><span class="dot" style="background:var(--series-1)"></span>Intervensjon: ${fmt(intervention[i], decimals)}</div>`;
+  });
+  hit.addEventListener("mouseleave", () => {
+    layer.innerHTML = "";
+    tooltip.style.display = "none";
+  });
+}
+
+twinSel.addEventListener("change", draw);
+covEl.addEventListener("input", draw);
+intenEl.addEventListener("input", draw);
+draw();
+
+/* ---------- Agent-svermen ---------- */
+const agents = [
+  { name: "Orkestrator", role: "Dekomponerer spørsmål, ruter til agenter, samler svar med sporbarhet", status: "Klar", good: true },
+  { name: "HypothesisGen", role: "Genererer testbare hypoteser fra litteratur og data-gap", status: "Klar", good: true },
+  { name: "DataHunter", role: "Finner og kvalitetsvurderer kilder, forhandler federert tilgang", status: "Klar", good: true },
+  { name: "CausalInfer", role: "Bygger kausale grafer og kjører sensitivitetsanalyser", status: "Klar", good: true },
+  { name: "TwinSimulator", role: "Kjører scenario- og virtuelle RCT-er mot digital twins", status: "Klar", good: true },
+  { name: "PolicyPilot", role: "Oversetter funn til pilotdesign og policy-brief med kostnadsanslag", status: "Klar", good: true },
+  { name: "BiasGuard ⛨", role: "Reviderer hele kjeden for skjevhet og equity — har vetorett", status: "Granskning aktiv", good: false },
+  { name: "CitizenValidator", role: "Validerer funn mot levde erfaringer fra berørte via appen", status: "Panel åpent", good: false },
+];
+document.getElementById("agents").innerHTML = agents.map(a => `
+  <div class="card agent-card">
+    <div class="name">${a.name}</div>
+    <div class="role">${a.role}</div>
+    <div class="status"><span class="sdot" style="background:${a.good ? "var(--status-good)" : "var(--status-warning)"}"></span>${a.status}</div>
+  </div>`).join("");
+</script>
+</body>
+</html>
