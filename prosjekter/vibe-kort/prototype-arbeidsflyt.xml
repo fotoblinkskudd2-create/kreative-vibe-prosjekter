@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  VIBE-KORT: Komplett arbeidsflyt fra konsept til prototype
+  Produkt: Fysisk kortstokk med kreative prompts + digital companion-app (QR/PWA)
+  Utarbeidet: 2026-07-07 | Del av porteføljen "kreative-vibe-prosjekter"
+-->
+<project name="Vibe-kort" version="1.0">
+
+  <!-- ============================================================
+       FASE 1: INPUTSAMLING
+       ============================================================ -->
+  <inputs>
+    <requirement>Produktet skal senke terskelen for kreativ samtale og idémyldring i grupper på 2–12 personer (workshops, sosiale samlinger, kreative team).</requirement>
+    <requirement>Minst 60 unike prompt-kort fordelt på 4 kategorier: Isbryter, Idé-gnist, Dypdykk og Vilt kort.</requirement>
+    <requirement>Kortene skal tåle gjentatt bruk (minimum 200 spilleøkter) uten synlig slitasje som hindrer lesbarhet.</requirement>
+    <requirement>Produktet skal fungere 100 % uten strøm/nett, men tilby digital merverdi (timer, tilfeldig trekk, utvidelsespakker) via companion-app.</requirement>
+    <requirement>Hele esken skal kunne sendes som brevpost i Norge (under 350 g, tykkelse under 7 cm er ikke krav for pakke, men vekt er styrende for pris).</requirement>
+    <requirement>Salgspris maks 249 kr med dekningsbidrag på minst 60 % ved opplag på 100 eksemplarer.</requirement>
+    <constraint>Budsjett for første prototyperunde: maks 3 000 kr (hjemmeprint + ett trykkeri-prøveeksemplar).</constraint>
+    <constraint>Ingen backend/server-drift: companion-appen må være en statisk PWA (GitHub Pages e.l.) med null månedlige kostnader.</constraint>
+    <constraint>Produksjon via print-on-demand (f.eks. MakePlayingCards, Printerstudio) – ingen egne maskininvesteringer.</constraint>
+    <constraint>Tidsramme: fungerende papirprototype innen 2 uker, trykket prøveeksemplar innen 6 uker.</constraint>
+    <constraint>Alt innhold på norsk (bokmål) i første utgave; tekst må være lesbar på 60 cm avstand (bordspill-situasjon).</constraint>
+    <resource>Hjemmekontor med blekk-/laserskriver (A4), skjærekniv, linjal og skjærematte.</resource>
+    <resource>Gratis designverktøy: Inkscape/Canva for kortdesign, qrencode for QR-generering.</resource>
+    <resource>GitHub-repo (kreative-vibe-prosjekter) for versjonskontroll av design, tekstinnhold og PWA-kode.</resource>
+    <resource>Print-on-demand-leverandører med poker-standard (63,5 × 88,9 mm) og lav MOQ (1 stk prøve mulig).</resource>
+    <resource>Testpanel: 3 grupper à 4–6 personer (venner, kollegaer, én workshop-fasilitator) for spilltesting.</resource>
+  </inputs>
+
+  <!-- ============================================================
+       FASE 2: IDÉBRAINSTORM
+       Evaluert på gjennomførbarhet, kostnad og effekt mot kravene.
+       ============================================================ -->
+  <ideation>
+    <idea id="1">
+      <description>Ren fysisk kortstokk: 60 prompt-kort i tuck-boks, ingen digital komponent.</description>
+      <pros>Enklest mulig produksjon; ingen vedlikehold; fungerer alltid; lav enhetskostnad.</pros>
+      <cons>Ingen merverdi etter kjøp; vanskelig å oppdatere innhold; oppfyller ikke kravet om digital merverdi.</cons>
+      <feasibility>8</feasibility>
+    </idea>
+    <idea id="2">
+      <description>Ren digital app (PWA): hele kortstokken som gratis/betalt web-app uten fysisk produkt.</description>
+      <pros>Null produksjonskostnad; umiddelbar distribusjon; enkel å oppdatere.</pros>
+      <cons>Mister den taktile/sosiale kvaliteten som er kjerneverdien; skjerm rundt bordet dreper stemningen; svak betalingsvilje for prompt-apper.</cons>
+      <feasibility>6</feasibility>
+    </idea>
+    <idea id="3">
+      <description>Hybrid: fysisk kortstokk der hvert kategorikort bærer QR-kode til statisk PWA med timer, tilfeldig-trekk-modus og digitale bonuskort.</description>
+      <pros>Beholder taktil kjerneopplevelse; digital merverdi uten driftskostnad; innhold kan utvides digitalt etter salg; oppfyller alle krav.</pros>
+      <cons>To leveranser å kvalitetssikre (trykk + kode); QR-koder må testes for skannbarhet på trykket kartong.</cons>
+      <feasibility>9</feasibility>
+    </idea>
+    <idea id="4">
+      <description>Print-selv PDF: nedlastbar A4-PDF med skjæremerker som kunden printer og kutter selv.</description>
+      <pros>Null produksjonskostnad; perfekt som rask MVP for å validere innholdet; kan selges billig (49–79 kr).</pros>
+      <cons>Lav opplevd kvalitet; mye arbeid for kunden; ikke bærekraftig som hovedprodukt.</cons>
+      <feasibility>10</feasibility>
+    </idea>
+    <idea id="5">
+      <description>Modulært system: basiskortstokk + tematiske utvidelsespakker (jobb-workshop, vorspiel, familie) à 20 kort.</description>
+      <pros>Gjenkjøpsmulighet; treffer flere segmenter; gjenbruker samme designsystem.</pros>
+      <cons>Krever validert basisprodukt først; flere SKU-er øker lager- og trykkompleksitet i første runde.</cons>
+      <feasibility>7</feasibility>
+    </idea>
+    <idea id="6">
+      <description>Storformat festival-/veggutgave: A5-kort på ring til bruk på arrangementer og fellesarealer.</description>
+      <pros>Synlighet og markedsføringsverdi; nisje uten konkurranse.</pros>
+      <cons>Dyr produksjon; smalt marked; passer ikke brevpost-kravet; distraherer fra kjerneprodukt.</cons>
+      <feasibility>4</feasibility>
+    </idea>
+    <idea id="7">
+      <description>Abonnement: 10 nye fysiske kort tilsendt hver måned.</description>
+      <pros>Løpende inntekt; bygger fellesskap rundt produktet.</pros>
+      <cons>Logistikk og porto spiser marginen; krever kontinuerlig innholdsproduksjon; for tidlig før produkt–marked-fit er bevist.</cons>
+      <feasibility>3</feasibility>
+    </idea>
+    <selection rationale="Idé 3 (hybrid) velges som hovedkonsept fordi den scorer høyest på krav-dekning og differensiering. Idé 4 (print-selv PDF) brukes som steg 1 i prototypeplanen for å validere selve kortinnholdet billig før trykk. Idé 5 (utvidelsespakker) legges i backlog som naturlig versjon 2.">
+      <primary>3</primary>
+      <mvp_validering>4</mvp_validering>
+      <backlog>5</backlog>
+    </selection>
+  </ideation>
+
+  <!-- ============================================================
+       FASE 3: DESIGNFASE
+       ============================================================ -->
+  <design>
+    <selected_concept>«Vibe-kort» hybrid: 62 kort (60 prompt-kort + 2 regel-/QR-kort) i poker-standard, levert i tuck-boks, med QR-lenke til statisk companion-PWA. Kategoriene fargekodes for å kunne sortere/velge modus uten å lese: Isbryter (gul), Idé-gnist (turkis), Dypdykk (dyp blå), Vilt kort (korall).</selected_concept>
+    <specifications>
+      <component name="Prompt-kort">63,5 × 88,9 mm (poker-standard) med 3 mm utfallende trykk og 3 mm sikkerhetsmargin; hjørneradius 3,5 mm; tekst sentrert, maks 140 tegn per kort.</component>
+      <component name="Regel-/QR-kort">Samme format; forside med kortfattede regler (3 spillmoduser), bakside med QR-kode 18 × 18 mm + kort URL som fallback.</component>
+      <component name="Tuck-boks">Innvendig 66 × 92 × 24 mm (se beregning av stabelhøyde i fase 4); lokk med tuck-flik og tommelutsparing.</component>
+      <component name="Companion-PWA">Statisk side (HTML/CSS/JS, ingen rammeverk-avhengigheter i drift): timer 60/120 s, «trekk tilfeldig kort»-modus med hele kortdatabasen som JSON, og 10 digitale bonuskort. Mål: total nedlasting under 200 kB.</component>
+      <dimensions>Kort: 63,5 × 88,9 × 0,35 mm. Kortstabel: 62 × 0,35 mm = 21,7 mm. Boks utvendig: ca. 68 × 94 × 26 mm. Typografi: prompt-tekst 14 pt (min. 12 pt), kategorinavn 8 pt kapitéler, x-høyde ≥ 2,2 mm for lesbarhet på 60 cm.</dimensions>
+      <materials>Kort: 350 gsm silkekartong (blackcore) med matt laminat på begge sider – blackcore hindrer gjennomskinn, matt laminat gir slitestyrke og fjerner gjenskinn under lamper. Boks: 300 gsm ubestrøket kartong med matt overflate. Trykk: CMYK begge sider. Prototype hjemme: 200 gsm matt fotopapir/kartong (tykkeste de fleste hjemmeskrivere mater pålitelig).</materials>
+      <rationale>Poker-standard velges fordi print-on-demand-priser er lavest og kortholdere/sleeves finnes overalt. 350 gsm med laminat er bransjestandard for spillkort med krav til 200+ økter. Fargekoding i stedet for ikon-koding fordi kategorivalg skjer på armlengdes avstand rundt bord. QR på egne kort (ikke på hvert prompt-kort) holder prompt-flatene rene og reduserer trykkrisiko til to kortdesign. Statisk PWA uten backend er direkte utledet av null-driftskost-begrensningen.</rationale>
+    </specifications>
+  </design>
+
+  <!-- ============================================================
+       FASE 4: BEREGNINGER
+       Antagelser er dokumentert per analyse.
+       ============================================================ -->
+  <calculations>
+    <analysis name="Stabelhøyde og bokspassform">Antagelse: 350 gsm silk med laminat gir kalibrert tykkelse ca. 0,35 mm/kort (leverandørdata 0,33–0,37 mm). Stabel: 62 kort × 0,35 mm = 21,7 mm. Innvendig boksdybde settes til 24 mm → klaring 2,3 mm (ca. 10 %), nok til uttak uten at kortene rasler løst. Innvendig bredde/høyde 66 × 92 mm gir 2,5/3,1 mm klaring rundt kortet.</analysis>
+    <analysis name="Vekt og porto">Kortareal: 6,35 cm × 8,89 cm = 56,45 cm² = 0,005645 m². Vekt per kort: 0,005645 m² × 350 g/m² ≈ 1,98 g (+ ~8 % laminat ≈ 2,13 g). Stokk: 62 × 2,13 g ≈ 132 g. Boks ca. 15 g. Totalt ≈ 147 g → godt under 350 g-grensen for rimeligste brevpost. Margin: 58 %.</analysis>
+    <analysis name="QR-skannbarhet">Tommelfingerregel: pålitelig skanneavstand ≈ 10 × QR-bredde. 18 mm QR → ~18 cm, som dekker håndholdt skanning. QR versjon 2 (25×25 moduler) med URL på ≤ 32 tegn gir modulstørrelse 18/25 = 0,72 mm, over anbefalt minimum 0,4 mm for trykk. Feilkorreksjon settes til nivå Q (25 %) for å tåle slitasje og matt laminat.</analysis>
+    <analysis name="Kostnad og dekningsbidrag">Antagelser (print-on-demand, 100 eks): kort + boks ≈ 55 kr/stk inkl. frakt til Norge og toll (kalkulert fra listepris ~4,2 USD + 25 % mva + frakt fordelt). Emballasje/utsendelse 15 kr. Variabel kost ≈ 70 kr. Salgspris 249 kr → dekningsbidrag 179 kr = 72 %.</analysis>
+    <analysis name="PWA-ytelse">Budsjett: HTML+CSS+JS ≤ 60 kB, kortdatabase-JSON (70 kort × ~180 byte) ≈ 13 kB, ikoner/fonter (systemfonter brukes) ≈ 0 kB, totalt &lt; 100 kB. På 4G (antatt 5 Mbit/s effektivt) er overføringstid &lt; 0,2 s; med DNS/TLS-håndtrykk er mål om &lt; 1 s første last realistisk. Service worker cacher alt → offline etter første besøk.</analysis>
+    <results>Boks 66 × 92 × 24 mm innvendig bekreftet. Totalvekt ≈ 147 g. QR 18 mm ved versjon 2/nivå Q er trykksikker. Dekningsbidrag 72 % ved 100 eks og pris 249 kr. PWA under 100 kB, offline-kapabel.</results>
+    <verification>Alle harde krav verifisert: vekt 147 g &lt; 350 g (OK); dekningsbidrag 72 % &gt; 60 % (OK); null driftskost via statisk hosting (OK); produkt fungerer uten nett – appen er tillegg (OK); tekst 14 pt ≈ x-høyde 2,4 mm ≥ 2,2 mm-kravet (OK). Slitasjekravet (200 økter) kan ikke regnes teoretisk og verifiseres empirisk i fase 5 (riffle-test). Kostantagelsen er den mest usikre og re-verifiseres mot faktisk tilbud før opplagsbestilling.</verification>
+  </calculations>
+
+  <!-- ============================================================
+       FASE 5: PROTOTYPEPLANLEGGING
+       ============================================================ -->
+  <prototype_plan>
+    <step order="1">Skriv alle 70 korttekster (60 fysiske + 10 digitale bonus) i én strukturert JSON-fil i repoet – én kilde for både trykk og PWA.</step>
+    <step order="2">Sett opp kortdesign-mal i Inkscape (63,5 × 88,9 mm + 3 mm bleed) og generer alle kortflater automatisk fra JSON (skript i repoet).</step>
+    <step order="3">Papirprototype: monter kortene 9-per-A4 med skjæremerker, print på 200 gsm, kutt med kniv og linjal. Lag 1 komplett sett (uke 1).</step>
+    <step order="4">Spilltest med 3 grupper: mål tid-til-første-latter, antall kort brukt per økt, og hvilke kort som «dør» (legges bort uleste). Revider tekstene (uke 2).</step>
+    <step order="5">Bygg og publiser companion-PWA på GitHub Pages; generer QR (nivå Q) mot endelig URL; test skanning fra papirprototypen.</step>
+    <step order="6">Bestill 1 prøveeksemplar fra print-on-demand med endelige filer (uke 3–4, levering uke 5–6).</step>
+    <step order="7">Valider prøveeksemplaret mot sjekklisten i fase 6; ved godkjenning bestilles 100 eks; ved avvik itereres filene og ny prøve bestilles.</step>
+    <materials>200 gsm matt kartong A4 (20 ark), blekk/toner, 350 gsm-prøveeksemplar fra leverandør, tuck-boks-prøve, tapetkniv-blader.</materials>
+    <tools>Skriver (A4), skjærekniv + stållinjal + skjærematte, hjørneavrunder (3,5 mm) valgfritt, Inkscape, qrencode, teksteditor/Git, mobiltelefoner (iOS + Android) for QR- og PWA-test.</tools>
+    <testing_method>1) Spilltest: 3 økter à 30 min, strukturert observasjonsskjema + 5-punkts skår per kort; kort under snitt 2,5 skrives om eller kuttes. 2) Slitasjetest: riffle-shuffle prøveeksemplaret 200 ganger og gni QR-kortet 100 ganger mot bordplate; QR skal fortsatt skanne og tekst være lesbar. 3) QR-test: skanning med 4 telefoner (gammel/ny × iOS/Android) under svakt lys (~100 lux) og fra 25 cm. 4) PWA-test: Lighthouse-kjøring med krav ytelse ≥ 90 og full offline-funksjon i flymodus. 5) Passformtest: kortstokk skal gli ut av boksen ved 45° vinkel, men ikke falle ut ved 90° vertikal risting.</testing_method>
+  </prototype_plan>
+
+  <!-- ============================================================
+       FASE 6: KVALITETSSIKRING
+       ============================================================ -->
+  <quality_checks>
+    <risk id="1">QR-koden blir uskannbar etter trykk (for lav kontrast på matt laminat, eller moduler under 0,4 mm ved leverandørens rasterisering).</risk>
+    <mitigation id="1">QR trykkes i 100 % sort på hvit bunn (aldri på kategorifarge), nivå Q-feilkorreksjon, og kort URL trykkes i klartekst under koden som fallback. Skannbarhet er eksplisitt godkjenningskriterium for prøveeksemplaret.</mitigation>
+    <risk id="2">Fargeavvik CMYK: kategorifargene (spesielt turkis og korall) ser riktige ut på skjerm (RGB) men blir grumsete i trykk.</risk>
+    <mitigation id="2">Definer alle kategorifarger direkte i CMYK-verdier i malen, hold total fargedekning under 240 %, og vurder fargene på fysisk prøveeksemplar i dagslys før opplag.</mitigation>
+    <risk id="3">Boksen passer ikke: leverandørens faktiske korttykkelse avviker fra 0,35 mm-antagelsen, slik at stokken sitter fast eller rasler.</risk>
+    <mitigation id="3">Be leverandøren om kalibrert tykkelse før boksfil låses; boksdybden har allerede 10 % klaring, og passformtesten (45°/90°-testen) kjøres på prøveeksemplaret.</mitigation>
+    <risk id="4">Innholdsrisiko: kort som skal være «vilt» oppleves flaue eller ekskluderende i feil kontekst (jobb-workshop vs. vorspiel).</risk>
+    <mitigation id="4">Spilltest i begge kontekster; kategoriene gjør at fasilitator kan fjerne «Vilt kort»-bunken; regelkortet anbefaler eksplisitt kategorivalg per setting.</mitigation>
+    <risk id="5">Kostnadsantagelsen sprekker (valuta, toll, frakt) og dekningsbidraget faller under 60 %-kravet.</risk>
+    <mitigation id="5">Innhent bindende tilbud fra to leverandører før opplag; smertegrense definert på forhånd: variabel kost over 100 kr utløser prisjustering til 299 kr eller bytte av leverandør.</mitigation>
+    <risk id="6">PWA-en råtner: lenker/hosting endres etter at QR er trykket på fysiske kort.</risk>
+    <mitigation id="6">QR peker til eget domene/kort sti (ikke direkte til github.io) slik at hosting kan flyttes uten å ugyldiggjøre trykte koder; URL-en behandles som uforanderlig kontrakt.</mitigation>
+    <improvement>Versjon 2: tematiske utvidelsespakker (idé 5) gjenbruker samme mal, JSON-pipeline og boksdesign – kun innhold og kategorifarge endres.</improvement>
+    <improvement>Automatiser kortgenerering fullt (JSON → trykkeklar PDF via skript) slik at tekstrettelser etter spilltest ikke krever manuelt malarbeid.</improvement>
+    <improvement>Legg inn anonym, frivillig tilbakemeldingsknapp i PWA-en («beste/verste kort») for å datadrive neste innholdsrevisjon uten backend (mailto- eller skjemalenke).</improvement>
+    <checklist name="Sjekkliste før prototypebygging">
+      <item>Alle 70 korttekster korrekturlest av én ekstern person (språk/tone).</item>
+      <item>Kortmal verifisert: bleed 3 mm, sikkerhetsmargin 3 mm, hjørneradius 3,5 mm, tekst ≥ 12 pt.</item>
+      <item>Kategorifarger definert i CMYK og total fargedekning ≤ 240 %.</item>
+      <item>QR generert med nivå Q, testskannet fra skjerm og fra papirutskrift.</item>
+      <item>PWA publisert, Lighthouse ≥ 90, offline-test i flymodus bestått.</item>
+      <item>Boksfil bruker leverandørens oppgitte kalibrerte korttykkelse.</item>
+      <item>Alle designfiler og JSON committet til repoet med tagget versjon før bestilling.</item>
+      <item>Bindende pristilbud dokumentert og dekningsbidrag ≥ 60 % bekreftet.</item>
+    </checklist>
+  </quality_checks>
+
+</project>
