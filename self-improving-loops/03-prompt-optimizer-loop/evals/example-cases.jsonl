@@ -1,0 +1,5 @@
+{"input": "Kunde klager på sen levering, tredje gang denne måneden", "must_include": ["beklager", "konkret tiltak"], "must_avoid": ["dessverre er det slik at", "vår policy"], "weight": 2}
+{"input": "Kunde spør om rabatt på årsabonnement", "must_include": ["årsrabatt"], "must_avoid": ["kan ikke", "umulig"], "weight": 1}
+{"input": "Kunde vil si opp, oppgir pris som grunn", "must_include": ["forstår", "alternativ"], "must_avoid": ["skjema", "oppsigelsestid på"], "weight": 3}
+{"input": "Positiv tilbakemelding fra fornøyd kunde", "must_include": ["takk"], "must_avoid": ["men", "forresten"], "weight": 1}
+{"input": "Teknisk feilrapport: appen krasjer ved oppstart på Android", "must_include": ["versjon", "feilsøk"], "must_avoid": ["prøv å restarte"], "weight": 2}
