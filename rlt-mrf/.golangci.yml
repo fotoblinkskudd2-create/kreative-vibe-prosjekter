@@ -1,0 +1,10 @@
+version: "2"
+
+linters:
+  settings:
+    errcheck:
+      # Writes to http.ResponseWriter / in-memory buffers: the error is not
+      # actionable and Prometheus exposition would be unreadable with checks.
+      exclude-functions:
+        - fmt.Fprintf
+        - fmt.Fprintln

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["rlt-mrf/**", ".github/workflows/ci.yml"]
+  pull_request:
+    paths: ["rlt-mrf/**", ".github/workflows/ci.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rlt-mrf
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: rlt-mrf/go.mod
+          cache-dependency-path: rlt-mrf/go.mod
+      - name: Vet
+        run: go vet ./...
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          working-directory: rlt-mrf
+      - name: Test (race detector)
+        run: go test -race -count=1 -timeout 5m ./...
+      - name: Build
+        run: go build ./...
+      - name: Build container image
+        run: docker build -t pulseloop:ci .

@@ -1,0 +1,4 @@
+/pulseloop
+*.test
+*.out
+*.prof
