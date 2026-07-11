@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe-kort</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-elev: #12151d;
+    --bg-card: #161a24;
+    --text: #eef1f7;
+    --text-dim: #9aa3b5;
+    --text-faint: #5b6373;
+    --border: rgba(255, 255, 255, 0.08);
+    --radius: 18px;
+    /* aksentfarge settes per stokk via data-attributt */
+    --accent: #8b5cf6;
+    --accent-soft: rgba(139, 92, 246, 0.18);
+    --accent-glow: rgba(139, 92, 246, 0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Bakgrunnsglød som følger valgt stokk */
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--accent-glow), transparent 65%),
+      radial-gradient(ellipse 60% 40% at 85% 110%, var(--accent-soft), transparent 70%);
+    transition: opacity 0.6s ease;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 1.25rem 1.25rem 4rem;
+  }
+
+  /* ---------- Topplinje ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0 1.5rem;
+  }
+
+  .logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(120deg, var(--text) 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    background-color: transparent;
+    font-family: inherit;
+  }
+
+  .nav-btn {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, transform 0.1s;
+  }
+  .nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .nav-btn:active { transform: scale(0.97); }
+  .nav-btn.aktiv { color: var(--text); border-color: var(--accent); }
+
+  /* ---------- Stokkevelger ---------- */
+  .intro {
+    margin-bottom: 1.5rem;
+  }
+  .intro h1 {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.35rem;
+  }
+  .intro p { color: var(--text-dim); font-size: 1rem; max-width: 46ch; }
+
+  .stokk-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  @media (min-width: 560px) {
+    .stokk-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .stokk-kort {
+    position: relative;
+    text-align: left;
+    font-family: inherit;
+    color: var(--text);
+    background: linear-gradient(160deg, var(--bg-card), var(--bg-elev));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.3rem 1.2rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.18s ease, border-color 0.2s, box-shadow 0.25s;
+  }
+  .stokk-kort::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 120% 90% at 15% -20%, var(--k-glow), transparent 60%);
+    opacity: 0.55;
+    transition: opacity 0.25s;
+  }
+  .stokk-kort:hover, .stokk-kort:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--k-farge);
+    box-shadow: 0 12px 40px -12px var(--k-glow);
+  }
+  .stokk-kort:hover::before { opacity: 0.9; }
+  .stokk-kort > * { position: relative; }
+
+  .stokk-emoji { font-size: 1.8rem; display: block; margin-bottom: 0.6rem; }
+  .stokk-navn { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+  .stokk-beskrivelse { font-size: 0.88rem; color: var(--text-dim); margin-top: 0.25rem; }
+  .stokk-antall {
+    display: inline-block;
+    margin-top: 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--k-farge);
+    background: var(--k-glow);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  /* ---------- Kortvisning ---------- */
+  .kort-topp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .tilbake-btn {
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4rem 0.2rem;
+    transition: color 0.2s;
+  }
+  .tilbake-btn:hover { color: var(--text); }
+
+  .stokk-tittel {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .teller {
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-faint);
+  }
+
+  /* Selve kortet med flip */
+  .kort-scene {
+    perspective: 1400px;
+    margin: 0 auto;
+    max-width: 460px;
+  }
+  .kort {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0.1, 0.2, 1);
+  }
+  .kort.snudd { transform: rotateY(180deg); }
+
+  .kort-flate {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 22px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.75rem;
+    text-align: center;
+  }
+
+  /* Baksiden (mønster, vises først) */
+  .kort-bak {
+    background:
+      radial-gradient(ellipse 100% 100% at 50% 0%, var(--accent-soft), transparent 70%),
+      repeating-linear-gradient(45deg, transparent 0 14px, rgba(255,255,255,0.025) 14px 28px),
+      linear-gradient(160deg, var(--bg-card), var(--bg-elev));
+    box-shadow: 0 20px 60px -20px var(--accent-glow);
+  }
+  .kort-bak .symbol {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 18px var(--accent-glow));
+  }
+  .kort-bak .hint {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* Forsiden (teksten) */
+  .kort-fram {
+    transform: rotateY(180deg);
+    background:
+      radial-gradient(ellipse 120% 80% at 50% -20%, var(--accent-soft), transparent 65%),
+      linear-gradient(165deg, var(--bg-card), var(--bg-elev));
+    box-shadow: 0 20px 60px -20px var(--accent-glow);
+  }
+  .kort-tekst {
+    font-size: clamp(1.15rem, 3.5vw, 1.4rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.45;
+    text-wrap: balance;
+  }
+  .kort-fram::after {
+    content: "";
+    position: absolute;
+    bottom: 1.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 42px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+
+  /* ---------- Handlingsknapper ---------- */
+  .handlinger {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+    flex-wrap: wrap;
+  }
+
+  .knapp {
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 0.8rem 1.4rem;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+    background: var(--bg-elev);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .knapp:active { transform: scale(0.96); }
+  .knapp:disabled { opacity: 0.5; cursor: default; }
+
+  .knapp-primar {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2, var(--accent)));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 8px 28px -8px var(--accent-glow);
+  }
+  .knapp-primar:hover { box-shadow: 0 10px 34px -6px var(--accent-glow); }
+
+  .knapp-ikon {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 14px;
+    font-size: 1.2rem;
+  }
+  .knapp-ikon.hjertet { border-color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
+
+  .snarvei-hint {
+    text-align: center;
+    margin-top: 1.1rem;
+    font-size: 0.8rem;
+    color: var(--text-faint);
+  }
+  .snarvei-hint kbd {
+    font-family: inherit;
+    font-size: 0.75rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 0.1rem 0.5rem;
+  }
+  @media (hover: none) { .snarvei-hint { display: none; } }
+
+  /* ---------- Favoritter ---------- */
+  .fav-liste { display: flex; flex-direction: column; gap: 0.8rem; }
+
+  .fav-kort {
+    background: linear-gradient(160deg, var(--bg-card), var(--bg-elev));
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--f-farge, var(--accent));
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+  }
+  .fav-kort .fav-stokk {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--f-farge, var(--accent));
+    margin-bottom: 0.35rem;
+  }
+  .fav-kort .fav-tekst { font-size: 0.98rem; font-weight: 500; }
+  .fav-handlinger { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+  .fav-handlinger button {
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .fav-handlinger button:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+
+  .tom-tilstand {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: var(--text-dim);
+  }
+  .tom-tilstand .tom-ikon { font-size: 2.6rem; display: block; margin-bottom: 0.8rem; opacity: 0.7; }
+  .tom-tilstand p { max-width: 34ch; margin: 0 auto; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    transform: translate(-50%, 20px);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.7rem 1.3rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 10;
+  }
+  .toast.vis { opacity: 1; transform: translate(-50%, 0); }
+
+  [hidden] { display: none !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kort, .stokk-kort, .knapp { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<div class="app">
+  <header>
+    <button class="logo" id="logoBtn" title="Til forsiden">🃏 Vibe-kort</button>
+    <button class="nav-btn" id="favNavBtn">♥ Favoritter <span id="favTeller"></span></button>
+  </header>
+
+  <!-- Visning: velg stokk -->
+  <section id="visningStokker">
+    <div class="intro">
+      <h1>Trekk et kort. Få en gnist.</h1>
+      <p>Fire kortstokker med kreative prompts og stemninger. Velg en stokk og la tilfeldigheten bestemme.</p>
+    </div>
+    <div class="stokk-grid" id="stokkGrid"></div>
+  </section>
+
+  <!-- Visning: trekk kort -->
+  <section id="visningKort" hidden>
+    <div class="kort-topp">
+      <button class="tilbake-btn" id="tilbakeBtn">← Stokker</button>
+      <span class="stokk-tittel" id="stokkTittel"></span>
+      <span class="teller" id="teller"></span>
+    </div>
+
+    <div class="kort-scene">
+      <div class="kort" id="kortet">
+        <div class="kort-flate kort-bak">
+          <span class="symbol" id="stokkSymbol">✦</span>
+          <span class="hint">Trykk «Trekk kort» for å begynne</span>
+        </div>
+        <div class="kort-flate kort-fram">
+          <p class="kort-tekst" id="kortTekst"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="handlinger">
+      <button class="knapp knapp-ikon" id="favBtn" title="Lagre som favoritt" aria-label="Lagre som favoritt" disabled>♡</button>
+      <button class="knapp knapp-primar" id="trekkBtn">Trekk kort</button>
+      <button class="knapp knapp-ikon" id="kopierBtn" title="Kopier kortet" aria-label="Kopier kortet" disabled>⧉</button>
+    </div>
+    <p class="snarvei-hint">Tips: <kbd>mellomrom</kbd> trekker et nytt kort</p>
+  </section>
+
+  <!-- Visning: favoritter -->
+  <section id="visningFavoritter" hidden>
+    <div class="kort-topp">
+      <button class="tilbake-btn" id="favTilbakeBtn">← Tilbake</button>
+      <span class="stokk-tittel">Favoritter</span>
+      <span class="teller" id="favAntall"></span>
+    </div>
+    <div class="fav-liste" id="favListe"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   Data: fire kortstokker
+   ============================================================ */
+const STOKKER = [
+  {
+    id: "gnist",
+    navn: "Kreativ gnist",
+    emoji: "✨",
+    symbol: "✦",
+    beskrivelse: "Kreative utfordringer du kan gjøre i dag — tegn, skriv, bygg, se annerledes.",
+    farge: "#f59e0b",
+    farge2: "#f97316",
+    kort: [
+      "Tegn barndomshjemmet ditt etter hukommelsen — men bare med geometriske former.",
+      "Skriv en nekrolog over en vane du nettopp har lagt bak deg. Vær høytidelig.",
+      "Fotografer noe stygt til det ser vakkert ut. Du får ikke lov til å flytte på det.",
+      "Lag en bruksanvisning, steg for steg, for å savne noen.",
+      "Design et flagg for kjøkkenskuffen med alt rotet. Forklar symbolikken.",
+      "Skriv historien om dagen din i dag — fortalt av skoene dine.",
+      "Lag et kart over et sted som bare finnes i drømmene dine. Med tegnforklaring.",
+      "Gi nye navn til fem farger i rommet du sitter i, som om du solgte maling til overpris.",
+      "Skriv et klagebrev fra månen til lysforurensningen. Månen er passiv-aggressiv.",
+      "Komponer en oppskrift på følelsen «søndag kveld». Ingredienser og fremgangsmåte.",
+      "Lag et museum av tre gjenstander fra lomma eller veska di. Skriv utstillingsskiltene.",
+      "Tegn lyden av regn — uten å tegne regn, dråper eller skyer.",
+      "Skriv den første setningen i sju forskjellige romaner du aldri kommer til å skrive.",
+      "Lag en reklameplakat for å gå seg bort med vilje.",
+      "Beskriv favorittsangen din som om den var en rett på en meny.",
+      "Skriv et postkort fra deg selv om ti år. Vær konkret om én ting som gikk bra.",
+      "Lag verdens minste kunstverk. Deretter: en altfor pompøs utstillingsplakat for det.",
+      "Lag et alfabet der hver bokstav er en ting du kan se akkurat nå.",
+      "Skriv dialogen mellom to paraplyer som venter i et stativ. Den ene er nervøs.",
+      "Ta bilde av nøyaktig samme sted tre ganger i dag. Finn historien mellom bildene.",
+      "Skriv en pakkeliste for en reise inn i din egen fantasi. Hva er strengt nødvendig?",
+      "Skriv en takketale for en pris du aldri kommer til å vinne — og mén hvert ord.",
+      "Omskriv den kjedeligste e-posten du har fått i det siste som et episk dikt.",
+      "Bygg noe på ti minutter av det som ligger nærmest deg. Gi det en tittel og et årstall.",
+      "Beskriv rommet du sitter i for en som aldri har kunnet se. Farger er forbudt.",
+      "Design logoen til firmaet du ville startet hvis penger ikke fantes."
+    ]
+  },
+  {
+    id: "samtale",
+    navn: "Samtalestartere",
+    emoji: "💬",
+    symbol: "❋",
+    beskrivelse: "Spørsmål som åpner ekte samtaler — noen dype, noen lure, alle uventede.",
+    farge: "#38bdf8",
+    farge2: "#6366f1",
+    kort: [
+      "Hva er det rareste rådet du faktisk har fulgt — og funket det?",
+      "Hvilken helt vanlig ting nekter du å gjøre, og hvorfor?",
+      "Hva har du sluttet å bekymre deg for — og hvordan skjedde det?",
+      "Hvilken lukt sender deg rett tilbake i tid, og hvor havner du da?",
+      "Hva ville tolvåringen i deg vært mest sjokkert over ved livet ditt nå?",
+      "Hvilken bitteliten uenighet er du villig til å ta med deg i graven?",
+      "Hva er det fineste noen har sagt til deg som de garantert ikke husker selv?",
+      "Hvis du måtte undervise i noe i ett år — hva hadde faget hett?",
+      "Hva overvurderer folk flest? Og hva undervurderer de?",
+      "Hvilken regel har du laget for deg selv som ingen andre vet om?",
+      "Hva gråt du sist av — film, sang eller ekte liv?",
+      "Du får svar på ett spørsmål om din egen fremtid. Hva ville du IKKE spurt om?",
+      "Hva er den beste dårlige avgjørelsen du noen gang har tatt?",
+      "Hvem tenker du på oftere enn de aner?",
+      "Hva står øverst på «aldri mer»-lista di?",
+      "Hvilken kompliment vet du aldri helt hvordan du skal ta imot?",
+      "Du får en helt fri onsdag som ingen vet om. Hva gjør du — helt ærlig?",
+      "Hva later du som du forstår, men egentlig ikke gjør?",
+      "Hvilket måltid i livet ditt husker du best — og handlet det egentlig om maten?",
+      "Hva slags gammel person gleder du deg til å bli?",
+      "Hva har du endret mening om det siste året?",
+      "Hva er det mest nyttige du har lært av en fremmed?",
+      "Når følte du deg sist helt til stede? Hva gjorde du da?",
+      "Hvilken sang skulle du ønske du kunne høre for aller første gang igjen?",
+      "Hva i hverdagen din ville sett ut som magi for en person fra 1926?",
+      "Hvilken egenskap hos deg selv oppdaget du altfor sent?"
+    ]
+  },
+  {
+    id: "musikk",
+    navn: "Musikk-vibe",
+    emoji: "🎧",
+    symbol: "♪",
+    beskrivelse: "Låtidéer og stemninger for musikkproduksjon — konkrete nok til å starte i kveld.",
+    farge: "#c084fc",
+    farge2: "#f472b6",
+    kort: [
+      "Lag en beat som høres ut som en heis som aldri kommer fram. 72 BPM, klaustrofobisk loop som løser seg opp i siste runde.",
+      "Nattbuss hjem i regnet: dempet piano, sidechainet pad, og vindusviskere som hi-hat.",
+      "En låt i 6/8 som føles som å vugge en båt. Ingen trommer før 1:30.",
+      "Sampl én hverdagslyd fra kjøkkenet ditt og bygg hele grooven rundt den.",
+      "Skriv et refreng med bare tre ord. Resten må sies med melodien.",
+      "90-talls R&B-akkorder — men teksten handler om å miste wifi på hytta.",
+      "Lag introen til en dokumentar om ditt eget liv. 45 sekunder, nøyaktig ett crescendo.",
+      "Lag en basslinje som høres flau ut. Ikke spør — bare prøv.",
+      "Solnedgang på en parkeringsplass: skimrende gitar, tape-wobble og litt for mye klang. Med vilje.",
+      "Lag en låt som starter på refrenget — og aldri kommer tilbake dit.",
+      "Samme melodi to ganger: først i ren dur, så med lånte akkorder til det nesten gjør vondt.",
+      "En dansbar låt om å ikke ville danse. 112 BPM, motvillig groove.",
+      "Bruk stemmen din som alle instrumentene. Maks fire spor.",
+      "Vinterlys klokka 14: langsomme strykere eller pads, og én tone som aldri slipper taket.",
+      "Lag en åtte-takters loop som er helt perfekt. Ødelegg deretter takt sju.",
+      "Skriv en voggesang for voksne som ikke får sove fordi de tenker på e-poster.",
+      "Ta den kjedeligste akkordprogresjonen du vet om, og gjør den spennende med bare rytme.",
+      "Lag en låt der bridgen er hele poenget. Alt annet er bare oppbygging.",
+      "Telefonsvarer fra 2004: lo-fi, knitring, og en melodi som høres halvglemt ut.",
+      "Lag en beat utelukkende av lyder som varer under 0,2 sekunder.",
+      "En duett mellom to instrumenter som aldri spiller samtidig.",
+      "Første dag med vårsol: åpne kvintakkorder, akustisk driv, og håndklapp spilt inn i en trappeoppgang.",
+      "Lag heismusikken til et hjemsøkt hotell. Vakker — men noe stemmer ikke.",
+      "En låt som sakker fra 128 til 80 BPM uten at lytteren merker overgangen.",
+      "Skriv en tekst der hver eneste linje begynner med samme ord — og gjør det til en styrke.",
+      "Lag lydsporet til å åpne et vindu etter tre dager innendørs."
+    ]
+  },
+  {
+    id: "satire",
+    navn: "Satire-frø",
+    emoji: "🌱",
+    symbol: "☄",
+    beskrivelse: "Humoristiske premisser å bygge videre på — sketsjer, tekster eller bare god latter.",
+    farge: "#4ade80",
+    farge2: "#a3e635",
+    kort: [
+      "En influenser prøver å «avslutte samarbeidet» med sin egen samvittighet. Samvittigheten krever sluttpakke.",
+      "Kommunen innfører køsystem for å se på solnedgangen. Nabokommunen svarer med gratis skumring.",
+      "Verdens første stille-podkast topper listene. Episode 34: enda mer stillhet, men nå med gjest.",
+      "En startup «disrupter» det å gå tur. Serie A-runden er i boks. Ingen vet hva appen gjør.",
+      "Nytt lovforslag: alle e-poster som starter med «Håper alt står bra til!» må faktisk mene det.",
+      "En far går i «kjernevirksomhetsmodus» hjemme og outsourcer klemming til nabolaget.",
+      "Regjeringen lanserer «Vent litt»-appen som eneste tiltak mot absolutt alt.",
+      "LinkedIn innfører «ærlig modus» i én time. Børsen stenger etter tolv minutter.",
+      "Værmelderen begynner å melde følelser i stedet for vær. Treffsikkerheten øker dramatisk.",
+      "Et borettslag går til full juridisk krig om hvem som eier lyden av gressklipperen.",
+      "En KI-assistent blir utbrent og begynner å svare «mhm» på alt. Brukerne foretrekker den nye versjonen.",
+      "Butikkjede lanserer «kortere søndagsåpent» som eksklusivt premium-medlemskap.",
+      "Norges første profesjonelle kø-ståer får agentbyrå og sponsoravtale med en termokopp-produsent.",
+      "Foreldremøtet innfører taletid på to minutter. Én far anker til Høyesterett.",
+      "Treningssenter tilbyr «bare dusje»-medlemskap. Blir landets mest lønnsomme kjede.",
+      "Kaffebar innfører prising etter hvor mye du snakker med baristaen. Introverte drikker gratis.",
+      "Ny realityserie: «Skatteetaten tar kontakt». Sesong to er utelukkende hyggelige overraskelser.",
+      "Møtet som kunne vært en e-post får eget verneombud og krav på pauserom.",
+      "En mann melder seg selv til Forbrukerrådet etter å ha lovet seg selv å begynne å trene «på mandag» 214 ganger.",
+      "Flyselskap innfører gebyr for følelsesmessig bagasje. Vekten måles ved gaten.",
+      "Landets siste faksmaskin markedsføres som «retro-teknologi» og selges til overpris på Finn.",
+      "Yogainstruktør avslørt: har aldri funnet indre ro — bare veldig god belysning.",
+      "Kommunestyremøtet avlyses fordi ingen ville trykke «Godta alle informasjonskapsler».",
+      "En vennegjeng oppretter styre, vedtekter og generalforsamling for å bestemme hvor de skal spise. Sak 1 utsettes.",
+      "Ny app matcher deg med folk som misliker nøyaktig de samme tingene. Forlovelsesraten eksploderer.",
+      "Selvhjelpsforfatter gir ut boka «Slutt å kjøpe selvhjelpsbøker». Kjøperne merker ingen forskjell."
+    ]
+  }
+];
+
+/* ============================================================
+   Tilstand
+   ============================================================ */
+const LAGRINGSNOKKEL = "vibekort_favoritter_v1";
+
+let aktivStokk = null;      // stokk-objekt
+let bunke = [];             // gjenværende indekser i denne runden (stokket)
+let trukketIRunden = 0;     // hvor mange kort som er vist i denne runden
+let gjeldendeKort = null;   // teksten på kortet som vises nå
+let animerer = false;       // lås under flip-animasjon
+let forrigeVisning = "stokker"; // hvor favoritter ble åpnet fra
+
+/* ============================================================
+   DOM-referanser
+   ============================================================ */
+const el = (id) => document.getElementById(id);
+const visningStokker = el("visningStokker");
+const visningKort = el("visningKort");
+const visningFavoritter = el("visningFavoritter");
+const kortet = el("kortet");
+const kortTekst = el("kortTekst");
+const teller = el("teller");
+const trekkBtn = el("trekkBtn");
+const favBtn = el("favBtn");
+const kopierBtn = el("kopierBtn");
+const toast = el("toast");
+
+/* ============================================================
+   Hjelpefunksjoner
+   ============================================================ */
+
+// Fisher–Yates-stokking
+function stokk(liste) {
+  const a = liste.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function nyRunde(unngaaTekst) {
+  bunke = stokk(aktivStokk.kort.map((_, i) => i));
+  trukketIRunden = 0;
+  // Unngå at første kort i ny runde er identisk med det siste som ble vist
+  if (unngaaTekst && aktivStokk.kort.length > 1) {
+    const sisteIdx = bunke.length - 1; // vi trekker fra slutten
+    if (aktivStokk.kort[bunke[sisteIdx]] === unngaaTekst) {
+      const bytt = Math.floor(Math.random() * sisteIdx);
+      [bunke[sisteIdx], bunke[bytt]] = [bunke[bytt], bunke[sisteIdx]];
+    }
+  }
+}
+
+let toastTimer = null;
+function visToast(melding) {
+  toast.textContent = melding;
+  toast.classList.add("vis");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("vis"), 1800);
+}
+
+function settAksent(stokkObj) {
+  const rot = document.documentElement.style;
+  if (stokkObj) {
+    rot.setProperty("--accent", stokkObj.farge);
+    rot.setProperty("--accent-2", stokkObj.farge2);
+    rot.setProperty("--accent-soft", hexTilRgba(stokkObj.farge, 0.16));
+    rot.setProperty("--accent-glow", hexTilRgba(stokkObj.farge, 0.35));
+  } else {
+    rot.removeProperty("--accent");
+    rot.removeProperty("--accent-2");
+    rot.removeProperty("--accent-soft");
+    rot.removeProperty("--accent-glow");
+  }
+}
+
+function hexTilRgba(hex, alfa) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alfa})`;
+}
+
+/* ============================================================
+   Favoritter (localStorage)
+   ============================================================ */
+function hentFavoritter() {
+  try {
+    const raa = localStorage.getItem(LAGRINGSNOKKEL);
+    const liste = raa ? JSON.parse(raa) : [];
+    return Array.isArray(liste) ? liste : [];
+  } catch (_) {
+    return [];
+  }
+}
+
+function lagreFavoritter(liste) {
+  try {
+    localStorage.setItem(LAGRINGSNOKKEL, JSON.stringify(liste));
+  } catch (_) {
+    visToast("Kunne ikke lagre — localStorage er utilgjengelig");
+  }
+}
+
+function erFavoritt(stokkId, tekst) {
+  return hentFavoritter().some((f) => f.stokk === stokkId && f.tekst === tekst);
+}
+
+function vekslFavoritt(stokkId, tekst) {
+  let liste = hentFavoritter();
+  const fantes = liste.some((f) => f.stokk === stokkId && f.tekst === tekst);
+  if (fantes) {
+    liste = liste.filter((f) => !(f.stokk === stokkId && f.tekst === tekst));
+  } else {
+    liste.push({ stokk: stokkId, tekst: tekst, lagt: Date.now() });
+  }
+  lagreFavoritter(liste);
+  oppdaterFavTeller();
+  return !fantes;
+}
+
+function oppdaterFavTeller() {
+  const antall = hentFavoritter().length;
+  el("favTeller").textContent = antall > 0 ? `(${antall})` : "";
+}
+
+/* ============================================================
+   Kopiering med fallback
+   ============================================================ */
+function kopierTekst(tekst) {
+  const fallback = () => {
+    const felt = document.createElement("textarea");
+    felt.value = tekst;
+    felt.setAttribute("readonly", "");
+    felt.style.position = "fixed";
+    felt.style.opacity = "0";
+    document.body.appendChild(felt);
+    felt.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (_) { ok = false; }
+    document.body.removeChild(felt);
+    visToast(ok ? "Kopiert!" : "Kopiering feilet — marker teksten manuelt");
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(tekst)
+      .then(() => visToast("Kopiert!"))
+      .catch(fallback);
+  } else {
+    fallback();
+  }
+}
+
+/* ============================================================
+   Visninger
+   ============================================================ */
+function visVisning(navn) {
+  visningStokker.hidden = navn !== "stokker";
+  visningKort.hidden = navn !== "kort";
+  visningFavoritter.hidden = navn !== "favoritter";
+  el("favNavBtn").classList.toggle("aktiv", navn === "favoritter");
+}
+
+function byggStokkGrid() {
+  const grid = el("stokkGrid");
+  grid.innerHTML = "";
+  for (const s of STOKKER) {
+    const knapp = document.createElement("button");
+    knapp.className = "stokk-kort";
+    knapp.style.setProperty("--k-farge", s.farge);
+    knapp.style.setProperty("--k-glow", hexTilRgba(s.farge, 0.22));
+    knapp.innerHTML =
+      `<span class="stokk-emoji">${s.emoji}</span>` +
+      `<span class="stokk-navn">${s.navn}</span>` +
+      `<p class="stokk-beskrivelse">${s.beskrivelse}</p>` +
+      `<span class="stokk-antall">${s.kort.length} kort</span>`;
+    knapp.addEventListener("click", () => aapneStokk(s));
+    grid.appendChild(knapp);
+  }
+}
+
+function aapneStokk(s) {
+  aktivStokk = s;
+  nyRunde(null);
+  gjeldendeKort = null;
+  settAksent(s);
+  el("stokkTittel").textContent = `${s.emoji} ${s.navn}`;
+  el("stokkSymbol").textContent = s.symbol;
+  kortet.classList.remove("snudd");
+  kortTekst.textContent = "";
+  favBtn.disabled = true;
+  kopierBtn.disabled = true;
+  favBtn.textContent = "♡";
+  favBtn.classList.remove("hjertet");
+  oppdaterTeller();
+  visVisning("kort");
+}
+
+function oppdaterTeller() {
+  const total = aktivStokk.kort.length;
+  teller.textContent = trukketIRunden === 0
+    ? `${total} kort i stokken`
+    : `Kort ${trukketIRunden} av ${total}`;
+}
+
+/* ============================================================
+   Trekk kort med flip-animasjon
+   ============================================================ */
+function trekkKort() {
+  if (!aktivStokk || animerer) return;
+  animerer = true;
+
+  // Tom bunke? Stokk på nytt (uten å gjenta forrige kort først).
+  if (bunke.length === 0) {
+    nyRunde(gjeldendeKort);
+    visToast("Stokken er tom — stokker på nytt");
+  }
+
+  const idx = bunke.pop();
+  const nyTekst = aktivStokk.kort[idx];
+  trukketIRunden++;
+
+  const visNytt = () => {
+    gjeldendeKort = nyTekst;
+    kortTekst.textContent = nyTekst;
+    oppdaterTeller();
+    oppdaterFavKnapp();
+    favBtn.disabled = false;
+    kopierBtn.disabled = false;
+    kortet.classList.add("snudd");
+    setTimeout(() => { animerer = false; }, 500);
+  };
+
+  if (kortet.classList.contains("snudd")) {
+    // Snu tilbake først, bytt tekst mens baksiden vises, snu fram igjen
+    kortet.classList.remove("snudd");
+    setTimeout(visNytt, 260);
+  } else {
+    visNytt();
+  }
+}
+
+function oppdaterFavKnapp() {
+  const fav = gjeldendeKort && erFavoritt(aktivStokk.id, gjeldendeKort);
+  favBtn.textContent = fav ? "♥" : "♡";
+  favBtn.classList.toggle("hjertet", !!fav);
+  favBtn.title = fav ? "Fjern fra favoritter" : "Lagre som favoritt";
+}
+
+/* ============================================================
+   Favoritt-visning
+   ============================================================ */
+function byggFavoritter() {
+  const liste = el("favListe");
+  const favoritter = hentFavoritter().slice().reverse(); // nyeste øverst
+  el("favAntall").textContent = favoritter.length === 1
+    ? "1 kort" : `${favoritter.length} kort`;
+  liste.innerHTML = "";
+
+  if (favoritter.length === 0) {
+    liste.innerHTML =
+      `<div class="tom-tilstand">` +
+      `<span class="tom-ikon">♡</span>` +
+      `<p>Ingen favoritter ennå. Trekk kort og trykk på hjertet for å samle de beste her.</p>` +
+      `</div>`;
+    return;
+  }
+
+  for (const f of favoritter) {
+    const stokkObj = STOKKER.find((s) => s.id === f.stokk);
+    const div = document.createElement("div");
+    div.className = "fav-kort";
+    if (stokkObj) div.style.setProperty("--f-farge", stokkObj.farge);
+
+    const merke = document.createElement("div");
+    merke.className = "fav-stokk";
+    merke.textContent = stokkObj ? `${stokkObj.emoji} ${stokkObj.navn}` : "Ukjent stokk";
+
+    const tekst = document.createElement("p");
+    tekst.className = "fav-tekst";
+    tekst.textContent = f.tekst;
+
+    const handlinger = document.createElement("div");
+    handlinger.className = "fav-handlinger";
+
+    const kopier = document.createElement("button");
+    kopier.textContent = "Kopier";
+    kopier.addEventListener("click", () => kopierTekst(f.tekst));
+
+    const fjern = document.createElement("button");
+    fjern.textContent = "Fjern";
+    fjern.addEventListener("click", () => {
+      vekslFavoritt(f.stokk, f.tekst);
+      byggFavoritter();
+      if (!visningKort.hidden) oppdaterFavKnapp();
+    });
+
+    handlinger.append(kopier, fjern);
+    div.append(merke, tekst, handlinger);
+    liste.appendChild(div);
+  }
+}
+
+/* ============================================================
+   Hendelser
+   ============================================================ */
+trekkBtn.addEventListener("click", trekkKort);
+
+favBtn.addEventListener("click", () => {
+  if (!gjeldendeKort) return;
+  const lagtTil = vekslFavoritt(aktivStokk.id, gjeldendeKort);
+  oppdaterFavKnapp();
+  visToast(lagtTil ? "Lagret som favoritt" : "Fjernet fra favoritter");
+});
+
+kopierBtn.addEventListener("click", () => {
+  if (gjeldendeKort) kopierTekst(gjeldendeKort);
+});
+
+el("tilbakeBtn").addEventListener("click", () => {
+  aktivStokk = null;
+  settAksent(null);
+  visVisning("stokker");
+});
+
+el("logoBtn").addEventListener("click", () => {
+  aktivStokk = null;
+  settAksent(null);
+  visVisning("stokker");
+});
+
+el("favNavBtn").addEventListener("click", () => {
+  forrigeVisning = !visningKort.hidden ? "kort" : "stokker";
+  byggFavoritter();
+  visVisning("favoritter");
+});
+
+el("favTilbakeBtn").addEventListener("click", () => {
+  if (forrigeVisning === "kort" && aktivStokk) {
+    oppdaterFavKnapp();
+    visVisning("kort");
+  } else {
+    visVisning("stokker");
+  }
+});
+
+// Mellomrom = trekk nytt kort (når kortvisningen er åpen)
+document.addEventListener("keydown", (e) => {
+  if (e.code !== "Space" || visningKort.hidden) return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  e.preventDefault(); // hindre at fokusert knapp «klikkes» eller siden scroller
+  trekkKort();
+});
+
+/* ============================================================
+   Oppstart
+   ============================================================ */
+byggStokkGrid();
+oppdaterFavTeller();
+visVisning("stokker");
+</script>
+</body>
+</html>
