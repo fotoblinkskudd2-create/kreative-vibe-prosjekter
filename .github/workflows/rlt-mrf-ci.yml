@@ -1,0 +1,38 @@
+name: rlt-mrf CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["rlt-mrf/**", ".github/workflows/rlt-mrf-ci.yml"]
+  pull_request:
+    paths: ["rlt-mrf/**", ".github/workflows/rlt-mrf-ci.yml"]
+
+defaults:
+  run:
+    working-directory: rlt-mrf
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+          cache-dependency-path: rlt-mrf/go.mod
+      - name: Vet
+        run: go vet ./...
+      - name: Test (race detector)
+        run: go test ./... -race -count=1 -timeout 300s
+      - name: Benchmark smoke
+        run: go test ./pkg/pulseloop/ -run xxx -bench BenchmarkRecursiveTree -benchtime 1s
+      - name: Build
+        run: go build ./...
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t rlt-mrf/pulsed:ci rlt-mrf

@@ -1,0 +1,109 @@
+# RLT-MRF PulseLoop core: 3 replicas spread across nodes/zones, with
+# probes wired to the daemon's /healthz and /readyz endpoints and metrics
+# scraped from /metrics. Selective redundancy: the stateless core is
+# replicated; state lives in the Data & State Layer (etcd/CockroachDB),
+# not in these pods.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsed
+  labels:
+    app.kubernetes.io/name: pulsed
+    app.kubernetes.io/part-of: rlt-mrf
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pulsed
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pulsed
+        app.kubernetes.io/part-of: rlt-mrf
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: /metrics
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: pulsed
+                topologyKey: kubernetes.io/hostname
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: pulsed
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: pulsed
+          image: ghcr.io/fotoblinkskudd2-create/rlt-mrf/pulsed:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PULSE_MIN_WORKERS
+              value: "4"
+            - name: PULSE_MAX_WORKERS
+              value: "64"
+            - name: PULSE_MAX_DEPTH
+              value: "8"
+            - name: PULSE_QUEUE_SIZE
+              value: "4096"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 1
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsed
+  labels:
+    app.kubernetes.io/name: pulsed
+    app.kubernetes.io/part-of: rlt-mrf
+spec:
+  selector:
+    app.kubernetes.io/name: pulsed
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+# Pod-level redundancy floor: never let a rollout or node drain take the
+# fabric below two live cores.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pulsed
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pulsed
