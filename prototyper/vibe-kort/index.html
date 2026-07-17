@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe-kort ✦ Trekk et kort, få en vibe</title>
+<style>
+  :root {
+    --bg: #0f0e17;
+    --card-bg: #fffffe;
+    --ink: #0f0e17;
+    --paper: #fffffe;
+    --skap: #ff8906;
+    --skriv: #e53170;
+    --spill: #7f5af0;
+    --tenk: #2cb67d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--paper);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(circle at 20% 30%, rgba(127,90,240,.15), transparent 40%),
+                      radial-gradient(circle at 80% 70%, rgba(255,137,6,.1), transparent 40%);
+  }
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    letter-spacing: .02em;
+    margin-bottom: .3rem;
+  }
+  h1 .star { color: var(--skap); }
+  .tagline {
+    opacity: .7;
+    font-style: italic;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+  .modes {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2.2rem;
+  }
+  .mode-btn {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: .55rem 1.3rem;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,.25);
+    background: transparent;
+    color: var(--paper);
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .mode-btn:hover { transform: translateY(-2px); }
+  .mode-btn.active[data-mode="skap"]  { background: var(--skap);  border-color: var(--skap);  color: var(--ink); }
+  .mode-btn.active[data-mode="skriv"] { background: var(--skriv); border-color: var(--skriv); }
+  .mode-btn.active[data-mode="spill"] { background: var(--spill); border-color: var(--spill); }
+  .mode-btn.active[data-mode="tenk"]  { background: var(--tenk);  border-color: var(--tenk);  color: var(--ink); }
+  .mode-btn.active[data-mode="alle"]  { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+
+  .card-scene {
+    perspective: 1200px;
+    width: min(340px, 90vw);
+    height: 460px;
+    cursor: pointer;
+    margin-bottom: 1.8rem;
+  }
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform .65s cubic-bezier(.4,.2,.2,1);
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 18px 50px rgba(0,0,0,.5);
+  }
+  .card-back {
+    background: repeating-linear-gradient(45deg, #1c1b29, #1c1b29 12px, #232134 12px, #232134 24px);
+    border: 3px solid rgba(255,255,255,.15);
+  }
+  .card-back .logo { font-size: 4rem; margin-bottom: 1rem; }
+  .card-back p { opacity: .65; font-style: italic; }
+  .card-front {
+    background: var(--card-bg);
+    color: var(--ink);
+    transform: rotateY(180deg);
+    border-top: 14px solid var(--accent, var(--spill));
+  }
+  .card-front .kategori {
+    font-size: .8rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--accent, var(--spill));
+    margin-bottom: 1.4rem;
+  }
+  .card-front .prompt {
+    font-size: 1.35rem;
+    line-height: 1.5;
+  }
+  .card-front .nummer {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.2rem;
+    font-size: .75rem;
+    opacity: .35;
+  }
+  .draw-btn {
+    font-family: inherit;
+    font-size: 1.15rem;
+    padding: .8rem 2.6rem;
+    border-radius: 999px;
+    border: none;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform .15s ease;
+    box-shadow: 0 6px 20px rgba(255,255,255,.15);
+  }
+  .draw-btn:hover { transform: scale(1.05); }
+  .draw-btn:active { transform: scale(.97); }
+  .counter { margin-top: 1.2rem; opacity: .5; font-size: .9rem; }
+  footer { margin-top: auto; padding-top: 2rem; opacity: .4; font-size: .8rem; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>Vibe-kort <span class="star">✦</span></h1>
+  <p class="tagline">Trekk et kort. Få en vibe. Lag noe.</p>
+
+  <div class="modes">
+    <button class="mode-btn active" data-mode="alle">Alle</button>
+    <button class="mode-btn" data-mode="skap">🎨 Skap</button>
+    <button class="mode-btn" data-mode="skriv">✍️ Skriv</button>
+    <button class="mode-btn" data-mode="spill">🎲 Spill</button>
+    <button class="mode-btn" data-mode="tenk">💭 Tenk</button>
+  </div>
+
+  <div class="card-scene" id="scene">
+    <div class="card" id="card">
+      <div class="card-face card-back">
+        <div class="logo">✦</div>
+        <p>Trykk for å trekke et kort</p>
+      </div>
+      <div class="card-face card-front" id="front">
+        <div class="kategori" id="kategori"></div>
+        <div class="prompt" id="prompt"></div>
+        <div class="nummer" id="nummer"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="draw-btn" id="draw">Trekk kort</button>
+  <p class="counter" id="counter"></p>
+
+  <footer>Vibe-kort · en kreativ vibe-prototype · null avhengigheter, bare gøy</footer>
+
+<script>
+const KORT = {
+  skap: [
+    "Lag noe med bare de tre nærmeste gjenstandene rundt deg akkurat nå.",
+    "Fotografer noe hverdagslig så nært at det blir uigjenkjennelig.",
+    "Tegn selvportrett med feil hånd. Heng det opp. Ingen unnskyldninger.",
+    "Lag en collage av ting du egentlig skulle kastet.",
+    "Bygg noe som bare skal vare i én time. Riv det etterpå.",
+    "Fang tre skygger på kamera før sola flytter seg.",
+    "Lag et instrument av noe på kjøkkenet. Spill én melodi.",
+    "Mal med kaffe, te eller noe annet du kan drikke.",
+    "Fotografer den samme tingen fra ti helt ulike vinkler.",
+    "Lag en miniatyrverden i en skuff, en boks eller et glass.",
+    "Design en plakat for din egen dag i dag — som om den var en film.",
+    "Lag noe vakkert av det som ligger øverst i søpla. Vask det først.",
+    "Fang farger: finn og fotografer sju røde ting på ti minutter.",
+    "Brett, riv eller klipp papir i tre minutter uten plan. Se hva det ble.",
+    "Lag et kunstverk som bare kan sees fra ett bestemt punkt i rommet."
+  ],
+  skriv: [
+    "Skriv en historie på nøyaktig seks ord. Ikke fem. Ikke sju.",
+    "Beskriv rommet du sitter i — som om du aldri har sett det før.",
+    "Skriv et brev til deg selv for ti år siden. Ett råd er nok.",
+    "Skriv en anmeldelse av din siste kaffekopp. Terningkast.",
+    "Dikt en samtale mellom to gjenstander i rommet ditt.",
+    "Skriv baksideteksten til boka om livet ditt så langt.",
+    "Beskriv en lyd du hører akkurat nå — uten å bruke navnet på den.",
+    "Skriv en unnskyldning til noe du har forsømt. Planten? Gitaren?",
+    "Finn opp et norsk ord for en følelse som mangler ord. Definer det.",
+    "Skriv ned den siste drømmen du husker — i presens, som om den skjer nå.",
+    "Lag en handleliste for en fiktiv person. Hvem er de? Hva skjer?",
+    "Skriv tre setninger som starter med 'Jeg har aldri fortalt noen at...' (Du må ikke vise dem til noen.)",
+    "Oversett favorittsangen din til byråkratisk norsk.",
+    "Skriv værmeldingen for humøret ditt i dag.",
+    "Fortell om barndomshjemmet ditt gjennom luktene."
+  ],
+  spill: [
+    "Snakk i rim de neste ti minuttene. Uansett hvem som hører på.",
+    "Gå en tur og ta til høyre hver gang du ser noe rødt.",
+    "Spis dagens neste måltid med feil bestikk.",
+    "Ring noen du er glad i og syng i stedet for å si hei.",
+    "Lag en hinderløype i stua. Ta tiden. Slå rekorden.",
+    "Snakk med aksent fra et annet sted til noen merker det.",
+    "Finn på en hemmelig håndhilsen og lær den bort til noen i dag.",
+    "Gi terningkast til de neste fem tingene som skjer deg.",
+    "Bytt om på to møbler og se hvor lang tid det tar før noen merker det.",
+    "Lag en dans på fire trinn til lyden av husets vaskemaskin/oppvaskmaskin.",
+    "Introduser deg selv for et kjæledyr (eller en plante) med fullt navn og tittel.",
+    "Gjennomfør neste samtale med bare spørsmål. Hvor lenge holder du?",
+    "Arranger tingene på bordet ditt som om det var et museum. Lag skilt.",
+    "Mim dagens gjøremål for noen — de skal gjette hva du skal.",
+    "Gå baklengs opp trappa. Vær seremoniell. Du er nå en annen person."
+  ],
+  tenk: [
+    "Hva ville du gjort i dag hvis ingen kunne se deg gjøre det?",
+    "Hvilken vane har du arvet — og fra hvem?",
+    "Hva er det kjedeligste med deg? Kan det være en superkraft?",
+    "Om huset ditt brant og alle var trygge: hvilken ting ville du savnet mest?",
+    "Hva ville tolv år gamle deg synes om dagen din i dag?",
+    "Hvilket kompliment har du aldri glemt? Hvorfor traff det?",
+    "Hva gjør du bare fordi alle andre gjør det?",
+    "Hvilken dør i livet lot du stå ulåst — som du aldri gikk tilbake til?",
+    "Hva er du ekspert på som ingen vet om?",
+    "Hvis dagene dine hadde lydspor: hva spilles på en tirsdag?",
+    "Hva ville du lært deg hvis du visste at ingen kom til å dømme resultatet?",
+    "Hvem skylder du en takk de aldri fikk?",
+    "Hva i livet ditt er ferdig — men du har ikke innrømmet det ennå?",
+    "Hvilken liten luksus tar du som en selvfølge?",
+    "Hva er det fineste stedet du kan gå til til fots herfra?"
+  ]
+};
+const NAVN = { skap: "🎨 Skap", skriv: "✍️ Skriv", spill: "🎲 Spill", tenk: "💭 Tenk" };
+const FARGER = { skap: "var(--skap)", skriv: "var(--skriv)", spill: "var(--spill)", tenk: "var(--tenk)" };
+
+let modus = "alle";
+let antall = parseInt(localStorage.getItem("vibekort-antall") || "0");
+let forrige = -1;
+const card = document.getElementById("card");
+const counter = document.getElementById("counter");
+
+function oppdaterTeller() {
+  counter.textContent = antall === 0 ? "" :
+    antall === 1 ? "Du har trukket 1 kort" : `Du har trukket ${antall} kort`;
+}
+oppdaterTeller();
+
+document.querySelectorAll(".mode-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    modus = btn.dataset.mode;
+  });
+});
+
+function trekk() {
+  const kategorier = modus === "alle" ? Object.keys(KORT) : [modus];
+  const kat = kategorier[Math.floor(Math.random() * kategorier.length)];
+  const bunke = KORT[kat];
+  let i;
+  do { i = Math.floor(Math.random() * bunke.length); } while (bunke.length > 1 && i === forrige);
+  forrige = i;
+
+  const vis = () => {
+    document.getElementById("kategori").textContent = NAVN[kat];
+    document.getElementById("prompt").textContent = bunke[i];
+    document.getElementById("nummer").textContent = `${kat.toUpperCase()} · ${i + 1}/${bunke.length}`;
+    document.getElementById("front").style.setProperty("--accent", FARGER[kat]);
+    card.classList.add("flipped");
+  };
+
+  if (card.classList.contains("flipped")) {
+    card.classList.remove("flipped");
+    setTimeout(vis, 350);
+  } else {
+    vis();
+  }
+  antall++;
+  localStorage.setItem("vibekort-antall", antall);
+  oppdaterTeller();
+}
+
+document.getElementById("draw").addEventListener("click", trekk);
+document.getElementById("scene").addEventListener("click", trekk);
+document.addEventListener("keydown", e => { if (e.code === "Space") { e.preventDefault(); trekk(); } });
+</script>
+</body>
+</html>

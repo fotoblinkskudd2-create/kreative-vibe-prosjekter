@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blinkskudd 📸 Dagens fotoutfordring</title>
+<style>
+  :root {
+    --bg: #101418;
+    --panel: #1a2129;
+    --gold: #f2b134;
+    --teal: #4ecdc4;
+    --paper: #f7f5f0;
+    --dim: #8a94a0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--paper);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+  .viewfinder {
+    width: min(560px, 94vw);
+    border: 2px solid rgba(255,255,255,.12);
+    border-radius: 14px;
+    background: var(--panel);
+    padding: 2rem;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .viewfinder::before, .viewfinder::after,
+  .corner-b::before, .corner-b::after {
+    content: "";
+    position: absolute;
+    width: 26px; height: 26px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .viewfinder::before { top: 10px; left: 10px; border-width: 3px 0 0 3px; }
+  .viewfinder::after  { top: 10px; right: 10px; border-width: 3px 3px 0 0; }
+  .corner-b::before   { bottom: 10px; left: 10px; border-width: 0 0 3px 3px; }
+  .corner-b::after    { bottom: 10px; right: 10px; border-width: 0 3px 3px 0; }
+  h1 {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  h1 span { color: var(--gold); }
+  .dato {
+    text-align: center;
+    color: var(--dim);
+    font-size: .85rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin: .4rem 0 1.8rem;
+  }
+  .tema-label {
+    font-size: .75rem;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--teal);
+    text-align: center;
+  }
+  .tema {
+    font-size: clamp(1.7rem, 6vw, 2.6rem);
+    text-align: center;
+    font-weight: 700;
+    margin: .4rem 0 1.6rem;
+  }
+  .regler { list-style: none; display: grid; gap: .7rem; margin-bottom: 1.8rem; }
+  .regler li {
+    background: rgba(255,255,255,.05);
+    border-left: 3px solid var(--gold);
+    padding: .75rem 1rem;
+    border-radius: 0 8px 8px 0;
+    font-size: .98rem;
+    line-height: 1.45;
+  }
+  .regler li b { color: var(--gold); font-weight: 600; margin-right: .4rem; }
+  .knapper { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+  button {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: .75rem 1.6rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform .15s ease;
+  }
+  button:hover { transform: translateY(-2px); }
+  .ferdig { background: var(--gold); color: #111; }
+  .ferdig.tatt { background: var(--teal); }
+  .nytt { background: transparent; color: var(--paper); border: 2px solid rgba(255,255,255,.25); }
+  .streak {
+    margin-top: 1.6rem;
+    text-align: center;
+    font-size: .95rem;
+    color: var(--dim);
+  }
+  .streak b { color: var(--gold); font-size: 1.3rem; }
+  .info {
+    margin-top: 2rem;
+    max-width: 560px;
+    text-align: center;
+    color: var(--dim);
+    font-size: .85rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+  <div class="viewfinder corner-b">
+    <h1>Blink<span>skudd</span> 📸</h1>
+    <p class="dato" id="dato"></p>
+    <p class="tema-label">Dagens tema</p>
+    <p class="tema" id="tema"></p>
+    <ul class="regler">
+      <li id="r1"></li>
+      <li id="r2"></li>
+      <li id="r3"></li>
+    </ul>
+    <div class="knapper">
+      <button class="ferdig" id="ferdig">Jeg tok blinkskuddet! ✓</button>
+      <button class="nytt" id="nytt">Trekk på nytt 🎲</button>
+    </div>
+    <p class="streak" id="streak"></p>
+  </div>
+  <p class="info">Én utfordring per dag — samme for hele dagen, ny hver midnatt.<br>
+  «Trekk på nytt» gir en tilfeldig ekstra hvis du vil ha mer. Streaken teller dager på rad du har levert.</p>
+
+<script>
+const TEMAER = [
+  "Skygge", "Rødt", "Bevegelse", "Speiling", "Tekstur", "Ensomhet", "Par",
+  "Geometri", "Morgenlys", "Slitasje", "Hender", "Vann", "Kontrast", "Glede",
+  "Linjer", "Gammelt og nytt", "Blått", "Stillhet", "Kaos", "Detaljen ingen ser",
+  "Vind", "Vindu", "Symmetri", "Brutt symmetri", "Ventetid", "Fart", "Gult",
+  "Under", "Over", "Bakfra", "Hjem", "Fremmed sted", "Metall", "Tre",
+  "Mykt", "Hardt", "Tomt rom", "Fullt rom", "Lys i mørket", "Regn eller vått",
+  "Grønt liv", "Forfall", "Tall og bokstaver", "Sirkler", "Trekanter",
+  "Himmel", "Bakke", "Nærmeste nabo", "Noe som flyr", "Hverdagshelten"
+];
+const BEGRENSNINGER = [
+  "Ingen zoom — flytt beina i stedet.",
+  "Ta bildet fra knehøyde eller lavere.",
+  "Kun ett forsøk. Første klikk teller.",
+  "Bildet må inneholde en lyskilde.",
+  "Ikke se på skjermen når du knipser.",
+  "Motivet skal IKKE være i midten.",
+  "Svart-hvitt (eller rediger til det etterpå).",
+  "Ta bildet innen 100 skritt fra der du står nå.",
+  "Noe i forgrunnen MÅ være uskarpt.",
+  "Hold kameraet på skrå — minst 30 grader.",
+  "Bildet må tas gjennom noe (glass, løv, gjerde...).",
+  "Vent til noe beveger seg inn i bildet.",
+  "Fyll hele rammen med motivet. Ingen luft.",
+  "Ta bildet i motlys. Gjør det vanskelig.",
+  "Bruk maks 60 sekunder fra nå.",
+  "Inkluder din egen skygge eller refleksjon.",
+  "Ta bildet fra så høyt du trygt kan.",
+  "Bare naturlig lys — ingen blits.",
+  "Motivet må være eldre enn deg.",
+  "Motivet må være mindre enn hånden din."
+];
+
+// Deterministisk "tilfeldig" per dato → alle får samme utfordring samme dag
+function frøRandom(frø) {
+  return function() {
+    frø = (frø * 9301 + 49297) % 233280;
+    return frø / 233280;
+  };
+}
+function dagensNøkkel() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function velg(rnd, liste, unntatt) {
+  let v;
+  do { v = liste[Math.floor(rnd() * liste.length)]; } while (unntatt && unntatt.includes(v));
+  return v;
+}
+function visUtfordring(rnd) {
+  document.getElementById("tema").textContent = velg(rnd, TEMAER);
+  const brukt = [];
+  ["r1","r2","r3"].forEach((id, n) => {
+    const b = velg(rnd, BEGRENSNINGER, brukt);
+    brukt.push(b);
+    document.getElementById(id).innerHTML = `<b>${n+1}.</b> ${b}`;
+  });
+}
+
+const nøkkel = dagensNøkkel();
+const frø = [...nøkkel].reduce((a,c) => a + c.charCodeAt(0) * 7, 0);
+visUtfordring(frøRandom(frø));
+
+document.getElementById("dato").textContent = new Date().toLocaleDateString("nb-NO",
+  { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+// Streak-logikk
+const ferdigBtn = document.getElementById("ferdig");
+function lastStreak() { return JSON.parse(localStorage.getItem("blinkskudd") || '{"streak":0,"sist":""}'); }
+function visStreak() {
+  const s = lastStreak();
+  document.getElementById("streak").innerHTML =
+    s.streak > 0 ? `🔥 Streak: <b>${s.streak}</b> ${s.streak === 1 ? "dag" : "dager"} på rad` : "Ingen streak ennå — dagens bilde starter den!";
+  if (s.sist === nøkkel) {
+    ferdigBtn.textContent = "Levert i dag! 🔥";
+    ferdigBtn.classList.add("tatt");
+  }
+}
+ferdigBtn.addEventListener("click", () => {
+  const s = lastStreak();
+  if (s.sist === nøkkel) return;
+  const igår = new Date(Date.now() - 864e5);
+  const igårNøkkel = `${igår.getFullYear()}-${String(igår.getMonth()+1).padStart(2,"0")}-${String(igår.getDate()).padStart(2,"0")}`;
+  s.streak = (s.sist === igårNøkkel) ? s.streak + 1 : 1;
+  s.sist = nøkkel;
+  localStorage.setItem("blinkskudd", JSON.stringify(s));
+  visStreak();
+});
+visStreak();
+
+document.getElementById("nytt").addEventListener("click", () => {
+  visUtfordring(frøRandom(Math.floor(Math.random() * 233280)));
+});
+</script>
+</body>
+</html>
