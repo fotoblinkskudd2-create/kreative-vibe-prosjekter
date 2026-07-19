@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonisk Kunst — live</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden;
+               font-family: ui-monospace, monospace; color: #888; }
+  canvas { display: block; }
+  #hud { position: fixed; top: 12px; left: 14px; font-size: 12px; line-height: 1.7;
+         pointer-events: none; text-shadow: 0 0 6px #000; }
+  #start { position: fixed; inset: 0; display: flex; align-items: center;
+           justify-content: center; background: rgba(0,0,0,.85); cursor: pointer; }
+  #start span { border: 1px solid #555; padding: 14px 28px; border-radius: 6px;
+                color: #ccc; font-size: 15px; letter-spacing: .06em; }
+  #start span:hover { border-color: #aaa; color: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"></div>
+<div id="start"><span>▶ start — mikrofon eller demo-drone</span></div>
+<script>
+// Sonisk Kunst live: mikrofon (eller syntetisk drone-fallback) → radiell
+// sanntidsmandala. Ingen avhengigheter, ren Web Audio + canvas.
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const hud = document.getElementById('hud');
+let W, H, cx, cy;
+function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight;
+                    cx = W / 2; cy = H / 2; }
+addEventListener('resize', resize); resize();
+
+let analyser, freq, timeData, rotation = 0, smoothEnergy = 0;
+
+async function start() {
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = ac.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = 0.82;
+  freq = new Uint8Array(analyser.frequencyBinCount);
+  timeData = new Uint8Array(analyser.fftSize);
+
+  let sourceLabel;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    ac.createMediaStreamSource(stream).connect(analyser);
+    sourceLabel = 'mikrofon';
+  } catch {
+    // Fallback: syntetisk drone i A-moll med LFO og puls
+    const master = ac.createGain(); master.gain.value = 0.5;
+    [110, 165, 132, 220].forEach((f, i) => {
+      const osc = ac.createOscillator(); osc.frequency.value = f;
+      const g = ac.createGain();
+      const lfo = ac.createOscillator(); lfo.frequency.value = 0.05 + 0.04 * i;
+      const lfoGain = ac.createGain(); lfoGain.gain.value = 0.12 / (i + 1);
+      g.gain.value = 0.15 / (i + 1);
+      lfo.connect(lfoGain).connect(g.gain);
+      osc.connect(g).connect(master); osc.start(); lfo.start();
+    });
+    master.connect(analyser); master.connect(ac.destination);
+    sourceLabel = 'demo-drone (mikrofon avslått)';
+  }
+  hud.dataset.source = sourceLabel;
+  document.getElementById('start').remove();
+  requestAnimationFrame(draw);
+}
+document.getElementById('start').onclick = start;
+
+function draw() {
+  analyser.getByteFrequencyData(freq);
+  analyser.getByteTimeDomainData(timeData);
+
+  // Energi (RMS) og spektral centroid direkte fra analyser-data
+  let sum = 0;
+  for (let i = 0; i < timeData.length; i++) { const v = (timeData[i] - 128) / 128; sum += v * v; }
+  const rms = Math.sqrt(sum / timeData.length);
+  smoothEnergy += (rms - smoothEnergy) * 0.15;
+
+  let num = 0, den = 0;
+  for (let i = 0; i < freq.length; i++) { num += i * freq[i]; den += freq[i]; }
+  const centroid = den > 0 ? num / den / freq.length : 0;
+
+  // Fading trail
+  ctx.fillStyle = 'rgba(0,0,0,0.10)';
+  ctx.fillRect(0, 0, W, H);
+
+  const baseR = Math.min(W, H) * 0.16;
+  const symmetry = 8;
+  rotation += 0.002 + 0.02 * smoothEnergy;
+
+  // Spektret tegnes som symmetriske radielle armer
+  const bins = 96;
+  for (let s = 0; s < symmetry; s++) {
+    const rot = rotation + s * 2 * Math.PI / symmetry;
+    ctx.beginPath();
+    for (let i = 0; i < bins; i++) {
+      const mag = freq[Math.floor(i * freq.length / bins / 2)] / 255;
+      const a = rot + (i / bins) * 2 * Math.PI / symmetry;
+      const r = baseR + mag * Math.min(W, H) * 0.30 * (0.35 + smoothEnergy * 2);
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    // Hue fra centroid: mørk lyd → blått, lys lyd → gult/rødt
+    const hue = 260 - centroid * 320;
+    ctx.strokeStyle = `hsla(${hue}, 85%, ${45 + smoothEnergy * 90}%, 0.55)`;
+    ctx.lineWidth = 1 + smoothEnergy * 6;
+    ctx.stroke();
+  }
+
+  // Indre puls-sirkel
+  ctx.beginPath();
+  ctx.arc(cx, cy, baseR * (0.5 + smoothEnergy * 1.6), 0, 2 * Math.PI);
+  ctx.strokeStyle = `hsla(${260 - centroid * 320}, 90%, 70%, ${0.2 + smoothEnergy})`;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  hud.textContent = `kilde: ${hud.dataset.source}\nenergi: ${smoothEnergy.toFixed(3)}  ·  centroid: ${centroid.toFixed(3)}`;
+  requestAnimationFrame(draw);
+}
+</script>
+</body>
+</html>
