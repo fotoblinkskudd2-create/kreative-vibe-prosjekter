@@ -1,0 +1,110 @@
+======================================================================
+1. FJORDVAKT - autonom miljøbøye, energibudsjett (Vestland, vinter)
+======================================================================
+   sensorpakke (turbiditet, pH, ledningsevne, DO)        0.35 W
+   Hg-proxy (DGT-veksler + pumpe, duty 2%)               0.18 W
+   MCU + logging (STM32L4, duty-styrt)                   0.06 W
+   LTE-M modem (3 opplastinger/døgn)                     0.09 W
+   GPS (fix hvert 30. min)                               0.05 W
+   lanterne (IALA, natt)                                 0.25 W
+   SUM snittlast                                          0.98 W  = 23.5 Wh/døgn
+   solinnhøsting desember :   14.2 Wh/døgn  (behov 23.5)
+   solinnhøsting mars     :   85.1 Wh/døgn  (behov 23.5)
+   solinnhøsting juni     :  236.3 Wh/døgn  (behov 23.5)
+   batteri 640 Wh LiFePO4, 80% DoD -> 22 døgn helt uten sol
+   KONKLUSJON: desember krever batteribuffer, går rundt med 50Ah. OK.
+
+======================================================================
+2. VRAKØYE - inspeksjons-ROV, fremdrift og driftstid
+======================================================================
+   1 kn: drag   5.5 N, fremdriftseffekt    6.3 W
+   2 kn: drag  22.0 N, fremdriftseffekt   50.2 W
+   3 kn: drag  49.4 N, fremdriftseffekt  169.5 W
+   hotellast (lys, kamera, com): 55 W
+   totaleffekt ved 2 kn arbeidsfart: 105 W
+   batteri 310 Wh -> driftstid 150 min. Mål: >120 min. OK.
+   trykk ved 200 m: 20.1 bar -> POM-skrog 12 mm, SF 2.1
+
+======================================================================
+3. STILLEPROP - lavstøypropell, tipphastighet og støyskalering
+======================================================================
+   referanse 9.5x5 to-blad     : tipp 101.1 m/s (M0.29), BPF  267 Hz
+   STILLEPROP 11x4 tre-blad    : tipp  81.9 m/s (M0.24), BPF  280 Hz
+   forventet delta rotasjonsstøy (v^5-skalering): -4.6 dB
+   + serratert bakkant, est. -2 dB bredbåndsstøy => ca -7 dB totalt
+   BPF flyttes fra 267 Hz til 280 Hz men amplituden dominerer - psykoakustisk
+   gevinst hovedsakelig fra amplitude, ikke frekvens.
+
+======================================================================
+4. ISFRI - elektrotermisk anti-ising for vinterdrone
+======================================================================
+   varmebehov per propell (holde +2C ved -10C): 32 W
+   4 propeller kontinuerlig: 127 W - UAKSEPTABELT for batteridrone
+   -> de-ising strategi: pulset 10% duty: 13 W snitt. OK.
+   hover-effekt 3.2 kg drone: 274 W
+   flytid uten/med de-ising: 49 / 46 min (7% tap)
+   KONKLUSJON: 10-12% flytidstap kjøper vinterdrift. Selgbart.
+
+======================================================================
+5. SKREDLYTT - geofonnode, batterilevetid over vintersesong
+======================================================================
+   snittstrøm: 1.82 mA @3.6V
+   2x LiSOCl2 D (13 Ah, -30C-derating 75%): 223 døgn = 7.4 mnd
+   KONKLUSJON: en vintersesong (5 mnd) med god margin. OK.
+   infralyd 2 Hz, demping ~0.2 dB/km: nodeavstand 800 m gir SNR>12 dB for
+   skred >5000 m3 (skalert fra publiserte kildestyrker). 6 noder/dalside.
+
+======================================================================
+6. LYDSKALPELL - MEMS-array akustisk kamera, vinkeloppløsning
+======================================================================
+     2.0 kHz: bølgelengde 17.2 cm, oppløsning ~ 66.6 grader
+     8.0 kHz: bølgelengde  4.3 cm, oppløsning ~ 16.6 grader
+    20.0 kHz: bølgelengde  1.7 cm, oppløsning ~  6.7 grader
+    35.0 kHz: bølgelengde  1.0 cm, oppløsning ~  3.8 grader
+   trykkluftlekkasje sender bredbånd 20-40 kHz: oppløsning 3-6 grader = 
+   15-30 cm flekk på 3 m avstand. Godt nok til å peke på ventilen.
+   prosessering: 64 kanaler x 48 kHz x 24 bit = 9.2 MB/s rå,
+   delay-and-sum på RP2350/FPGA-hybrid klarer 25 bilder/s ved 40x40 piksler.
+
+======================================================================
+7. HEVEKAMMER - presisjonsfermentering, termikk og CO2-prediksjon
+======================================================================
+   varmetap-koeffisient UA: 0.99 W/K (30 mm EPP, 0.85 m2)
+   holde 26C i 18C rom: 7.9 W - 15 W varmefolie holder. OK.
+   retard 4C: 14 W kjølebehov, peltier COP 0.45 -> 31 W el. OK.
+   CO2-stigning ved peak fermentering: ~457 ppm/min i 35 L kammer
+   NDIR-sensor (±30 ppm) ser vendepunktet i CO2-rate 30-45 min før
+   overheving. Det er produktet: kammeret sier fra NÅR, ikke bare temperatur.
+
+======================================================================
+8. RETROVOLT - friksjonsdrift-elkit for vintagesykkel, rekkevidde
+======================================================================
+   20 km/t, 0% stigning: 84 W ved hjulet
+   20 km/t, 3% stigning: 268 W ved hjulet
+   25 km/t, 0% stigning: 138 W ved hjulet
+   flatmark 20 km/t, motor tar 60%: rekkevidde 60 km. Bergen-realistisk: 35-45 km.
+   friksjonsrull sliter dekk ~+15%. Byttbar rull i polyuretan. Akseptabelt.
+
+======================================================================
+9. EDGEHUB - lokal automasjonsserver, kost vs sky over 3 år
+======================================================================
+   strøm: 11 W kontinuerlig = 106 NOK/år
+   typisk SMB skykost for tilsvarende (SaaS+API): 3200 NOK/mnd
+   3 år sky: 115,200 NOK | 3 år EDGEHUB: 19,688 NOK
+   besparelse: 95,512 NOK + data forlater aldri huset (GDPR).
+   LLM-ytelse lokalt: 8B-modell kvantisert, ~12 tok/s på NPU. Nok til
+   e-postklassifisering, dokumentuttrekk, ikke sanntidschat. Ærlig spec.
+
+======================================================================
+10. AKUSTIKKPROFIL - adaptiv absorbent, RT60 for og etter
+======================================================================
+   rom 34 m3, flate 64 m2
+   ubehandlet (gips/parkett)             : RT60 0.94 s
+   + 8 paneler lukket (125Hz-modus)      : RT60 0.53 s
+   + 8 paneler apen (bredband)           : RT60 0.31 s
+   panelet endrer virkedybde mekanisk (spjeld): samme 8 paneler dekker
+   basscontrol OG flutter. Mål under 0.35 s bredbånd: nås med 8 stk a 0.29 m2.
+
+======================================================================
+FERDIG. Alle tall er førsteordens. Prototypene verifiserer.
+======================================================================
