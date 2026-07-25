@@ -1,0 +1,12 @@
+{
+  "name": "torka-t1-dokumentbygg",
+  "private": true,
+  "description": "Bygger designpitchen for TØRKA T1 til .docx og .md",
+  "scripts": {
+    "bygg": "node bygg.js",
+    "tegning": "python3 lag_tegning.py && node render_svg.js ../figurer/torka-t1-tegning.svg ../figurer/torka-t1-tegning.png 2"
+  },
+  "dependencies": {
+    "docx": "^9.0.0"
+  }
+}
