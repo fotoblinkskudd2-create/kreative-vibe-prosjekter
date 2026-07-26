@@ -469,6 +469,98 @@ textarea:focus { outline: none; border-color: var(--blue-deep); }
   padding: 0 14px 0 6px;
 }
 
+/* ----------------------------------------------------------- Små grep --- */
+
+.action {
+  padding: 6px var(--space-2) var(--space-2);
+  transition: background 0.5s var(--ease), box-shadow 0.4s var(--ease);
+}
+
+.action[data-done="true"] {
+  background: linear-gradient(160deg, rgba(217, 228, 215, 0.85), rgba(251, 249, 246, 0.9));
+}
+
+.action-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) 4px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--r-md);
+}
+
+.action-num {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--beige);
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+}
+
+.action[data-done="true"] .action-num {
+  background: var(--sage-deep);
+  color: #37473A;
+}
+
+.action-title {
+  flex: 1 1 auto;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.chev-down {
+  transition: transform 0.4s var(--ease);
+  transform: rotate(90deg);
+}
+
+.action-head[aria-expanded="true"] .chev-down { transform: rotate(-90deg); }
+
+.action-why {
+  margin: 0 4px var(--space-2);
+  padding: 0 42px 0 42px;
+  font-size: 0.96rem;
+  animation: fade-up 0.4s var(--ease) both;
+}
+
+.action-why[hidden] { display: none; }
+
+.action-mark {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 4px;
+  border: 1px dashed rgba(140, 132, 120, 0.28);
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--ink-soft);
+  font-size: 0.94rem;
+  cursor: pointer;
+  transition: all 0.4s var(--ease);
+}
+
+.action-mark:hover { background: rgba(255, 255, 255, 0.7); }
+
+.action-mark[aria-pressed="true"] {
+  border-style: solid;
+  border-color: transparent;
+  background: var(--sage-deep);
+  color: #37473A;
+  font-weight: 600;
+}
+
+.action-head:focus-visible,
+.action-mark:focus-visible {
+  outline: 2px solid var(--blue-deep);
+  outline-offset: 2px;
+}
+
 /* ------------------------------------------------------- Mindre bevegelse */
 
 @media (prefers-reduced-motion: reduce) {
