@@ -1,0 +1,3 @@
+dato,panel_id,type,fart_ms,temp_c,rilleavstand_um,rillehoyde_um,materiale,kraft_n_snitt,kraft_n_std,antall_maalinger,rekkefolge_nr,notat
+# Fyll ut én rad per måleserie. type = glatt | rillet. Bytt rekkefølge annenhver serie.
+# Uten std og antall_maalinger er raden verdiløs - da vet du ikke om forskjellen er reell.

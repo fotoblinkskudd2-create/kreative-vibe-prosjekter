@@ -1,0 +1,50 @@
+{
+  "syklus": 1,
+  "generert": "2026-07-26",
+  "ideer": [
+    { "navn": "Riblet-Kalkulator", "verdier": {"brukbarhet_48h": 9, "robusthet": 8, "selgbarhet": 7, "patent_potensial": 6, "energi_kost": 8},
+      "begrunnelse": "BYGGET denne syklusen. Kjøper: FPV-/fixed-wing-byggere i norske og tyske forum, samt studentgrupper i aerodynamikk. Selve kalkulatoren er ikke patenterbar — den målte geometrien er." },
+
+    { "navn": "Riblet-film for droneskrog (fysisk produkt)", "verdier": {"brukbarhet_48h": 4, "robusthet": 7, "selgbarhet": 8, "patent_potensial": 8, "energi_kost": 5},
+      "begrunnelse": "Kalkulatoren er leadmagneten, filmen er produktet. Krever SLA-mester eller filmleverandør. Kjøper: alle som kjøpte kalkulatorens svar." },
+
+    { "navn": "Isvarsler for droneflyging (Bergen/Vestland)", "verdier": {"brukbarhet_48h": 8, "robusthet": 8, "selgbarhet": 6, "patent_potensial": 2, "energi_kost": 8},
+      "begrunnelse": "Yr/MET åpne API-er + isingsindeks fra temp/duggpunkt/fuktighet. Én side, ett kart, én farge. Kjøper: norske dronepiloter — men de betaler lite. Rekkevidde er verdien." },
+
+    { "navn": "Kolibri-vinge simulator (2D, kvasistasjonær)", "verdier": {"brukbarhet_48h": 6, "robusthet": 7, "selgbarhet": 4, "patent_potensial": 7, "energi_kost": 5},
+      "begrunnelse": "Software-først-versjonen av testriggen. Gir patentgrunnlaget uten hardware. Ingen kjøper i dag — men den mater notat 002." },
+
+    { "navn": "Kolibri-vinge testrigg (fysisk)", "verdier": {"brukbarhet_48h": 2, "robusthet": 6, "selgbarhet": 7, "patent_potensial": 9, "energi_kost": 3},
+      "begrunnelse": "Høyeste patentverdi i porteføljen. Bryter 48h-porten hardt. Del: simulator nå, rigg når kraftmåler finnes." },
+
+    { "navn": "Gonzo Suno-serie «SAKSNUMMER»", "verdier": {"brukbarhet_48h": 10, "robusthet": 5, "selgbarhet": 5, "patent_potensial": 0, "energi_kost": 9},
+      "begrunnelse": "LEVERT denne syklusen. Null patent, null inntekt direkte — men billigste rekkevidde du har, og rekkevidden mater alt annet." },
+
+    { "navn": "PanicSafe PWA (pust + panikklogg)", "verdier": {"brukbarhet_48h": 7, "robusthet": 7, "selgbarhet": 6, "patent_potensial": 3, "energi_kost": 6},
+      "begrunnelse": "PWA først for å teste retention før App Store-review blir flaskehals. Kjøper: usikker — sannsynligvis gratis produkt som bygger troverdighet." },
+
+    { "navn": "Sverm-koordinator SaaS", "verdier": {"brukbarhet_48h": 2, "robusthet": 4, "selgbarhet": 9, "patent_potensial": 8, "energi_kost": 2},
+      "begrunnelse": "Størst marked, tyngst regulatorisk, krever team. Klassisk felle for en solopreneur. Parkér med patentnotat." },
+
+    { "navn": "Vindtunnel-rigg av byggevifte + veiecelle", "verdier": {"brukbarhet_48h": 6, "robusthet": 7, "selgbarhet": 3, "patent_potensial": 2, "energi_kost": 6},
+      "begrunnelse": "Ikke et produkt — en forutsetning. Uten den er alle riblet- og vingetall gjetning. Dette er infrastrukturen resten står på." },
+
+    { "navn": "Batteri-derating-kalkulator for kulde", "verdier": {"brukbarhet_48h": 9, "robusthet": 8, "selgbarhet": 5, "patent_potensial": 1, "energi_kost": 9},
+      "begrunnelse": "LiPo-kapasitet mot temperatur, én formel, én side. Samme kjøper som riblet-kalkulatoren. Bygger en verktøykasse-merkevare, ikke ett verktøy." },
+
+    { "navn": "Vibe-kort: 100 kreative prompt-kort som PWA", "verdier": {"brukbarhet_48h": 9, "robusthet": 8, "selgbarhet": 4, "patent_potensial": 0, "energi_kost": 8},
+      "begrunnelse": "Passer repoets navn og er en helg unna. Men ingen navngitt kjøper — dette er et hobbyprodukt til det motsatte er bevist." },
+
+    { "navn": "Dokumentasjonslogg for saksgang (lokal, kryptert)", "verdier": {"brukbarhet_48h": 7, "robusthet": 8, "selgbarhet": 6, "patent_potensial": 2, "energi_kost": 5},
+      "begrunnelse": "Datert, tidsstemplet hendelseslogg med eksport til PDF. Du trenger den selv. Kjøper: alle i en langvarig prosess — men det er et sensitivt marked som krever varsomhet." },
+
+    { "navn": "«Verktøykassa» — samlet nettsted for alle kalkulatorene", "verdier": {"brukbarhet_48h": 8, "robusthet": 9, "selgbarhet": 6, "patent_potensial": 0, "energi_kost": 7},
+      "begrunnelse": "Distribusjonslaget. Én statisk side, alle verktøyene, én e-postliste. Dette er det som gjør enkeltverktøy til en kanal." },
+
+    { "navn": "AI-agent som overvåker Patentstyret-publiseringer", "verdier": {"brukbarhet_48h": 5, "robusthet": 6, "selgbarhet": 5, "patent_potensial": 1, "energi_kost": 6},
+      "begrunnelse": "Nyhetssøk-automatisering for egne felt. Nyttig, men løser et problem du har fire ganger i året. Feil prioritet nå." },
+
+    { "navn": "Kurs: «Bygg din egen dronedel med biomimicry»", "verdier": {"brukbarhet_48h": 3, "robusthet": 6, "selgbarhet": 7, "patent_potensial": 0, "energi_kost": 3},
+      "begrunnelse": "Best marginer av alt her, men krever at verktøyene og målingene finnes først. Riktig idé, gal syklus." }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "loop": {
+    "id": "REGNVIKING-30H-MAX",
+    "version": "1.0.0",
+    "owner": "Alexander (REGNViking), Bergen",
+    "runtime_hours": 30,
+    "cycle_minutes": {
+      "min": 90,
+      "max": 120,
+      "default": 105
+    },
+    "target_cycles": 17,
+    "quality_gate": "Output MÅ være sterkere, mer komplett og høyere verdi enn input. Null slurv. Patentér alt relevant.",
+    "tone": "Direkte, høy-signal, gonzo-rå når det passer, norsk når relevant, copy-paste klar. Ingen fluff.",
+    "stop_conditions": [
+      "runtime_hours nådd",
+      "manuell stopp (openclaw.py stop)",
+      "3 sykluser på rad med verdi_score < 5 (loopen har gått tom, krever ny input-pull)"
+    ]
+  },
+
+  "identity": {
+    "roller": [
+      "Norsk droneoppfinner",
+      "AI Empire builder",
+      "Gonzo-skaper",
+      "Solopreneur"
+    ],
+    "base": "Bergen, Norge"
+  },
+
+  "superhuman_skills": [
+    {
+      "id": "drone-sovereign",
+      "navn": "Arctic Biomimicry Drone Sovereign",
+      "domene": ["biomimicry", "kolibri-vinge", "haihud/riblets", "arctic", "ukraina-relevans", "svermflyging"]
+    },
+    {
+      "id": "gonzo-forge",
+      "navn": "Gonzo Raw Justice Creative Forge",
+      "domene": ["satire", "suno/musikk", "creator-økonomi", "justis- og familieskriving"]
+    },
+    {
+      "id": "codex-msx",
+      "navn": "Codex MSX Multi-Agent Empire Optimizer",
+      "domene": ["multi-agent swarms", "ROI-analyse", "skill-gaps", "flaskehalser", "selvforbedring"]
+    },
+    {
+      "id": "panicsafe",
+      "navn": "PanicSafe Biohack Mental Architect",
+      "domene": ["mental health tech", "panikk/angst-protokoller", "biohacking", "energistyring"]
+    },
+    {
+      "id": "ide-jakt",
+      "navn": "Ide-Jakt Value Incubator",
+      "domene": ["idégenerering", "48h-prototyper", "iOS/SaaS", "salgbarhet", "patentscreening"]
+    }
+  ],
+
+  "fokusomrader": [
+    "drone",
+    "agent",
+    "creative",
+    "business",
+    "mental"
+  ],
+
+  "faser": [
+    {
+      "id": 1,
+      "navn": "MAX INPUT PULL",
+      "minutter": 8,
+      "output": "input-pull.md",
+      "sjekkliste": [
+        "Hent siste minne-fakta og aktive prosjekter",
+        "Uløste ideer fra forrige syklus (carry-over)",
+        "ROI-muligheter akkurat nå",
+        "Energinivå (1-10) og tid tilgjengelig",
+        "Sett topp 3 prioriteringer på tvers av fokusområdene"
+      ]
+    },
+    {
+      "id": 2,
+      "navn": "CODEX MSX ANALYSE",
+      "minutter": 18,
+      "agent": "codex-msx",
+      "output": "msx-analyse.md",
+      "sjekkliste": [
+        "Swarm-analyse: ROI per aktivt spor",
+        "Skill-gaps og flaskehalser",
+        "Forslag til nye skills/sub-agenter",
+        "Score alle kandidat-ideer med scoringsmodellen"
+      ]
+    },
+    {
+      "id": 3,
+      "navn": "OPENCLAW ACTION WAVE",
+      "minutter": 55,
+      "output": "deliverables/",
+      "krav": {
+        "min_deliverables": 3,
+        "min_48h_prototyper": 1,
+        "max_48h_prototyper": 2
+      },
+      "sjekkliste": [
+        "Aktiver 2-3 relevante sub-agenter (ikke alle - unngå spredning)",
+        "Produser konkrete artefakter: kode, prompts, tekst, prototype-steg, patentnotat",
+        "Alt skal være copy-paste klart",
+        "Ingen deliverable uten neste fysiske handling"
+      ]
+    },
+    {
+      "id": 4,
+      "navn": "SELF-REFLECTION + OPTIMERING",
+      "minutter": 12,
+      "output": "refleksjon.md",
+      "sjekkliste": [
+        "Hva fungerte? Hva var svakt?",
+        "Ble kvalitetsporten bestått (bedre enn input)?",
+        "Oppdater state: carry-over, nye prioriteringer, energijustering",
+        "Juster neste syklus (agent-miks, lengde, fokus)"
+      ]
+    },
+    {
+      "id": 5,
+      "navn": "OUTPUT LOG",
+      "minutter": 7,
+      "output": "LOGG.md",
+      "format": "Syklus X/{target_cycles} | Verdi levert: ... | Neste fokus: ..."
+    }
+  ],
+
+  "scoring": {
+    "skala": "0-10 per akse",
+    "akser": [
+      { "id": "brukbarhet_48h", "vekt": 0.30, "beskrivelse": "Kan en fungerende v0 stå ferdig innen 48 timer med ressursene du har nå?" },
+      { "id": "robusthet", "vekt": 0.15, "beskrivelse": "Holder den uten daglig babysitting? Tåler den at du er borte en uke?" },
+      { "id": "selgbarhet", "vekt": 0.30, "beskrivelse": "Finnes det en identifiserbar kjøper med budsjett og smerte i dag?" },
+      { "id": "patent_potensial", "vekt": 0.15, "beskrivelse": "Teknisk effekt som er ny, ikke-åpenbar og beskrivbar i krav?" },
+      { "id": "energi_kost", "vekt": 0.10, "beskrivelse": "Invertert: 10 = nesten gratis for deg, 0 = tapper deg helt." }
+    ],
+    "terskler": {
+      "bygg_naa": 7.5,
+      "parker_men_noter": 5.0,
+      "drep": 0
+    }
+  },
+
+  "agent_miks_regler": {
+    "maks_aktive_per_syklus": 3,
+    "obligatorisk": ["codex-msx"],
+    "rotasjon": "Ingen sub-agent kan gå mer enn 3 sykluser på rad uten pause. Ide-Jakt kjører minimum hver 3. syklus.",
+    "panicsafe_trigger": "Aktiveres automatisk når energinivå <= 4 eller når 2 sykluser på rad har verdi_score < 5."
+  },
+
+  "sluttrapport": {
+    "seksjoner": [
+      "Topp 10 deliverables",
+      "Nye skills/agenter foreslått",
+      "Patent-kandidater",
+      "ROI-estimat",
+      "Anbefalt neste 7-dagers plan"
+    ]
+  }
+}

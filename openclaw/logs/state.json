@@ -1,0 +1,48 @@
+{
+  "loop_id": "REGNVIKING-30H-MAX",
+  "startet": "2026-07-26T08:56:33+00:00",
+  "stoppet": null,
+  "runtime_hours": 30,
+  "target_cycles": 17,
+  "energi": 8,
+  "aktiv_syklus": null,
+  "sykluser": [
+    {
+      "nr": 1,
+      "agenter": [
+        "codex-msx",
+        "drone-sovereign",
+        "ide-jakt"
+      ],
+      "startet": "2026-07-26T08:56:33+00:00",
+      "avsluttet": "2026-07-26T08:56:43+00:00",
+      "varighet_min": 0.2,
+      "verdi_score": 8,
+      "deliverables": [
+        "Riblet-Kalkulator (web + CLI + 10 tester, verifisert)",
+        "Gonzo Suno-pakke SAKSNUMMER (3 spor + 20 hooks)",
+        "Idebank: 15 ideer scoret, 1 BYGG NA, 3 drept med dodsarsak",
+        "OpenClaw orchestrator-runner (14 tester)"
+      ],
+      "neste_fokus": "Nyhetssok + batteri-derating-kalkulator (samme kjoper, bygger Verktoykassa)",
+      "svakhet": "Scoringsmodellen straffer enablere: vindtunnel-riggen fikk DREP selv om alt annet avhenger av den",
+      "patent": [
+        "001 Riblet-geometri lav-Re: posisjonsavhengig paforing bak turbulensovergang"
+      ]
+    }
+  ],
+  "carry_over": [
+    "Nyhetssok Google Patents/Espacenet - 2 timer, innen 2026-08-02",
+    "Vindtunnel-rigg: manuelt overstyrt DREP-dom, er enabler for hele riblet-sporet",
+    "Ny scoringsakse enabler_verdi - til codex-msx for vurdering i syklus 2"
+  ],
+  "patent_kandidater": [
+    "[S1] 001 Riblet-geometri lav-Re: posisjonsavhengig paforing bak turbulensovergang"
+  ],
+  "deliverables": [
+    "[S1] Riblet-Kalkulator (web + CLI + 10 tester, verifisert)",
+    "[S1] Gonzo Suno-pakke SAKSNUMMER (3 spor + 20 hooks)",
+    "[S1] Idebank: 15 ideer scoret, 1 BYGG NA, 3 drept med dodsarsak",
+    "[S1] OpenClaw orchestrator-runner (14 tester)"
+  ]
+}

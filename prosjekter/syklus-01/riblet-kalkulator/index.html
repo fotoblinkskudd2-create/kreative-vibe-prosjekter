@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riblet-Kalkulator — haihud-geometri for droneskrog</title>
+<style>
+  :root{
+    --bg:#faf9f7; --kort:#fff; --tekst:#1a1a1a; --dempet:#6b6b6b; --strek:#e2e0dc;
+    --aksent:#0b6e5f; --varsel:#a8541a; --feil:#9b2c2c; --kode:#f2f0ec;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#141413; --kort:#1e1e1c; --tekst:#eceae5; --dempet:#9b978f; --strek:#33322e;
+           --aksent:#4ec9b0; --varsel:#e0a458; --feil:#e57373; --kode:#26251f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tekst);
+       font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+       padding:24px 16px 64px}
+  .wrap{max-width:960px;margin:0 auto}
+  h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.02em}
+  .sub{color:var(--dempet);margin:0 0 28px;font-size:.95rem}
+  .kort{background:var(--kort);border:1px solid var(--strek);border-radius:12px;padding:20px;margin-bottom:18px}
+  h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--dempet);margin:0 0 16px;font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+  label{display:block;font-size:.82rem;color:var(--dempet);margin-bottom:5px}
+  input[type=number],select{width:100%;padding:9px 11px;border:1px solid var(--strek);border-radius:8px;
+    background:var(--bg);color:var(--tekst);font:inherit;font-size:.95rem}
+  input[type=range]{width:100%;accent-color:var(--aksent)}
+  .hoved{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:8px}
+  .tall{background:var(--kode);border-radius:10px;padding:14px}
+  .tall .n{font:600 1.7rem/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.02em}
+  .tall .e{font-size:.8rem;color:var(--dempet);margin-top:3px}
+  .tall.pri .n{color:var(--aksent)}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--strek)}
+  th{color:var(--dempet);font-weight:600;font-size:.8rem}
+  td.v{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}
+  .scroll{overflow-x:auto}
+  .flagg{padding:11px 14px;border-radius:8px;font-size:.9rem;margin-top:14px;border-left:3px solid}
+  .ok{background:color-mix(in srgb,var(--aksent) 10%,transparent);border-color:var(--aksent)}
+  .adv{background:color-mix(in srgb,var(--varsel) 12%,transparent);border-color:var(--varsel)}
+  .err{background:color-mix(in srgb,var(--feil) 12%,transparent);border-color:var(--feil)}
+  svg{display:block;width:100%;height:auto}
+  .note{font-size:.82rem;color:var(--dempet);margin-top:12px}
+  code{background:var(--kode);padding:1px 5px;border-radius:4px;font-size:.87em}
+  button{background:var(--aksent);color:var(--bg);border:0;border-radius:8px;padding:9px 16px;
+    font:inherit;font-weight:600;cursor:pointer}
+  button:hover{opacity:.88}
+  .preset{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .preset button{background:transparent;color:var(--tekst);border:1px solid var(--strek);font-weight:500;font-size:.85rem;padding:6px 12px}
+  .preset button:hover{border-color:var(--aksent);color:var(--aksent);opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Riblet-Kalkulator</h1>
+<p class="sub">Haihud-geometri for droneskrog og vinger. Regner optimal rilleavstand ut fra fart, posisjon og luftforhold — og sier hva som faktisk kan produseres.</p>
+
+<div class="kort">
+  <h2>Driftspunkt</h2>
+  <div class="preset">
+    <button data-p="12,0.25,15,0">FPV-cruise 12 m/s</button>
+    <button data-p="20,0.5,15,0">Fixed-wing 20 m/s</button>
+    <button data-p="35,0.8,5,300">Langdistanse 35 m/s</button>
+    <button data-p="25,0.6,-20,500">Arktisk −20 °C</button>
+  </div>
+  <div class="grid">
+    <div><label for="fart">Fart U (m/s)</label><input type="number" id="fart" value="20" min="1" max="200" step="1"></div>
+    <div><label for="pos">Posisjon fra forkant x (mm)</label><input type="number" id="pos" value="500" min="10" max="5000" step="10"></div>
+    <div><label for="temp">Lufttemperatur (°C)</label><input type="number" id="temp" value="15" min="-40" max="45" step="1"></div>
+    <div><label for="hoyde">Høyde over havet (m)</label><input type="number" id="hoyde" value="0" min="0" max="6000" step="50"></div>
+  </div>
+  <div style="margin-top:16px">
+    <label for="splus">Dimensjonsløs rilleavstand s⁺ = <span id="splusVal">16</span> <span style="color:var(--dempet)">(optimum 15–20)</span></label>
+    <input type="range" id="splus" min="4" max="40" step="0.5" value="16">
+  </div>
+</div>
+
+<div class="kort">
+  <h2>Geometri å printe</h2>
+  <div class="hoved">
+    <div class="tall pri"><div class="n" id="oS">—</div><div class="e">rilleavstand s (µm)</div></div>
+    <div class="tall pri"><div class="n" id="oH">—</div><div class="e">rillehøyde h (µm), h/s = 0.5</div></div>
+    <div class="tall"><div class="n" id="oDR">—</div><div class="e">estimert motstandsreduksjon</div></div>
+    <div class="tall"><div class="n" id="oDv">—</div><div class="e">viskøs lengde δ<sub>ν</sub> (µm)</div></div>
+  </div>
+  <div id="flaggRegime" class="flagg ok"></div>
+  <div id="flaggProd" class="flagg adv"></div>
+</div>
+
+<div class="kort">
+  <h2>Tverrsnitt (1:1-forhold)</h2>
+  <svg id="snitt" viewBox="0 0 600 150" role="img" aria-label="Tverrsnitt av rilleprofil"></svg>
+  <p class="note">Trekantprofil. Spissen skal være så skarp som produksjonsmetoden tillater — en avrundet topp spiser mesteparten av gevinsten.</p>
+</div>
+
+<div class="kort">
+  <h2>Effekt mot s⁺</h2>
+  <svg id="kurve" viewBox="0 0 600 260" role="img" aria-label="Motstandsreduksjon mot s pluss"></svg>
+  <p class="note">Empirisk kurveform: topp ~8 % ved s⁺ ≈ 16, null ved s⁺ ≈ 32, motstandsøkning over det. Formen følger publiserte riblet-målinger; det absolutte tallet gjør ikke det. Bruk kurven til å velge geometri — mål selv før du lover noen noe.</p>
+</div>
+
+<div class="kort">
+  <h2>Mellomregning</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Størrelse</th><th style="text-align:right">Verdi</th><th>Formel</th></tr></thead>
+    <tbody id="mellom"></tbody>
+  </table></div>
+</div>
+
+<div class="kort">
+  <h2>Testprotokoll — neste fysiske handling</h2>
+  <ol style="margin:0;padding-left:20px">
+    <li>Print to identiske paneler, 150 × 300 mm: ett glatt, ett med rilleprofilen over. Samme materiale, samme orientering, samme etterbehandling.</li>
+    <li>Monter i vindtunnel eller på en kalibrert vifterigg ved <b id="pFart">20</b> m/s. Monter panelet flatt, 0° angrepsvinkel.</li>
+    <li>Mål motstandskraft med veiecelle, minst 60 sekunders snitt, minst 5 repetisjoner per panel.</li>
+    <li>Bytt rekkefølge annenhver gang (glatt/rillet/glatt/rillet) for å fange termisk drift i cellen.</li>
+    <li><b>Nullhypotese:</b> ingen målbar forskjell. Forventet effekt er <span id="pDR">8</span> % — er måleusikkerheten din større enn det, måler du ingenting.</li>
+    <li>Logg alt i <code>prosjekter/syklus-01/riblet-kalkulator/maalinger.csv</code> med dato, temperatur og panel-ID.</li>
+  </ol>
+</div>
+
+<p class="note">Regnes lokalt i nettleseren. Referanseimplementasjon med tester: <code>riblet.py</code> — samme formler, 10 enhetstester.</p>
+
+</div>
+<script>
+const R = 287.05, S_OPT = 16, DR_MAX = 8, S_NULL = 32;
+
+function luft(tempC, hoyde){
+  const T = tempC + 273.15;
+  const p = 101325 * Math.pow(1 - 2.25577e-5 * hoyde, 5.2559);
+  const mu = 1.458e-6 * Math.pow(T, 1.5) / (T + 110.4);
+  const rho = p / (R * T);
+  return {rho, mu, nu: mu / rho, T, p};
+}
+function dr(sp){
+  if (sp <= 0) return 0;
+  const n = (sp - S_OPT) / S_OPT;
+  return Math.max(DR_MAX * (1 - n * n), -4);
+}
+function beregn(U, x, tempC, hoyde, sp){
+  const L = luft(tempC, hoyde);
+  const Re = U * x / L.nu;
+  const cf = 0.0592 * Math.pow(Re, -0.2);
+  const tau = 0.5 * L.rho * U * U * cf;
+  const utau = Math.sqrt(tau / L.rho);
+  const dv = L.nu / utau;
+  const s = sp * dv;
+  return {L, Re, cf, tau, utau, dv, s, h: s / 2, sp, dr: dr(sp)};
+}
+function prodDom(sUm){
+  if (sUm >= 800) return ["ok", "FDM (0.4 mm dyse) klarer dette med fin laghøyde. Enkleste vei."];
+  if (sUm >= 300) return ["adv", "FDM med 0.2 mm dyse er på grensen. SLA/DLP er trygt. CNC med v-bit fungerer."];
+  if (sUm >= 80)  return ["adv", "SLA/DLP eller mikrofresing. FDM er utelukket. Alternativ: kjøpt riblet-film."];
+  return ["err", "Under 80 µm — krever mikroreplikasjon/preging eller kommersiell film. Ikke garasjeproduksjon."];
+}
+function regimeDom(Re){
+  if (Re < 5e5) return ["err", `Re_x = ${Re.toExponential(2)} — LAMINÆRT grensesjikt. Riller gir ingen gevinst her og kan koste deg motstand. Flytt startpunktet bakover, eller opp i fart.`];
+  if (Re > 1e7)  return ["adv", `Re_x = ${Re.toExponential(2)} — over gyldighetsområdet til korrelasjonen. Behandle C_f som nedre grense.`];
+  return ["ok", `Re_x = ${Re.toExponential(2)} — turbulent grensesjikt. Riblets virker i dette området.`];
+}
+
+const el = id => document.getElementById(id);
+const felt = ["fart","pos","temp","hoyde","splus"].map(el);
+
+function tegnSnitt(r){
+  const svg = el("snitt"), W = 600, H = 150, n = 7;
+  const bredde = W / n, hoyde = bredde * (r.h / r.s) * 2;  // h/s = 0.5 → høyde = halve bredden ×2 for lesbarhet
+  let d = `M 0 ${H-10}`;
+  for (let i = 0; i < n; i++) d += ` L ${i*bredde + bredde/2} ${H-10-hoyde} L ${(i+1)*bredde} ${H-10}`;
+  const mal = `<line x1="${bredde/2}" y1="28" x2="${bredde*1.5}" y2="28" stroke="var(--aksent)" stroke-width="1.5"/>
+    <text x="${bredde}" y="21" text-anchor="middle" fill="var(--aksent)" font-size="13" font-family="ui-monospace,monospace">s = ${(r.s*1e6).toFixed(0)} µm</text>
+    <line x1="${bredde*3.5}" y1="${H-10-hoyde}" x2="${bredde*3.5}" y2="${H-10}" stroke="var(--aksent)" stroke-width="1.5"/>
+    <text x="${bredde*3.65}" y="${H-10-hoyde/2}" fill="var(--aksent)" font-size="13" font-family="ui-monospace,monospace">h = ${(r.h*1e6).toFixed(0)} µm</text>`;
+  svg.innerHTML = `<path d="${d} L ${W} ${H} L 0 ${H} Z" fill="var(--kode)" stroke="var(--tekst)" stroke-width="1.5"/>${mal}`;
+}
+
+function tegnKurve(r){
+  const svg = el("kurve"), W = 600, H = 260, m = {t:16, r:16, b:36, l:44};
+  const px = sp => m.l + (sp / 40) * (W - m.l - m.r);
+  const py = v => m.t + ((10 - v) / 15) * (H - m.t - m.b);   // skala +10 … −5
+  let d = "";
+  for (let sp = 0.5; sp <= 40; sp += 0.5) d += (d ? " L " : "M ") + px(sp) + " " + py(dr(sp));
+  let akser = `<line x1="${m.l}" y1="${py(0)}" x2="${W-m.r}" y2="${py(0)}" stroke="var(--strek)" stroke-width="1"/>`;
+  for (const v of [10, 5, 0, -5]) akser += `<text x="${m.l-8}" y="${py(v)+4}" text-anchor="end" fill="var(--dempet)" font-size="11">${v}%</text>`;
+  for (const sp of [0, 10, 16, 20, 30, 40]) akser += `<text x="${px(sp)}" y="${H-14}" text-anchor="middle" fill="var(--dempet)" font-size="11">${sp}</text>`;
+  akser += `<text x="${(W)/2}" y="${H-1}" text-anchor="middle" fill="var(--dempet)" font-size="11">s⁺</text>`;
+  const band = `<rect x="${px(15)}" y="${m.t}" width="${px(20)-px(15)}" height="${H-m.t-m.b}" fill="var(--aksent)" opacity="0.10"/>`;
+  const pkt = `<circle cx="${px(r.sp)}" cy="${py(r.dr)}" r="5" fill="var(--aksent)"/>
+    <text x="${px(r.sp)}" y="${py(r.dr)-12}" text-anchor="middle" fill="var(--aksent)" font-size="12" font-weight="600">${r.dr>=0?"+":""}${r.dr.toFixed(1)}%</text>`;
+  svg.innerHTML = band + akser + `<path d="${d}" fill="none" stroke="var(--tekst)" stroke-width="2"/>` + pkt;
+}
+
+function oppdater(){
+  const U = +felt[0].value, x = +felt[1].value / 1000, tempC = +felt[2].value,
+        hoyde = +felt[3].value, sp = +felt[4].value;
+  el("splusVal").textContent = sp;
+  if (!(U > 0) || !(x > 0)) return;
+
+  const r = beregn(U, x, tempC, hoyde, sp);
+  el("oS").textContent  = (r.s * 1e6).toFixed(0);
+  el("oH").textContent  = (r.h * 1e6).toFixed(0);
+  el("oDR").textContent = (r.dr >= 0 ? "+" : "") + r.dr.toFixed(1) + "%";
+  el("oDv").textContent = (r.dv * 1e6).toFixed(1);
+
+  const [rk, rt] = regimeDom(r.Re);
+  el("flaggRegime").className = "flagg " + rk; el("flaggRegime").textContent = rt;
+  const [pk, pt] = prodDom(r.s * 1e6);
+  el("flaggProd").className = "flagg " + pk; el("flaggProd").textContent = pt;
+
+  el("mellom").innerHTML = [
+    ["Tetthet ρ", r.L.rho.toFixed(4) + " kg/m³", "p/(R·T)"],
+    ["Kinematisk viskositet ν", r.L.nu.toExponential(3) + " m²/s", "μ/ρ, Sutherland"],
+    ["Reynolds Re_x", r.Re.toExponential(3), "U·x/ν"],
+    ["Friksjonskoeffisient C_f", r.cf.toFixed(5), "0.0592·Re_x^(−1/5)"],
+    ["Veggskjærspenning τ_w", r.tau.toFixed(4) + " Pa", "½·ρ·U²·C_f"],
+    ["Friksjonshastighet u_τ", r.utau.toFixed(4) + " m/s", "√(τ_w/ρ)"],
+    ["Viskøs lengde δ_ν", (r.dv*1e6).toFixed(2) + " µm", "ν/u_τ"],
+    ["Rilleavstand s", (r.s*1e6).toFixed(1) + " µm", "s⁺·δ_ν"],
+  ].map(([a,b,c]) => `<tr><td>${a}</td><td class="v">${b}</td><td style="color:var(--dempet);font-size:.85em">${c}</td></tr>`).join("");
+
+  el("pFart").textContent = U;
+  el("pDR").textContent = Math.abs(r.dr).toFixed(1);
+  tegnSnitt(r); tegnKurve(r);
+}
+
+felt.forEach(f => f.addEventListener("input", oppdater));
+document.querySelectorAll(".preset button").forEach(b =>
+  b.addEventListener("click", () => {
+    const [U, x, t, h] = b.dataset.p.split(",");
+    felt[0].value = U; felt[1].value = (+x * 1000); felt[2].value = t; felt[3].value = h;
+    oppdater();
+  }));
+oppdater();
+</script>
+</body>
+</html>

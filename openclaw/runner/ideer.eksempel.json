@@ -1,0 +1,30 @@
+{
+  "_kommentar": "Input til `openclaw.py score`. Akse-ID-ene må matche config/regnviking-30h.json.",
+  "ideer": [
+    {
+      "navn": "Riblet-Kalkulator (haihud-geometri for droneskrog)",
+      "verdier": { "brukbarhet_48h": 9, "robusthet": 8, "selgbarhet": 7, "patent_potensial": 7, "energi_kost": 8 },
+      "begrunnelse": "Ren matematikk + én HTML-fil. Kjøper: dronebyggere, FPV-miljø, forskningsgrupper. Patentvinkel ligger i produksjonsmetoden, ikke i kalkulatoren."
+    },
+    {
+      "navn": "Kolibri-vinge testrigg (fysisk prototype)",
+      "verdier": { "brukbarhet_48h": 3, "robusthet": 6, "selgbarhet": 8, "patent_potensial": 9, "energi_kost": 3 },
+      "begrunnelse": "Høyeste patentverdi, men hardware bryter 48h-porten. Del opp: simulering nå, rigg senere."
+    },
+    {
+      "navn": "Gonzo Suno-pakke (satireserie, 10 spor)",
+      "verdier": { "brukbarhet_48h": 10, "robusthet": 5, "selgbarhet": 6, "patent_potensial": 0, "energi_kost": 9 },
+      "begrunnelse": "Null patent, men billigst mulig distribusjon og gir rekkevidde som mater alt annet."
+    },
+    {
+      "navn": "PanicSafe iOS-app (pusteprotokoll + panikklogg)",
+      "verdier": { "brukbarhet_48h": 6, "robusthet": 7, "selgbarhet": 7, "patent_potensial": 4, "energi_kost": 5 },
+      "begrunnelse": "App Store-review er flaskehalsen, ikke koden. Start som PWA for å teste retention først."
+    },
+    {
+      "navn": "Sverm-koordinator SaaS (multi-agent for droneflåte)",
+      "verdier": { "brukbarhet_48h": 2, "robusthet": 4, "selgbarhet": 9, "patent_potensial": 8, "energi_kost": 2 },
+      "begrunnelse": "Størst marked, men regulatorisk tungt og krever team. Parker med patentnotat."
+    }
+  ]
+}
