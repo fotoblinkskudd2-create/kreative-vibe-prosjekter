@@ -160,8 +160,8 @@ export default function renderBreathe(root) {
     phaseText.textContent = byUser ? 'Vi stopper her.' : 'Klar når du er det.';
     roundText.textContent = `${ROUNDS} rolige runder`;
 
-    if (byUser && round > 0) {
-      showDone('Fint at du tok deg tid. Selv noen pust teller.');
+    if (byUser) {
+      showDone('Fint at du tok deg tid. Selv noen få pust teller.');
     }
   }
 

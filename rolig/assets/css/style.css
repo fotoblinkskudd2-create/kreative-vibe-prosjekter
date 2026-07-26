@@ -556,10 +556,83 @@ textarea:focus { outline: none; border-color: var(--blue-deep); }
 }
 
 .action-head:focus-visible,
-.action-mark:focus-visible {
+.action-mark:focus-visible,
+.entry-head:focus-visible {
   outline: 2px solid var(--blue-deep);
   outline-offset: 2px;
 }
+
+/* ---------------------------------------------------------- Historikk --- */
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day-label {
+  margin: var(--space-3) 0 2px;
+  padding-left: 6px;
+  font-size: 0.86rem;
+  letter-spacing: 0.6px;
+  color: var(--ink-faint);
+}
+
+.day-label:first-child { margin-top: 0; }
+
+.entry {
+  background: var(--white-soft);
+  border: 1px solid rgba(140, 132, 120, 0.07);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.entry-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 14px var(--space-2);
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.entry-head[disabled] { cursor: default; }
+
+.entry-face {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  border-radius: 50%;
+  background: var(--beige);
+}
+
+.entry-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.5;
+}
+
+.entry-mood { font-size: 0.98rem; }
+
+.entry-note {
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-2) calc(42px + var(--space-2) * 2);
+  font-size: 0.96rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  animation: fade-up 0.4s var(--ease) both;
+}
+
+.entry-note[hidden] { display: none; }
 
 /* ------------------------------------------------------- Mindre bevegelse */
 
