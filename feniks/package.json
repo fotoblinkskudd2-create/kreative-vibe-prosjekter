@@ -1,0 +1,21 @@
+{
+  "name": "feniks-broporter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Agent 11 (Portneren), 12 (Livvakten) og 13 (Skattemesteren) med orkestratorfunksjoner for Føniks-arkitekturen.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "test": "node --experimental-transform-types --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "sjekk": "npm run typecheck && npm test",
+    "demo": "node --experimental-transform-types src/demo.ts",
+    "vaktbikkje": "node --experimental-transform-types src/vaktbikkje-main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0"
+  }
+}
