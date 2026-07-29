@@ -1,0 +1,289 @@
+# Routing + cost policy for the orchestration kernel.
+# Single source of truth. route.py and memlint.py read this file; nothing is
+# hardcoded in the tools. Edit here, not in the Python.
+
+[meta]
+schema = 1
+updated = "2026-07-29"
+
+# ---------------------------------------------------------------------------
+# Models. Prices are USD per million tokens, Anthropic first-party API rates.
+# VERIFY before relying on absolute numbers: https://platform.claude.com/docs/en/pricing
+# Bedrock / Vertex are partner-operated with separate pricing.
+# ---------------------------------------------------------------------------
+
+[models.claude-opus-5]
+engine = "claude"
+tier = "frontier"
+input_per_mtok = 5.0
+output_per_mtok = 25.0
+context = 1000000
+max_output = 128000
+cache_min_tokens = 512
+use_for = "Architecture, multi-file refactor, deep review, high-stakes correctness."
+
+[models.claude-sonnet-5]
+engine = "claude"
+tier = "balanced"
+input_per_mtok = 3.0
+output_per_mtok = 15.0
+context = 1000000
+max_output = 128000
+cache_min_tokens = 1024
+use_for = "High-volume production work, most agentic loops, default step-down from Opus."
+note = "Introductory pricing $2.00/$10.00 per MTok through 2026-08-31."
+
+[models.claude-haiku-4-5]
+engine = "claude"
+tier = "cheap"
+input_per_mtok = 1.0
+output_per_mtok = 5.0
+context = 200000
+max_output = 64000
+cache_min_tokens = 4096
+use_for = "Classification, summarization, routing, simple tool calls, Foci backend."
+
+[models.claude-fable-5]
+engine = "claude"
+tier = "max"
+input_per_mtok = 10.0
+output_per_mtok = 50.0
+context = 1000000
+max_output = 128000
+cache_min_tokens = 512
+use_for = "Explicit request only. Hardest long-horizon reasoning. Never auto-selected."
+requires_explicit_request = true
+
+# Codex runs on OpenAI models via the Codex CLI. The exact version string is
+# whatever that CLI is configured with; the kernel does not pin it and does not
+# claim to know it. Plan/review stays on Claude.
+[models.codex-cli]
+engine = "codex"
+tier = "external"
+input_per_mtok = 0.0
+output_per_mtok = 0.0
+context = 0
+max_output = 0
+cache_min_tokens = 0
+use_for = "Long-running autonomous coding loops, git-native workflows, keep-going-until-green."
+unverified = "Version/pricing not tracked here. Read from the installed Codex CLI."
+
+# ---------------------------------------------------------------------------
+# Prompt caching economics. Cache is the primary input-cost lever.
+# ---------------------------------------------------------------------------
+
+[cache]
+read_multiplier = 0.1
+write_multiplier_5m = 1.25
+write_multiplier_1h = 2.0
+breakeven_reads_5m = 2
+breakeven_reads_1h = 3
+max_breakpoints = 4
+batch_discount = 0.5
+render_order = "tools -> system -> messages"
+
+# ---------------------------------------------------------------------------
+# Cost classes. `cost` weights from matched signals sum into these buckets.
+# ---------------------------------------------------------------------------
+
+[cost_class.low]
+max_weight = 2
+effort = "low"
+model = "claude-haiku-4-5"
+label = "low"
+
+[cost_class.medium]
+max_weight = 6
+effort = "high"
+model = "claude-sonnet-5"
+label = "medium"
+
+[cost_class.high]
+max_weight = 9999
+effort = "xhigh"
+model = "claude-opus-5"
+label = "high"
+
+# Ordered cheapest-first. Escalate only on failed quality gate.
+[escalation]
+ladder = ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-5"]
+top = "claude-fable-5"
+
+# ---------------------------------------------------------------------------
+# Engines.
+# ---------------------------------------------------------------------------
+
+[engine.claude]
+role = "Plan, architect, review. Long-horizon reasoning, context-heavy analysis, memory-file authoring."
+priority = 1
+
+[engine.codex]
+role = "Execute. Autonomous coding loops, parallel tasks, test-driven iteration, large PRs."
+priority = 2
+
+[engine.foci]
+role = "Host. Lightweight always-on agent runtime, tool piping, session branching, realtime/Telegram surfaces."
+priority = 3
+
+# ---------------------------------------------------------------------------
+# Signals. Substring match, case-insensitive, against the task description.
+# Per-engine weights + a cost weight. Norwegian and English keywords both.
+# ---------------------------------------------------------------------------
+
+[[signal]]
+name = "architecture"
+keywords = ["arkitektur", "architecture", "design system", "systemdesign", "refactor",
+            "refaktor", "multi-file", "flere filer", "migration", "migrering", "tradeoff"]
+claude = 3
+codex = 1
+foci = 0
+cost = 3
+
+[[signal]]
+name = "deep_review"
+keywords = ["review", "gjennomgang", "audit", "revisjon", "correctness", "korrekthet",
+            "security", "sikkerhet", "kodekvalitet"]
+claude = 3
+codex = 0
+foci = 0
+cost = 2
+
+[[signal]]
+name = "execution_loop"
+keywords = ["until green", "til grønt", "test-driven", "tdd", "ci", "pipeline",
+            "iterate", "iterer", "autonomous", "autonom", "long-running", "langkjørende",
+            "pull request", "large pr", "stor pr"]
+claude = 0
+codex = 3
+foci = 0
+cost = 3
+
+[[signal]]
+name = "terminal_git"
+keywords = ["git", "branch", "commit", "rebase", "merge", "terminal", "shell", "bash"]
+claude = 0
+codex = 2
+foci = 0
+cost = 1
+
+[[signal]]
+name = "runtime_agent"
+keywords = ["telegram", "always-on", "alltid på", "realtime", "sanntid", "daemon",
+            "webhook", "tool-piping", "session branching", "low-memory", "lav minnebruk",
+            "footprint", "fotavtrykk"]
+claude = 0
+codex = 0
+foci = 4
+cost = 1
+
+[[signal]]
+name = "cheap_bulk"
+keywords = ["classify", "klassifiser", "summarize", "oppsummer", "extract", "hent ut",
+            "label", "merk", "translate", "oversett", "batch", "bulk"]
+claude = 1
+codex = 0
+foci = 1
+cost = 0
+
+[[signal]]
+name = "memory_write"
+keywords = ["claude.md", "agents.md", "memory", "minne", "convention", "konvensjon",
+            "decision", "beslutning", "compaction", "komprimering"]
+claude = 3
+codex = 0
+foci = 1
+cost = 1
+
+[[signal]]
+name = "docs_prose"
+keywords = ["documentation", "dokumentasjon", "readme", "spec", "kravspek", "explain",
+            "forklar", "salgsmateriell"]
+claude = 2
+codex = 0
+foci = 0
+cost = 1
+
+# ---------------------------------------------------------------------------
+# Flag weights. Applied on top of keyword signals.
+# ---------------------------------------------------------------------------
+
+# Risk raises the cost tier and the reviewer model. It deliberately does NOT
+# out-vote the execution engine: a high-risk "until green" loop still runs on
+# Codex, it just gets Opus reviewing it. See plan_review_model in the decision.
+[flag.risk_high]
+claude = 1
+codex = 0
+foci = 0
+cost = 3
+
+[flag.risk_medium]
+claude = 0
+codex = 0
+foci = 0
+cost = 1
+
+[flag.horizon_long]
+claude = 0
+codex = 3
+foci = 0
+cost = 3
+
+[flag.horizon_medium]
+claude = 0
+codex = 1
+foci = 0
+cost = 1
+
+[flag.runtime]
+claude = 0
+codex = 0
+foci = 4
+cost = 0
+
+[flag.interactive]
+claude = 1
+codex = 0
+foci = 1
+cost = 0
+
+[flag.files_many]
+threshold = 5
+claude = 2
+codex = 2
+foci = 0
+cost = 2
+
+[flag.files_sprawl]
+threshold = 20
+claude = 1
+codex = 2
+foci = 0
+cost = 3
+
+# ---------------------------------------------------------------------------
+# Memory hygiene. Enforced by memlint.py.
+# ---------------------------------------------------------------------------
+
+[memory]
+dir = "memory"
+max_lines = 300
+max_entry_chars = 200
+compact_at_window_pct = 60
+require_bullet_entries = true
+
+# Files exempt from the one-fact-per-bullet rule (prose allowed).
+prose_files = ["README.md"]
+
+# Substrings/patterns that must never appear in a memory file.
+# Regex, case-insensitive.
+secret_patterns = [
+  "sk-ant-[a-z0-9-]{8,}",
+  "sk-[a-z0-9]{20,}",
+  "ghp_[a-zA-Z0-9]{16,}",
+  "github_pat_[a-zA-Z0-9_]{20,}",
+  "xox[baprs]-[a-zA-Z0-9-]{10,}",
+  "AKIA[0-9A-Z]{16}",
+  "-----BEGIN [A-Z ]*PRIVATE KEY-----",
+  "whsec_[a-zA-Z0-9]{16,}",
+  "(api[_-]?key|apikey|secret|passwd|password|token)\\s*[:=]\\s*[\"']?[A-Za-z0-9/+_-]{12,}",
+]
