@@ -1,0 +1,72 @@
+# Foci agent config — TEMPLATE, SCHEMA UNVERIFIED
+#
+# This file expresses the kernel's *intent* for a Foci deployment. The key names
+# and structure have NOT been validated against an installed Foci build, so do
+# not deploy it as-is. Check each key against the runtime's own documentation,
+# then record the corrections in memory/known-issues.md.
+#
+# Copy to foci/config.toml (gitignored) and fill secrets from the environment.
+# Never commit a real token: memlint.py and review will reject it.
+
+[agent]
+name = "foci-kreativ"
+identity_file = "foci/IDENTITY.md"
+soul_file = "foci/SOUL.md"
+role = "host"   # host | executor | planner — Foci is the host in this kernel
+
+[model]
+# Cheap-first. The router owns escalation; this is only the entry point.
+backend = "anthropic"
+id = "claude-haiku-4-5"
+effort = "low"
+thinking = "adaptive"
+max_tokens = 4096
+
+[model.escalation]
+# Mirrors [escalation] in orchestration/policy.toml. Keep them in sync.
+ladder = ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-5"]
+trigger = "quality_gate_failed"   # never escalate on a hunch
+
+[auth]
+# Read from the environment. No literal keys in this file.
+api_key_env = "ANTHROPIC_API_KEY"
+
+[context]
+compact_at_pct = 60
+preserve = ["goals", "corrections", "preferences", "technical_state"]
+discard = ["tool_noise", "failed_attempts", "intermediate_reasoning"]
+
+[cache]
+enabled = true
+ttl = "5m"                # "5m" (1.25x write) or "1h" (2.0x write)
+# Stable prefix first, volatile content last. One changed byte invalidates the
+# rest of the prefix. Haiku will not cache a prefix under 4096 tokens.
+stable_prefix = ["foci/IDENTITY.md", "foci/SOUL.md", "memory/conventions.md"]
+min_prefix_tokens = 4096
+
+[memory]
+dir = "memory"
+load = "on_demand"        # never dump the whole directory into context
+writeback = true
+
+[routing]
+# Foci defers to the kernel router instead of choosing engines itself.
+command = "python3 orchestration/route.py"
+default_flags = ["--runtime", "--json"]
+handoff = { architecture = "claude", long_loop = "codex" }
+
+[surfaces]
+# Enable only what is actually in use; each one is footprint.
+telegram = false
+webhook = false
+cli = true
+
+[limits]
+max_session_turns = 200
+branch_after_turns = 50
+max_parallel_sessions = 4
+
+[safety]
+sandbox_destructive = true
+isolated_branch = true
+allow_credential_storage = false
