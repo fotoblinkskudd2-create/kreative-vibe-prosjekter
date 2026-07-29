@@ -1,0 +1,68 @@
+# Føniks — driftsoppsett.
+#
+# Det arkitektonisk viktige her er at vaktbikkja er en egen tjeneste med
+# tilgang til Docker-sokkelen. En vaktbikkje inne i containeren den overvåker
+# deler skjebne med den, og overvåker dermed ingenting.
+
+services:
+  # Pulslager. Egen container slik at pulsen overlever at master dør.
+  puls:
+    image: redis:7-alpine
+    container_name: feniks-puls
+    restart: unless-stopped
+    command: >
+      redis-server
+      --save ""
+      --appendonly no
+      --maxmemory 32mb
+      --maxmemory-policy noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks: [feniks]
+
+  # Orkestratoren: agent 1–13 og hovedløkken.
+  master:
+    build: .
+    container_name: feniks-master
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      FENIKS_REDIS_VERT: puls
+      FENIKS_REDIS_PORT: "6379"
+    depends_on:
+      puls:
+        condition: service_healthy
+    networks: [feniks]
+    # Én stabil identitet utover. Ingen proxyrotasjon: kilder er kvotebasert
+    # tilgang, og kvoter knyttes til legitimasjon, ikke til IP.
+    dns_search: .
+
+  # Vaktbikkja. Egen container, egen livssyklus.
+  vaktbikkje:
+    build: .
+    container_name: feniks-vaktbikkje
+    restart: unless-stopped
+    command: ["npm", "run", "vaktbikkje"]
+    env_file: .env
+    environment:
+      FENIKS_CONTAINER: feniks-master
+      FENIKS_REDIS_VERT: puls
+      FENIKS_REDIS_PORT: "6379"
+      # Bevæpnes bevisst, i .env. Standard er tørrkjøring.
+      FENIKS_VAKT_INTERVALL_MS: "60000"
+    volumes:
+      # Nødvendig for å kunne starte master på nytt. Merk at dette gir
+      # containeren kontroll over Docker-verten — den skal derfor ikke kjøre
+      # annen kode enn vaktbikkja, og den skal ikke ha nettverkstilgang utover.
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      puls:
+        condition: service_healthy
+    networks: [feniks]
+
+networks:
+  feniks:
+    driver: bridge
