@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'"
+    />
+    <meta name="description" content="Finner pengelekkasjer i bankutskriften din. Alt kjører lokalt i nettleseren." />
+    <meta name="theme-color" content="#020202" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <title>Penge-Magnet</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Penge-Magnet trenger JavaScript. All kjøring skjer lokalt i nettleseren din.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

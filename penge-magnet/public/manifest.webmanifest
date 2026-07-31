@@ -1,0 +1,19 @@
+{
+  "name": "Penge-Magnet",
+  "short_name": "Penge-Magnet",
+  "description": "Finner pengelekkasjer i bankutskriften din. Alt kjører lokalt.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#020202",
+  "theme_color": "#020202",
+  "lang": "no",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
