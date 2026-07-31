@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="nb" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vibe Code Planner</title>
+<meta name="description" content="Gjør en løs prosjektidé om til en tett, token-effektiv brief en kodeagent kan bygge fra i første forsøk.">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> Planner</a>
+  <nav class="nav">
+    <a href="index.html">Start</a>
+    <a href="vibe-planner.html" aria-current="page">Vibe Code</a>
+    <a href="agent-planner.html">Agent Run</a>
+    <button class="chip" data-theme-toggle title="Bytt lyst/mørkt">◐</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <h1>Vibe Code Planner</h1>
+    <p class="muted" style="max-width:62ch;margin-top:8px">
+      Skriv ideen én gang, ordentlig. Ut kommer en tett brief, en kontekstfil og en faseplan
+      som agenten kan bygge fra uten tjue runder med oppklaring.
+    </p>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="chip" id="loadExample">Fyll inn eksempel</button>
+      <button class="chip" id="importJson">Åpne .json</button>
+      <button class="chip danger" id="resetAll">Nullstill</button>
+    </div>
+  </div>
+
+  <div class="split">
+
+    <!-- ============ VENSTRE: skjema ============ -->
+    <div class="col-in">
+
+      <section class="card">
+        <div class="card-head"><span class="step-no">1</span><h2>Prosjektet</h2></div>
+
+        <div class="field">
+          <label for="f-name">Navn</label>
+          <input type="text" id="f-name" data-f="name" placeholder="Vibe-kort">
+        </div>
+
+        <div class="field">
+          <label for="f-pitch">Én setning — hva gjør det, for hvem <span class="lbl-note">(dette styrer alt annet)</span></label>
+          <textarea id="f-pitch" data-f="pitch" rows="2"
+            placeholder="En webapp der jeg lager digitale kort med tekst og bilde, og deler dem med en lenke."></textarea>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="f-type">Type</label>
+            <select id="f-type" data-f="type">
+              <option value="webapp">Webapp (klient)</option>
+              <option value="static">Statisk side / landingsside</option>
+              <option value="api">API / backend</option>
+              <option value="fullstack">Fullstack (klient + server)</option>
+              <option value="cli">CLI-verktøy</option>
+              <option value="script">Skript / automasjon</option>
+              <option value="prototype">Rask prototype</option>
+              <option value="content">Innhold / tekstprosjekt</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-stack">Stack <span class="lbl-note">(tomt = forslag)</span></label>
+            <input type="text" id="f-stack" data-f="stack" placeholder="Vanilla HTML/CSS/JS">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="f-deploy">Hvor skal det kjøre</label>
+            <input type="text" id="f-deploy" data-f="deploy" placeholder="GitHub Pages">
+          </div>
+          <div class="field">
+            <label for="f-ambition">Ambisjonsnivå</label>
+            <select id="f-ambition" data-f="ambition">
+              <option value="throwaway">Skisse — kast etterpå</option>
+              <option value="real" selected>Ekte — skal brukes</option>
+              <option value="polished">Polert — andre skal se det</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="step-no">2</span><h2>Omfang</h2>
+          <span class="hint">Ikke-mål sparer flest tokens</span>
+        </div>
+
+        <div class="field">
+          <label>Må ha <span class="lbl-note">— uten disse er det ikke ferdig</span></label>
+          <div class="list" id="list-must"></div>
+          <button class="chip tiny" style="margin-top:7px" data-add="must">+ Legg til</button>
+        </div>
+
+        <div class="field">
+          <label>Kjekt å ha <span class="lbl-note">— bare hvis det første står</span></label>
+          <div class="list" id="list-should"></div>
+          <button class="chip tiny" style="margin-top:7px" data-add="should">+ Legg til</button>
+        </div>
+
+        <div class="field">
+          <label>Ikke nå <span class="lbl-note">— skriv det agenten ellers finner på å bygge</span></label>
+          <div class="list" id="list-not"></div>
+          <button class="chip tiny" style="margin-top:7px" data-add="not">+ Legg til</button>
+          <div class="note" style="margin-top:9px">
+            Innlogging, database, betaling, admin-panel og «flere brukere» er de vanligste
+            tingene en agent bygger uoppfordret. Står de her, blir de ikke bygget.
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="step-no">3</span><h2>Kontekst agenten trenger</h2></div>
+
+        <div class="field">
+          <label for="f-existing">Finnes koden fra før?</label>
+          <select id="f-existing" data-f="existing">
+            <option value="new">Nei — tomt repo</option>
+            <option value="some">Litt — noen filer finnes</option>
+            <option value="big">Ja — eksisterende kodebase</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="f-files">Filer/mapper agenten skal lese først <span class="lbl-note">(én per linje)</span></label>
+          <textarea id="f-files" data-f="files" rows="3" placeholder="src/kort.js — kortmodellen&#10;assets/styles.css — eksisterende stil"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="f-rules">Regler og konvensjoner <span class="lbl-note">(én per linje)</span></label>
+          <textarea id="f-rules" data-f="rules" rows="3" placeholder="Ingen rammeverk, ingen byggesteg&#10;Norsk i UI, engelsk i koden&#10;Alt skal virke uten nett"></textarea>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="f-run">Kjørekommando</label>
+            <input type="text" id="f-run" data-f="run" placeholder="åpne index.html">
+          </div>
+          <div class="field">
+            <label for="f-test">Testkommando</label>
+            <input type="text" id="f-test" data-f="test" placeholder="npm test">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-done">Slik vet vi at det virker <span class="lbl-note">(én per linje — akseptansekriterier)</span></label>
+          <textarea id="f-done" data-f="done" rows="3" placeholder="Jeg kan lage et kort, laste siden på nytt, og kortet er der&#10;Delingslenken åpner kortet i skrivebeskyttet visning"></textarea>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="step-no">4</span><h2>Faseplan</h2>
+          <span class="hint" id="taskCount"></span>
+        </div>
+        <div class="btn-row mb">
+          <button class="chip" id="genTasks">Foreslå oppgaver på nytt</button>
+          <button class="chip tiny" id="addTask">+ Tom oppgave</button>
+        </div>
+        <div class="list" id="taskList"></div>
+        <div class="note mt">
+          Låst oppgave <span class="tag">🔒</span> beholdes når du genererer på nytt.
+          Modellen til høyre er forslag ut fra hva oppgaven er og hvor stor den er.
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============ HØYRE: resultat ============ -->
+    <div class="col-out">
+
+      <section class="card">
+        <div class="card-head"><h2>Token-økonomi</h2></div>
+        <div class="stats" id="econ"></div>
+        <details class="fold">
+          <summary>Forutsetninger</summary>
+          <div>
+            <div class="row">
+              <div class="field">
+                <label for="f-roundsUn">Runder per oppgave uten plan</label>
+                <input type="number" id="f-roundsUn" data-f="roundsUn" min="1" max="30" step="0.5" value="7">
+              </div>
+              <div class="field">
+                <label for="f-roundsPl">Med plan</label>
+                <input type="number" id="f-roundsPl" data-f="roundsPl" min="1" max="30" step="0.5" value="3">
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="f-ctx">Kontekst sendt per runde (tokens)</label>
+                <input type="number" id="f-ctx" data-f="ctx" min="500" step="500" value="9000">
+              </div>
+              <div class="field">
+                <label for="f-rate">Kurs USD → NOK</label>
+                <input type="number" id="f-rate" data-f="rate" min="0" step="0.1" value="10.5">
+              </div>
+            </div>
+            <p class="tiny faint" style="margin:6px 0 0">
+              Anslag, ikke fakturering. Tallene viser størrelsesorden og forskjellen mellom
+              å planlegge og ikke planlegge — ikke hva kjøringen faktisk koster.
+            </p>
+          </div>
+        </details>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Klar til bruk</h2></div>
+        <div class="tabs" id="outTabs">
+          <button class="tab" data-tab="brief">BRIEF.md</button>
+          <button class="tab" data-tab="claude">CLAUDE.md</button>
+          <button class="tab" data-tab="plan">PLAN.md</button>
+          <button class="tab" data-tab="first">Første prompt</button>
+        </div>
+
+        <pre class="out" data-panel="brief" id="out-brief"></pre>
+        <pre class="out" data-panel="claude" id="out-claude" hidden></pre>
+        <pre class="out" data-panel="plan" id="out-plan" hidden></pre>
+        <pre class="out" data-panel="first" id="out-first" hidden></pre>
+
+        <div class="btn-row mt">
+          <button class="primary" id="copyOut">Kopier</button>
+          <button id="dlOut">Last ned</button>
+          <button id="dlJson">Lagre .json</button>
+        </div>
+        <div class="tiny faint mt" id="outMeta"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Neste steg</h2></div>
+        <p class="small muted">
+          Planen er laget. Skal du kjøre den med agenter, ta den med videre — der fordeles
+          oppgavene på modeller og bølger, og du får kostnadsanslag per kjøring.
+        </p>
+        <button class="primary" id="toAgent">Send til Agent Run Planner →</button>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<script src="assets/core.js"></script>
+<script src="assets/vibe-planner.js"></script>
+</body>
+</html>
