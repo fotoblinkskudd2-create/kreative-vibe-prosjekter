@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="nb" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planner — vibe code og agent-kjøringer</title>
+<meta name="description" content="To verktøy for å planlegge før agenten koder: en brief-bygger og en kjøreplanlegger med modellvalg og kostnadsanslag.">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<style>
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+  .big-card {
+    display: block; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 22px; color: var(--text);
+    transition: border-color .14s, transform .14s;
+  }
+  .big-card:hover { text-decoration: none; border-color: var(--accent); transform: translateY(-2px); }
+  .big-card .ic { font-size: 1.6rem; line-height: 1; }
+  .big-card h2 { margin: 12px 0 6px; }
+  .big-card p { color: var(--text-dim); font-size: 0.9rem; margin: 0 0 12px; }
+  .big-card ul { margin: 0; padding-left: 17px; color: var(--text-dim); font-size: 0.85rem; }
+  .big-card li { margin-bottom: 3px; }
+  .go { display: inline-block; margin-top: 14px; color: var(--accent); font-weight: 600; font-size: 0.88rem; }
+  .flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px; }
+  .flow-step { background: var(--bg-soft); border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 13px; }
+  .flow-step .n { font-family: var(--mono); font-size: .72rem; color: var(--accent); font-weight: 700; }
+  .flow-step h3 { margin: 4px 0 4px; font-size: .88rem; }
+  .flow-step p { margin: 0; font-size: .8rem; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> Planner</a>
+  <nav class="nav">
+    <a href="index.html" aria-current="page">Start</a>
+    <a href="vibe-planner.html">Vibe Code</a>
+    <a href="agent-planner.html">Agent Run</a>
+    <button class="chip" data-theme-toggle title="Bytt lyst/mørkt">◐</button>
+  </nav>
+</header>
+
+<main class="wrap-narrow">
+
+  <div class="hero">
+    <h1>Planlegg før agenten koder</h1>
+    <p class="muted" style="max-width:60ch;margin-top:10px">
+      Det meste av tokens går med til at agenten gjetter hva du mente, bygger noe du ikke ba om,
+      og gjør det om igjen. To verktøy som fjerner den runden: ett som gjør ideen til en tett brief,
+      og ett som fordeler arbeidet på riktig modell før kjøringen starter.
+    </p>
+  </div>
+
+  <div class="cards">
+    <a class="big-card" href="vibe-planner.html">
+      <div class="ic">🎛️</div>
+      <h2>Vibe Code Planner</h2>
+      <p>Løs idé inn, byggbar brief ut.</p>
+      <ul>
+        <li>Må ha, kjekt å ha og — viktigst — ikke bygg dette</li>
+        <li>Faseplan med foreslått modell per oppgave</li>
+        <li>Ferdig <code class="mono">BRIEF.md</code>, <code class="mono">CLAUDE.md</code> og første prompt</li>
+        <li>Anslag på hva planlegging sparer</li>
+      </ul>
+      <span class="go">Åpne →</span>
+    </a>
+
+    <a class="big-card" href="agent-planner.html">
+      <div class="ic">🛰️</div>
+      <h2>Agent Run Planner</h2>
+      <p>Oppgaver inn, kjøreplan og budsjett ut.</p>
+      <ul>
+        <li>Modellvalg per oppgave — billigste som holder</li>
+        <li>Bølger som viser hva som kan gå samtidig</li>
+        <li>Kostnad med og uten prompt caching</li>
+        <li>Runbook og én ferdig prompt per oppgave</li>
+      </ul>
+      <span class="go">Åpne →</span>
+    </a>
+  </div>
+
+  <section class="card" style="margin-top:22px">
+    <div class="card-head"><h2>Slik henger de sammen</h2></div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="n">01</div>
+        <h3>Skriv ideen én gang</h3>
+        <p>Omfang, regler og — særlig — hva som ikke skal bygges.</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">02</div>
+        <h3>Få en faseplan</h3>
+        <p>Oppgavene foreslås ut fra prosjekttype og må-ha-listen.</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">03</div>
+        <h3>Send den videre</h3>
+        <p>Ett klikk tar planen inn i kjøreplanleggeren.</p>
+      </div>
+      <div class="flow-step">
+        <div class="n">04</div>
+        <h3>Kjør med budsjett</h3>
+        <p>Runbook, prompts og kostnad før første token brennes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Hvorfor dette sparer noe</h2></div>
+    <div class="stats">
+      <div class="stat">
+        <div class="k">Færre runder</div>
+        <div class="v">−50 %</div>
+        <div class="s">når omfanget er skrevet ned først</div>
+      </div>
+      <div class="stat">
+        <div class="k">Riktig modell</div>
+        <div class="v">5–15×</div>
+        <div class="s">prisforskjell mellom minste og største</div>
+      </div>
+      <div class="stat">
+        <div class="k">Caching</div>
+        <div class="v">−90 %</div>
+        <div class="s">på fast kontekst som leses om igjen</div>
+      </div>
+      <div class="stat">
+        <div class="k">Parallelt</div>
+        <div class="v">2–4×</div>
+        <div class="s">raskere når bølgene er uavhengige</div>
+      </div>
+    </div>
+    <p class="tiny faint mt">
+      Størrelsesordener, ikke garantier. Alle anslag i verktøyene er beregnet ut fra
+      forutsetninger du selv kan endre — de viser forskjellen mellom to måter å jobbe på,
+      ikke hva en konkret kjøring faktisk koster.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>Om verktøyene</h2></div>
+    <p class="small muted">
+      Alt kjører i nettleseren. Ingen konto, ingen server, ingenting sendes noe sted —
+      arbeidet ditt ligger i nettleserens eget lager, og kan eksporteres som
+      <code class="mono">.json</code> eller markdown når du vil ta det med videre.
+    </p>
+    <p class="small muted" style="margin:0">
+      Ingen byggesteg: klon repoet og åpne <code class="mono">index.html</code>, eller slå på
+      GitHub Pages for mappa.
+    </p>
+  </section>
+
+</main>
+
+<script src="assets/core.js"></script>
+<script>Core.initTheme();</script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="nb" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Run Planner</title>
+<meta name="description" content="Fordel oppgaver på riktig modell, kjør dem i parallelle bølger, og se hva kjøringen koster før du starter.">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark"></span> Planner</a>
+  <nav class="nav">
+    <a href="index.html">Start</a>
+    <a href="vibe-planner.html">Vibe Code</a>
+    <a href="agent-planner.html" aria-current="page">Agent Run</a>
+    <button class="chip" data-theme-toggle title="Bytt lyst/mørkt">◐</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <h1>Agent Run Planner</h1>
+    <p class="muted" style="max-width:64ch;margin-top:8px">
+      Bestem hvilken modell hver oppgave fortjener, hva som kan gå samtidig, og hva
+      kjøringen koster — før du starter den. Ut kommer en runbook og én ferdig prompt per oppgave.
+    </p>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="chip" id="importHandoff">Hent fra Vibe Code Planner</button>
+      <button class="chip" id="loadExample">Fyll inn eksempel</button>
+      <button class="chip" id="importJson">Åpne .json</button>
+      <button class="chip danger" id="resetAll">Nullstill</button>
+    </div>
+  </div>
+
+  <div class="split">
+
+    <!-- ============ VENSTRE ============ -->
+    <div class="col-in">
+
+      <section class="card">
+        <div class="card-head"><span class="step-no">1</span><h2>Oppdraget</h2></div>
+
+        <div class="field">
+          <label for="f-name">Navn på kjøringen</label>
+          <input type="text" id="f-name" data-f="name" placeholder="Vibe-kort — første bygg">
+        </div>
+
+        <div class="field">
+          <label for="f-mission">Fast kontekst alle agentene får <span class="lbl-note">(brief, regler, arkitektur — dette er prefikset som caches)</span></label>
+          <textarea id="f-mission" data-f="mission" rows="5"
+            placeholder="Lim inn BRIEF.md eller beskriv prosjektet, stacken og reglene her."></textarea>
+          <div class="tiny faint" id="missionSize" style="margin-top:4px"></div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="f-repo">Kodebase agenten må kjenne</label>
+            <select id="f-repo" data-f="repo">
+              <option value="2000">Bittelite — noen filer</option>
+              <option value="8000" selected>Lite prosjekt</option>
+              <option value="25000">Middels kodebase</option>
+              <option value="70000">Stor kodebase</option>
+              <option value="180000">Veldig stor / monorepo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-window">Kontekstvindu (tokens)</label>
+            <input type="number" id="f-window" data-f="window" min="8000" step="1000" value="200000">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="f-parallel">Maks agenter samtidig</label>
+            <input type="number" id="f-parallel" data-f="parallel" min="1" max="12" value="3">
+          </div>
+          <div class="field">
+            <label for="f-fresh">Ferske tokens per runde</label>
+            <input type="number" id="f-fresh" data-f="fresh" min="100" step="100" value="1200">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Innstillinger</label>
+          <div class="chips">
+            <button class="chip" data-toggle="caching">Prompt caching</button>
+            <button class="chip" data-toggle="autoRoute">Automatisk modellvalg</button>
+            <button class="chip" data-toggle="checkpoints">Stopp for godkjenning per bølge</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="step-no">2</span><h2>Oppgaver</h2>
+          <span class="hint" id="taskCount"></span>
+        </div>
+        <div class="btn-row mb">
+          <button class="chip tiny" id="addTask">+ Oppgave</button>
+          <button class="chip tiny" id="autoDeps">Koble avhengigheter automatisk</button>
+        </div>
+        <div class="list" id="taskList"></div>
+        <div class="note mt">
+          <strong>Avhengigheter</strong> avgjør hva som kan gå samtidig. Skriv nummer,
+          f.eks. <code class="mono">1,3</code> — tom betyr at oppgaven kan starte med én gang.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="step-no">3</span><h2>Priser</h2>
+          <span class="hint">USD per million tokens</span>
+        </div>
+        <div class="table-scroll">
+          <table id="priceTable">
+            <thead><tr><th>Modell</th><th class="num">Inn</th><th class="num">Ut</th><th class="num">Cache-lesing</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="row mt">
+          <div class="field">
+            <label for="f-rate">Kurs USD → NOK</label>
+            <input type="number" id="f-rate" data-f="rate" min="0" step="0.1" value="10.5">
+          </div>
+          <div class="field">
+            <label for="f-overhead">Påslag for feilkjøringer (%)</label>
+            <input type="number" id="f-overhead" data-f="overhead" min="0" max="200" step="5" value="20">
+          </div>
+        </div>
+        <p class="tiny faint" style="margin:8px 0 0">
+          Standardprisene er anslag og kan endres fritt. Cache-lesing regnes som
+          10 % av inn-prisen, cache-skriving som 125 %. Sjekk gjeldende priser hos leverandøren.
+        </p>
+      </section>
+
+    </div>
+
+    <!-- ============ HØYRE ============ -->
+    <div class="col-out">
+
+      <section class="card">
+        <div class="card-head"><h2>Nøkkeltall</h2></div>
+        <div class="stats" id="stats"></div>
+        <div id="warnings" class="mt"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Kjøreplan</h2><span class="hint" id="waveMeta"></span></div>
+        <div id="waveView"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Kostnad per modell</h2></div>
+        <div class="table-scroll">
+          <table id="costTable">
+            <thead><tr><th>Modell</th><th class="num">Oppg.</th><th class="num">Inn</th><th class="num">Ut</th><th class="num">Kostnad</th></tr></thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><h2>Klar til bruk</h2></div>
+        <div class="tabs" id="outTabs">
+          <button class="tab" data-tab="runbook">RUNBOOK.md</button>
+          <button class="tab" data-tab="prompts">Prompts</button>
+          <button class="tab" data-tab="csv">Kostnad (CSV)</button>
+        </div>
+        <pre class="out" data-panel="runbook" id="out-runbook"></pre>
+        <pre class="out" data-panel="prompts" id="out-prompts" hidden></pre>
+        <pre class="out" data-panel="csv" id="out-csv" hidden></pre>
+        <div class="btn-row mt">
+          <button class="primary" id="copyOut">Kopier</button>
+          <button id="dlOut">Last ned</button>
+          <button id="dlJson">Lagre .json</button>
+        </div>
+        <div class="tiny faint mt" id="outMeta"></div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<script src="assets/core.js"></script>
+<script src="assets/agent-planner.js"></script>
+</body>
+</html>
