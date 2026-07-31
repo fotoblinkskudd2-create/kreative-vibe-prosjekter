@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1070" width="1600" height="1070">
+<defs>
+  <marker id="pil_rust" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#b5462a"/></marker>
+  <marker id="pil_bla" viewBox="0 0 10 10" refX="9" refY="5"
+          markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#2b7ea8"/></marker>
+</defs>
+<rect x="0.0" y="0.0" width="1600.0" height="1070.0" fill="#ffffff" stroke="none" stroke-width="1" rx="0" opacity="1.0"/>
+<rect x="14.0" y="14.0" width="1572.0" height="1042.0" fill="none" stroke="#cfcfcf" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="46" y="62" font-family="Helvetica, Arial, sans-serif" font-size="27" fill="#1a1a1a" text-anchor="start" font-weight="bold">TØRKA T1 — termisk revisjon</text>
+<text x="46" y="88" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#6b6b6b" text-anchor="start" font-weight="normal">Energibudsjett for én tørkesyklus: 4 kg plagg, 0,8 l fritt vann, 90 minutter, romluft 20 °C / 40 % RF</text>
+<line x1="46.0" y1="104.0" x2="1554.0" y2="104.0" stroke="#1a1a1a" stroke-width="1.4" stroke-linecap="butt"/>
+<text x="46" y="136" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#1a1a1a" text-anchor="start" font-weight="bold">1  Hvor rev. A ikke går opp</text>
+<line x1="96.0" y1="506.0" x2="1506.0" y2="506.0" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="510.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">0</text>
+<line x1="96.0" y1="469.3" x2="1506.0" y2="469.3" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="473.3333333333333" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">100</text>
+<line x1="96.0" y1="432.7" x2="1506.0" y2="432.7" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="436.6666666666667" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">200</text>
+<line x1="96.0" y1="396.0" x2="1506.0" y2="396.0" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="400.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">300</text>
+<line x1="96.0" y1="359.3" x2="1506.0" y2="359.3" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="363.33333333333337" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">400</text>
+<line x1="96.0" y1="322.7" x2="1506.0" y2="322.7" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="326.6666666666667" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">500</text>
+<line x1="96.0" y1="286.0" x2="1506.0" y2="286.0" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="290.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">600</text>
+<line x1="96.0" y1="249.3" x2="1506.0" y2="249.3" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="253.33333333333337" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">700</text>
+<line x1="96.0" y1="212.7" x2="1506.0" y2="212.7" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="216.66666666666669" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">800</text>
+<line x1="96.0" y1="176.0" x2="1506.0" y2="176.0" stroke="#e6e6e6" stroke-width="1" stroke-linecap="butt"/>
+<text x="86" y="180.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">900</text>
+<text x="86" y="162" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">W</text>
+<line x1="96.0" y1="506.0" x2="1506.0" y2="506.0" stroke="#1a1a1a" stroke-width="1.4" stroke-linecap="butt"/>
+<rect x="716.4" y="374.7" width="282.0" height="131.3" fill="#b5462a" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="857.4" y="445.32592592592596" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">358 W</text>
+<rect x="716.4" y="291.0" width="282.0" height="83.6" fill="#2b7ea8" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="857.4" y="337.8324148856836" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">228 W</text>
+<rect x="716.4" y="222.3" width="282.0" height="68.8" fill="#8a7f6d" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="857.4" y="261.63797791951527" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">188 W</text>
+<rect x="716.4" y="213.5" width="282.0" height="8.8" fill="#4a7c59" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="857.4" y="530" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1a1a1a" text-anchor="middle" font-weight="bold">rev. A  —  slik den er spesifisert</text>
+<text x="857.4" y="556" font-family="Helvetica, Arial, sans-serif" font-size="21" fill="#1a1a1a" text-anchor="middle" font-weight="bold">1,20 kWh</text>
+<text x="857.4" y="574" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#6b6b6b" text-anchor="middle" font-weight="normal">798 W snitteffekt</text>
+<text x="857.4" y="594" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#b5462a" text-anchor="middle" font-weight="bold">-74 W over effekttaket</text>
+<rect x="1111.2" y="374.7" width="282.0" height="131.3" fill="#b5462a" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="1252.1999999999998" y="445.32592592592596" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">358 W</text>
+<rect x="1111.2" y="332.8" width="282.0" height="41.8" fill="#2b7ea8" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="1252.1999999999998" y="358.7421333687677" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">114 W</text>
+<rect x="1111.2" y="264.1" width="282.0" height="68.8" fill="#8a7f6d" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="1252.1999999999998" y="303.4574148856836" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">188 W</text>
+<rect x="1111.2" y="255.3" width="282.0" height="8.8" fill="#4a7c59" stroke="#ffffff" stroke-width="1.2" rx="0" opacity="1.0"/>
+<text x="1252.1999999999998" y="530" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1a1a1a" text-anchor="middle" font-weight="bold">rev. B  —  med varmegjenvinner</text>
+<text x="1252.1999999999998" y="556" font-family="Helvetica, Arial, sans-serif" font-size="21" fill="#1a1a1a" text-anchor="middle" font-weight="bold">1,03 kWh</text>
+<text x="1252.1999999999998" y="574" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#6b6b6b" text-anchor="middle" font-weight="normal">684 W snitteffekt</text>
+<text x="1252.1999999999998" y="594" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#4a7c59" text-anchor="middle" font-weight="bold">+40 W margin til effekttaket</text>
+<line x1="96.0" y1="240.5" x2="1506.0" y2="240.5" stroke="#b5462a" stroke-width="2" stroke-linecap="butt" stroke-dasharray="8 4"/>
+<text x="1506" y="232.53333333333336" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#b5462a" text-anchor="end" font-weight="bold">Effekttak 724 W  (PTC 700 W + vifte 24 W)</text>
+<line x1="441.4" y1="286.0" x2="716.4" y2="286.0" stroke="#6b6b6b" stroke-width="1.4" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<text x="706.4" y="279.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">Påstand rev. A: 0,90 kWh / 600 W snitt</text>
+<text x="112" y="188" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1a1a1a" text-anchor="start" font-weight="bold">Poster i budsjettet</text>
+<rect x="112.0" y="201.0" width="12.0" height="12.0" fill="#b5462a" stroke="none" stroke-width="1" rx="0" opacity="1.0"/>
+<text x="131" y="211" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#1a1a1a" text-anchor="start" font-weight="normal">Latent varme — fordamping av 0,8 l vann</text>
+<rect x="112.0" y="221.0" width="12.0" height="12.0" fill="#2b7ea8" stroke="none" stroke-width="1" rx="0" opacity="1.0"/>
+<text x="131" y="231" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#1a1a1a" text-anchor="start" font-weight="normal">Sensibel varme — oppvarming av erstatningsluft</text>
+<rect x="112.0" y="241.0" width="12.0" height="12.0" fill="#8a7f6d" stroke="none" stroke-width="1" rx="0" opacity="1.0"/>
+<text x="131" y="251" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#1a1a1a" text-anchor="start" font-weight="normal">Kappetap gjennom duk</text>
+<rect x="112.0" y="261.0" width="12.0" height="12.0" fill="#4a7c59" stroke="none" stroke-width="1" rx="0" opacity="1.0"/>
+<text x="131" y="271" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#1a1a1a" text-anchor="start" font-weight="normal">Vifte</text>
+<text x="112" y="304" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="start" font-weight="normal">Søylene viser snitteffekt over de 90 minuttene.</text>
+<text x="112" y="320" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="start" font-weight="normal">Kappetapet er posten rev. A ikke har med.</text>
+<text x="46" y="638" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#1a1a1a" text-anchor="start" font-weight="bold">2  Foreslått rettelse</text>
+<rect x="46.0" y="658.0" width="1508.0" height="340.0" fill="#ebe6dc" stroke="#c9c1b2" stroke-width="1.2" rx="4" opacity="1.0"/>
+<rect x="86.0" y="758.0" width="1428.0" height="168.0" fill="#ffffff" stroke="#1a1a1a" stroke-width="1.6" rx="3" opacity="1.0"/>
+<text x="96" y="748" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#1a1a1a" text-anchor="start" font-weight="bold" letter-spacing="0.5">KLIMAMODUL rev. B — snitt</text>
+<rect x="514.4" y="789.8" width="371.3" height="92.4" fill="#bcd9e6" stroke="#2b7ea8" stroke-width="1.6" rx="2" opacity="1.0"/>
+<line x1="555.7" y1="793.8" x2="555.7" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="596.9" y1="793.8" x2="596.9" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="638.2" y1="793.8" x2="638.2" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="679.4" y1="793.8" x2="679.4" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="720.7" y1="793.8" x2="720.7" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="761.9" y1="793.8" x2="761.9" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="803.2" y1="793.8" x2="803.2" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<line x1="844.4" y1="793.8" x2="844.4" y2="878.2" stroke="#2b7ea8" stroke-width="0.7" stroke-linecap="butt"/>
+<text x="700.04" y="779.8" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#2b7ea8" text-anchor="middle" font-weight="bold">NY: motstrøms platevarmeveksler i aluminium, η ≈ 50%</text>
+<rect x="971.4" y="784.9" width="142.8" height="57.1" fill="#d9d2c5" stroke="#1a1a1a" stroke-width="1.2" rx="2" opacity="1.0"/>
+<text x="1042.76" y="817.44" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="normal">vifte</text>
+<rect x="1157.0" y="784.9" width="171.4" height="57.1" fill="#f2c9bd" stroke="#1a1a1a" stroke-width="1.2" rx="2" opacity="1.0"/>
+<text x="1242.68" y="817.44" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#1a1a1a" text-anchor="middle" font-weight="normal">PTC</text>
+<path d="M 94 813.44 L 514.4 813.44" fill="none" stroke="#2b7ea8" stroke-width="3" stroke-linejoin="round" marker-end="url(#pil_bla)"/>
+<text x="98" y="804.44" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#2b7ea8" text-anchor="start" font-weight="normal">romluft 20 °C</text>
+<path d="M 885.6800000000001 813.44 L 971.36 813.44" fill="none" stroke="#8f5a3c" stroke-width="3" stroke-linejoin="round" marker-end="url(#pil_rust)"/>
+<text x="893.6800000000001" y="804.44" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#8f5a3c" text-anchor="start" font-weight="normal">forvarmet 25 °C</text>
+<path d="M 1328.3600000000001 813.44 L 1506 813.44" fill="none" stroke="#b5462a" stroke-width="3" stroke-linejoin="round" marker-end="url(#pil_rust)"/>
+<text x="1502" y="804.44" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#b5462a" text-anchor="end" font-weight="normal">tilluft 38 °C  →  pod</text>
+<path d="M 1506 885.6800000000001 L 885.6800000000001 885.6800000000001" fill="none" stroke="#2b7ea8" stroke-width="3" stroke-linejoin="round" marker-end="url(#pil_bla)"/>
+<text x="1502" y="903.6800000000001" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#2b7ea8" text-anchor="end" font-weight="normal">retur fra pod 30 °C, 12,3 g/kg</text>
+<path d="M 514.4 885.6800000000001 L 94 885.6800000000001" fill="none" stroke="#2b7ea8" stroke-width="3" stroke-linejoin="round" marker-end="url(#pil_bla)"/>
+<text x="98" y="903.6800000000001" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#2b7ea8" text-anchor="start" font-weight="normal">avtrekk 25 °C  →  vindusplate</text>
+<text x="86" y="946" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6b6b6b" text-anchor="start" font-weight="normal">Ingen kondens i pakken: duggpunktet i avtrekket er 17,3 °C, og inntaksluften er varmere enn det.</text>
+<text x="68" y="692" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#1a1a1a" text-anchor="start" font-weight="bold">Endringen som lukker effektgapet</text>
+<text x="68" y="712" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#6b6b6b" text-anchor="start" font-weight="normal">Avtrekket forlot podden på 30 °C og gikk rett ut av vinduet. Rev. B lar det varme inntaksluften først.</text>
+<text x="68" y="976" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#1a1a1a" text-anchor="start" font-weight="normal">Sensibel post faller fra 0,34 til 0,17 kWh — 0,17 kWh spart per syklus, og syklusen kommer under effekttaket.</text>
+<line x1="46.0" y1="1018.0" x2="1554.0" y2="1018.0" stroke="#cfcfcf" stroke-width="1" stroke-linecap="butt"/>
+<text x="46" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="start" font-weight="normal">Beregnet med termisk_revisjon.py · Buck-ligningen for metningstrykk · kappetap antatt 5 m² ved U = 2,5 W/m²K</text>
+<text x="1554" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#6b6b6b" text-anchor="end" font-weight="normal">Rev. B, forslag · ikke frigitt for produksjon</text>
+</svg>
